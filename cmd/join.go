@@ -17,8 +17,8 @@ var joinCmd = &cobra.Command{
 
 		firstPath, _ := cmd.Flags().GetString("first")
 		secondPath, _ := cmd.Flags().GetString("second")
-		joinColumnName, _ := cmd.Flags().GetString("output")
-		outputPath, _ := cmd.Flags().GetString("column")
+		joinColumnName, _ := cmd.Flags().GetString("column")
+		outputPath, _ := cmd.Flags().GetString("output")
 
 		return runJoin(firstPath, secondPath, joinColumnName, outputPath)
 	},
@@ -80,16 +80,16 @@ func join(first csv.CsvReader, second csv.CsvReader, joinColumnName string, out 
 
 	secondTable, err := csv.LoadCsvTable(second, joinColumnName)
 	if err != nil {
-		return errors.Wrap(err, "Failed to read the second CSV file.")
+		return errors.Wrap(err, "Failed to read the second CSV file")
 	}
 
 	firstColumnNames, err := first.Read()
 	if err != nil {
-		return errors.Wrap(err, "Failed to read the first CSV file.")
+		return errors.Wrap(err, "Failed to read the first CSV file")
 	}
 	firstJoinColumnIndex := util.IndexOf(firstColumnNames, joinColumnName)
 	if firstJoinColumnIndex == -1 {
-		return fmt.Errorf("%s is not found.", joinColumnName)
+		return fmt.Errorf("Missing %s in the first CSV file.", joinColumnName)
 	}
 
 	// 追加するものは、結合用のカラムを除く
@@ -104,7 +104,7 @@ func join(first csv.CsvReader, second csv.CsvReader, joinColumnName string, out 
 			break
 		}
 		if err != nil {
-			return errors.Wrap(err, "Failed to read the first CSV file.")
+			return errors.Wrap(err, "Failed to read the first CSV file")
 		}
 
 		secondRowMap := secondTable.Find(firstRow[firstJoinColumnIndex])
@@ -116,7 +116,10 @@ func join(first csv.CsvReader, second csv.CsvReader, joinColumnName string, out 
 			}
 		}
 
-		out.Write(append(firstRow, secondRow...))
+		err = out.Write(append(firstRow, secondRow...))
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

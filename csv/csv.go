@@ -25,7 +25,8 @@ func NewCsvReader(r io.Reader) (CsvReader, error) {
 
 	br := bufio.NewReader(r)
 	mark, err := br.Peek(len(utf8bom))
-	if err != nil {
+
+	if err != io.EOF && err != nil {
 		return nil, err
 	}
 
@@ -108,7 +109,7 @@ func LoadCsvTable(reader CsvReader, joinColumnName string) (CsvTable, error) {
 		// -> 重複して存在した場合はエラーに
 		_, has := rows[row[primaryColumnIndex]]
 		if has {
-			return nil, fmt.Errorf("%s is duplicated.", row[primaryColumnIndex])
+			return nil, fmt.Errorf("%s:%s is duplicated.", joinColumnName, row[primaryColumnIndex])
 		}
 
 		rows[row[primaryColumnIndex]] = row
