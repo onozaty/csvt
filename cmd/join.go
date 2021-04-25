@@ -1,13 +1,12 @@
 package cmd
 
 import (
-	"bufio"
-	"encoding/csv"
 	"fmt"
 	"io"
 	"os"
-	"reflect"
 
+	"github.com/onozaty/csvt/csv"
+	"github.com/onozaty/csvt/util"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -21,7 +20,7 @@ var joinCmd = &cobra.Command{
 		joinColumnName, _ := cmd.Flags().GetString("output")
 		outputPath, _ := cmd.Flags().GetString("column")
 
-		return execute(firstPath, secondPath, joinColumnName, outputPath)
+		return runJoin(firstPath, secondPath, joinColumnName, outputPath)
 	},
 }
 
@@ -39,19 +38,7 @@ func init() {
 	joinCmd.Flags().SortFlags = false
 }
 
-type CsvTable interface {
-	find(key string) map[string]string
-	joinColumnName() string
-	columnNames() []string
-}
-
-type MemoryTable struct {
-	JoinColumnName string
-	ColumnNames    []string
-	Rows           map[string][]string
-}
-
-func execute(firstPath string, secondPath string, joinColumnName string, outputPath string) error {
+func runJoin(firstPath string, secondPath string, joinColumnName string, outputPath string) error {
 
 	firstFile, err := os.Open(firstPath)
 	if err != nil {
@@ -59,7 +46,7 @@ func execute(firstPath string, secondPath string, joinColumnName string, outputP
 	}
 	defer firstFile.Close()
 
-	firstReader, err := newCsvReader(firstFile)
+	firstReader, err := csv.NewCsvReader(firstFile)
 	if err != nil {
 		return err
 	}
@@ -70,7 +57,7 @@ func execute(firstPath string, secondPath string, joinColumnName string, outputP
 	}
 	defer secondFile.Close()
 
-	secondReader, err := newCsvReader(secondFile)
+	secondReader, err := csv.NewCsvReader(secondFile)
 	if err != nil {
 		return err
 	}
@@ -80,7 +67,7 @@ func execute(firstPath string, secondPath string, joinColumnName string, outputP
 		return err
 	}
 	defer outputFile.Close()
-	out := csv.NewWriter(outputFile)
+	out := csv.NewCsvWriter(outputFile)
 
 	err = join(firstReader, secondReader, joinColumnName, out)
 
@@ -89,9 +76,9 @@ func execute(firstPath string, secondPath string, joinColumnName string, outputP
 	return err
 }
 
-func join(first *csv.Reader, second *csv.Reader, joinColumnName string, out *csv.Writer) error {
+func join(first csv.CsvReader, second csv.CsvReader, joinColumnName string, out csv.CsvWriter) error {
 
-	secondTable, err := loadCsvTable(second, joinColumnName)
+	secondTable, err := csv.LoadCsvTable(second, joinColumnName)
 	if err != nil {
 		return errors.Wrap(err, "Failed to read the second CSV file.")
 	}
@@ -100,13 +87,13 @@ func join(first *csv.Reader, second *csv.Reader, joinColumnName string, out *csv
 	if err != nil {
 		return errors.Wrap(err, "Failed to read the first CSV file.")
 	}
-	firstJoinColumnIndex := indexOf(firstColumnNames, joinColumnName)
+	firstJoinColumnIndex := util.IndexOf(firstColumnNames, joinColumnName)
 	if firstJoinColumnIndex == -1 {
 		return fmt.Errorf("%s is not found.", joinColumnName)
 	}
 
 	// 追加するものは、結合用のカラムを除く
-	appendsecondColumnNames := remove(secondTable.columnNames(), joinColumnName)
+	appendsecondColumnNames := util.Remove(secondTable.ColumnNames(), joinColumnName)
 	outColumnNames := append(firstColumnNames, appendsecondColumnNames...)
 	out.Write(outColumnNames)
 
@@ -120,7 +107,7 @@ func join(first *csv.Reader, second *csv.Reader, joinColumnName string, out *csv
 			return errors.Wrap(err, "Failed to read the first CSV file.")
 		}
 
-		secondRowMap := secondTable.find(firstRow[firstJoinColumnIndex])
+		secondRowMap := secondTable.Find(firstRow[firstJoinColumnIndex])
 		secondRow := make([]string, len(appendsecondColumnNames))
 
 		for i, appendColumnName := range appendsecondColumnNames {
@@ -133,108 +120,4 @@ func join(first *csv.Reader, second *csv.Reader, joinColumnName string, out *csv
 	}
 
 	return nil
-}
-
-var utf8bom = []byte{0xEF, 0xBB, 0xBF}
-
-func newCsvReader(file *os.File) (*csv.Reader, error) {
-
-	br := bufio.NewReader(file)
-	mark, err := br.Peek(len(utf8bom))
-	if err != nil {
-		return nil, err
-	}
-
-	if reflect.DeepEqual(mark, utf8bom) {
-		// BOMがあれば読み飛ばす
-		br.Discard(len(utf8bom))
-	}
-
-	return csv.NewReader(br), nil
-}
-
-func (t *MemoryTable) find(key string) map[string]string {
-
-	row := t.Rows[key]
-
-	if row == nil {
-		return nil
-	}
-
-	rowMap := make(map[string]string)
-	for i := 0; i < len(t.ColumnNames); i++ {
-		rowMap[t.ColumnNames[i]] = row[i]
-	}
-
-	return rowMap
-}
-
-func (t *MemoryTable) joinColumnName() string {
-
-	return t.JoinColumnName
-}
-
-func (t *MemoryTable) columnNames() []string {
-
-	return t.ColumnNames
-}
-
-func loadCsvTable(reader *csv.Reader, joinColumnName string) (CsvTable, error) {
-
-	headers, err := reader.Read()
-	if err != nil {
-		return nil, err
-	}
-
-	primaryColumnIndex := indexOf(headers, joinColumnName)
-	if primaryColumnIndex == -1 {
-		return nil, fmt.Errorf("%s is not found.", joinColumnName)
-	}
-
-	rows := make(map[string][]string)
-	for {
-		row, err := reader.Read()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return nil, err
-		}
-
-		// 格納前に既にあるか確認
-		// -> 重複して存在した場合はエラーに
-		_, has := rows[row[primaryColumnIndex]]
-		if has {
-			return nil, fmt.Errorf("%s is duplicated.", row[primaryColumnIndex])
-		}
-
-		rows[row[primaryColumnIndex]] = row
-	}
-
-	return &MemoryTable{
-		JoinColumnName: joinColumnName,
-		ColumnNames:    headers,
-		Rows:           rows,
-	}, nil
-}
-
-func indexOf(strings []string, search string) int {
-
-	for i, v := range strings {
-		if v == search {
-			return i
-		}
-	}
-	return -1
-}
-
-func remove(strings []string, search string) []string {
-
-	result := []string{}
-	for _, v := range strings {
-		if v != search {
-			result = append(result, v)
-		}
-	}
-	return result
 }
