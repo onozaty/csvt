@@ -201,7 +201,7 @@ func TestJoin(t *testing.T) {
 	}
 
 	out.Flush()
-	result := string(b.Bytes())
+	result := b.String()
 
 	expect := `ID,Name,Height,Weight
 1,Yamada,171,50
@@ -245,7 +245,7 @@ func TestJoin_rightNone(t *testing.T) {
 	}
 
 	out.Flush()
-	result := string(b.Bytes())
+	result := b.String()
 
 	expect := `ID,Name,Height,Weight
 1,Yamada,,
@@ -285,7 +285,7 @@ func TestJoin_firstFileJoinColumnNotFount(t *testing.T) {
 	out := csv.NewCsvWriter(w)
 
 	err = join(r1, r2, "CompanyID", out)
-	if err == nil || err.Error() != "Missing CompanyID in the first CSV file." {
+	if err == nil || err.Error() != "Missing CompanyID in the first CSV file" {
 		t.Fatal("failed test\n", err)
 	}
 }
@@ -317,7 +317,7 @@ func TestJoin_secondFileJoinColumnNotFount(t *testing.T) {
 	out := csv.NewCsvWriter(w)
 
 	err = join(r1, r2, "CompanyID", out)
-	if err == nil || err.Error() != "Failed to read the second CSV file: CompanyID is not found." {
+	if err == nil || err.Error() != "Failed to read the second CSV file: CompanyID is not found" {
 		t.Fatal("failed test\n", err)
 	}
 }

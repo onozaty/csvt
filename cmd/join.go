@@ -89,7 +89,7 @@ func join(first csv.CsvReader, second csv.CsvReader, joinColumnName string, out 
 	}
 	firstJoinColumnIndex := util.IndexOf(firstColumnNames, joinColumnName)
 	if firstJoinColumnIndex == -1 {
-		return fmt.Errorf("Missing %s in the first CSV file.", joinColumnName)
+		return fmt.Errorf("Missing %s in the first CSV file", joinColumnName)
 	}
 
 	// 追加するものは、結合用のカラムを除く
