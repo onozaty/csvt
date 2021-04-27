@@ -78,18 +78,19 @@ func runJoin(firstPath string, secondPath string, joinColumnName string, outputP
 
 func join(first csv.CsvReader, second csv.CsvReader, joinColumnName string, out csv.CsvWriter) error {
 
-	secondTable, err := csv.LoadCsvTable(second, joinColumnName)
+	secondTable, err := csv.LoadCsvMemoryTable(second, joinColumnName)
 	if err != nil {
-		return errors.Wrap(err, "Failed to read the second CSV file")
+		return errors.Wrap(err, "failed to read the second CSV file")
 	}
+	defer secondTable.Close()
 
 	firstColumnNames, err := first.Read()
 	if err != nil {
-		return errors.Wrap(err, "Failed to read the first CSV file")
+		return errors.Wrap(err, "failed to read the first CSV file")
 	}
 	firstJoinColumnIndex := util.IndexOf(firstColumnNames, joinColumnName)
 	if firstJoinColumnIndex == -1 {
-		return fmt.Errorf("Missing %s in the first CSV file", joinColumnName)
+		return fmt.Errorf("missing %s in the first CSV file", joinColumnName)
 	}
 
 	// 追加するものは、結合用のカラムを除く
@@ -104,10 +105,14 @@ func join(first csv.CsvReader, second csv.CsvReader, joinColumnName string, out 
 			break
 		}
 		if err != nil {
-			return errors.Wrap(err, "Failed to read the first CSV file")
+			return errors.Wrap(err, "failed to read the first CSV file")
 		}
 
-		secondRowMap := secondTable.Find(firstRow[firstJoinColumnIndex])
+		secondRowMap, err := secondTable.Find(firstRow[firstJoinColumnIndex])
+		if err != nil {
+			return errors.Wrap(err, "failed to find the second CSV file")
+		}
+
 		secondRow := make([]string, len(appendsecondColumnNames))
 
 		for i, appendColumnName := range appendsecondColumnNames {

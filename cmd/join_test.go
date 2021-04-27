@@ -285,7 +285,7 @@ func TestJoin_firstFileJoinColumnNotFount(t *testing.T) {
 	out := csv.NewCsvWriter(w)
 
 	err = join(r1, r2, "CompanyID", out)
-	if err == nil || err.Error() != "Missing CompanyID in the first CSV file" {
+	if err == nil || err.Error() != "missing CompanyID in the first CSV file" {
 		t.Fatal("failed test\n", err)
 	}
 }
@@ -317,7 +317,7 @@ func TestJoin_secondFileJoinColumnNotFount(t *testing.T) {
 	out := csv.NewCsvWriter(w)
 
 	err = join(r1, r2, "CompanyID", out)
-	if err == nil || err.Error() != "Failed to read the second CSV file: CompanyID is not found" {
+	if err == nil || err.Error() != "failed to read the second CSV file: CompanyID is not found" {
 		t.Fatal("failed test\n", err)
 	}
 }
@@ -346,7 +346,7 @@ func TestJoin_firstFileEmpty(t *testing.T) {
 	out := csv.NewCsvWriter(w)
 
 	err = join(r1, r2, "CompanyID", out)
-	if err == nil || err.Error() != "Failed to read the first CSV file: EOF" {
+	if err == nil || err.Error() != "failed to read the first CSV file: EOF" {
 		t.Fatal("failed test\n", err)
 	}
 }
@@ -374,7 +374,7 @@ func TestJoin_secondFileEmpty(t *testing.T) {
 	out := csv.NewCsvWriter(w)
 
 	err = join(r1, r2, "CompanyID", out)
-	if err == nil || err.Error() != "Failed to read the second CSV file: EOF" {
+	if err == nil || err.Error() != "failed to read the second CSV file: EOF" {
 		t.Fatal("failed test\n", err)
 	}
 }
