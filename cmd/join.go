@@ -15,14 +15,28 @@ var joinCmd = &cobra.Command{
 	Use: "join",
 	RunE: func(cmd *cobra.Command, args []string) error {
 
+		// 引数の解析に成功した時点で、エラーが起きてもUsageは表示しない
+		cmd.SilenceUsage = true
+
 		firstPath, _ := cmd.Flags().GetString("first")
 		secondPath, _ := cmd.Flags().GetString("second")
 		joinColumnName, _ := cmd.Flags().GetString("column")
 		outputPath, _ := cmd.Flags().GetString("output")
-		useFileTable, _ := cmd.Flags().GetBool("usingfile")
 
-		return runJoin(firstPath, secondPath, joinColumnName, outputPath, useFileTable)
+		useFileTable, _ := cmd.Flags().GetBool("usingfile")
+		noRecordNoError, _ := cmd.Flags().GetBool("norecord")
+		joinOptions := JoinOptions{
+			useFileTable:    useFileTable,
+			noRecordNoError: noRecordNoError,
+		}
+
+		return runJoin(firstPath, secondPath, joinColumnName, outputPath, joinOptions)
 	},
+}
+
+type JoinOptions struct {
+	useFileTable    bool
+	noRecordNoError bool
 }
 
 func init() {
@@ -37,10 +51,11 @@ func init() {
 	joinCmd.Flags().StringP("output", "o", "", "Output CSV file path")
 	joinCmd.MarkFlagRequired("output")
 	joinCmd.Flags().BoolP("usingfile", "", false, "Use temporary files for join (Use this when joining large files that will not fit in memory)")
+	joinCmd.Flags().BoolP("norecord", "", false, "No error even if there is no record corresponding to sencod CSV")
 	joinCmd.Flags().SortFlags = false
 }
 
-func runJoin(firstPath string, secondPath string, joinColumnName string, outputPath string, useFileTable bool) error {
+func runJoin(firstPath string, secondPath string, joinColumnName string, outputPath string, joinOptions JoinOptions) error {
 
 	firstFile, err := os.Open(firstPath)
 	if err != nil {
@@ -71,19 +86,19 @@ func runJoin(firstPath string, secondPath string, joinColumnName string, outputP
 	defer outputFile.Close()
 	out := csv.NewCsvWriter(outputFile)
 
-	err = join(firstReader, secondReader, joinColumnName, out, useFileTable)
+	err = join(firstReader, secondReader, joinColumnName, out, joinOptions)
 
 	out.Flush()
 
 	return err
 }
 
-func join(first csv.CsvReader, second csv.CsvReader, joinColumnName string, out csv.CsvWriter, useFileTable bool) error {
+func join(first csv.CsvReader, second csv.CsvReader, joinColumnName string, out csv.CsvWriter, joinOptions JoinOptions) error {
 
 	var secondTable csv.CsvTable
 	var err error
 
-	if useFileTable {
+	if joinOptions.useFileTable {
 		secondTable, err = csv.LoadCsvFileTable(second, joinColumnName)
 	} else {
 		secondTable, err = csv.LoadCsvMemoryTable(second, joinColumnName)
@@ -120,6 +135,13 @@ func join(first csv.CsvReader, second csv.CsvReader, joinColumnName string, out 
 		secondRowMap, err := secondTable.Find(firstRow[firstJoinColumnIndex])
 		if err != nil {
 			return errors.Wrap(err, "failed to find the second CSV file")
+		}
+
+		if secondRowMap == nil && !joinOptions.noRecordNoError {
+			// 対応するレコードが無かった場合にエラーに
+			return fmt.Errorf(
+				"%s was not found in the second CSV file\nif you don't want to raise an error, use the 'norecord' option",
+				firstRow[firstJoinColumnIndex])
 		}
 
 		secondRow := make([]string, len(appendsecondColumnNames))
