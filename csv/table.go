@@ -94,14 +94,14 @@ func LoadCsvMemoryTable(reader CsvReader, joinColumnName string) (CsvTable, erro
 	}, nil
 }
 
-type StorageTable struct {
+type FileTable struct {
 	joinColumnName string
 	columnNames    []string
 	dbPath         string
 	db             *bolt.DB
 }
 
-func (t *StorageTable) Find(key string) (map[string]string, error) {
+func (t *FileTable) Find(key string) (map[string]string, error) {
 
 	// 既にDBを開いている場合は、使いまわす
 	// (CsvTableのClose時に閉じている)
@@ -142,17 +142,17 @@ func (t *StorageTable) Find(key string) (map[string]string, error) {
 	return rowMap, nil
 }
 
-func (t *StorageTable) JoinColumnName() string {
+func (t *FileTable) JoinColumnName() string {
 
 	return t.joinColumnName
 }
 
-func (t *StorageTable) ColumnNames() []string {
+func (t *FileTable) ColumnNames() []string {
 
 	return t.columnNames
 }
 
-func (t *StorageTable) Close() error {
+func (t *FileTable) Close() error {
 
 	if t.db != nil {
 		err := t.db.Close()
@@ -164,7 +164,7 @@ func (t *StorageTable) Close() error {
 	return os.Remove(t.dbPath)
 }
 
-func LoadCsvStorageTable(reader CsvReader, joinColumnName string) (CsvTable, error) {
+func LoadCsvFileTable(reader CsvReader, joinColumnName string) (CsvTable, error) {
 
 	headers, err := reader.Read()
 	if err != nil {
@@ -188,49 +188,57 @@ func LoadCsvStorageTable(reader CsvReader, joinColumnName string) (CsvTable, err
 	}
 	defer db.Close()
 
-	err = db.Update(func(tx *bolt.Tx) error {
-		b, err := tx.CreateBucket([]byte("csvRows"))
+	eof := false
+
+	for !eof {
+
+		err = db.Update(func(tx *bolt.Tx) error {
+			b, err := tx.CreateBucketIfNotExists([]byte("csvRows"))
+			if err != nil {
+				return err
+			}
+
+			// 1トランザクションで大量の書き込みを行うと速度が落ちるため
+			// 分割してコミットを行う
+			for i := 0; i < 10000; i++ {
+				row, err := reader.Read()
+				if err == io.EOF {
+					eof = true
+					break
+				}
+				if err != nil {
+					return err
+				}
+
+				key := row[primaryColumnIndex]
+
+				// 格納前に既にあるか確認
+				// -> 重複して存在した場合はエラーに
+				v := b.Get([]byte(key))
+				if v != nil {
+					return fmt.Errorf("%s:%s is duplicated", joinColumnName, key)
+				}
+
+				rowJson, err := json.Marshal(row)
+				if err != nil {
+					return err
+				}
+
+				err = b.Put([]byte(key), []byte(rowJson))
+				if err != nil {
+					return err
+				}
+			}
+
+			return nil
+		})
+
 		if err != nil {
-			return err
+			return nil, err
 		}
-
-		for {
-			row, err := reader.Read()
-			if err == io.EOF {
-				break
-			}
-			if err != nil {
-				return err
-			}
-
-			key := row[primaryColumnIndex]
-
-			// 格納前に既にあるか確認
-			// -> 重複して存在した場合はエラーに
-			v := b.Get([]byte(key))
-			if v != nil {
-				return fmt.Errorf("%s:%s is duplicated", joinColumnName, key)
-			}
-
-			rowJson, err := json.Marshal(row)
-			if err != nil {
-				return err
-			}
-
-			err = b.Put([]byte(key), []byte(rowJson))
-			if err != nil {
-				return err
-			}
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		return nil, err
 	}
 
-	return &StorageTable{
+	return &FileTable{
 		joinColumnName: joinColumnName,
 		columnNames:    headers,
 		dbPath:         dbFile.Name(),

@@ -173,8 +173,8 @@ func TestLoadCsvMemoryTable_big(t *testing.T) {
 	}
 }
 
-// StorageTable
-func TestLoadCsvStorageTable(t *testing.T) {
+// FileTable
+func TestLoadCsvFileTable(t *testing.T) {
 
 	s := `ID,Name,Height,Weight
 1,Yamada,171,50
@@ -186,7 +186,7 @@ func TestLoadCsvStorageTable(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	table, err := LoadCsvStorageTable(r, "ID")
+	table, err := LoadCsvFileTable(r, "ID")
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -226,7 +226,7 @@ func TestLoadCsvStorageTable(t *testing.T) {
 	}
 }
 
-func TestLoadCsvStorageTable_duplicateKey(t *testing.T) {
+func TestLoadCsvFileTable_duplicateKey(t *testing.T) {
 
 	s := `ID,Name,Height,Weight
 1,Yamada,171,50
@@ -238,13 +238,13 @@ func TestLoadCsvStorageTable_duplicateKey(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	_, err = LoadCsvStorageTable(r, "ID")
+	_, err = LoadCsvFileTable(r, "ID")
 	if err == nil || err.Error() != "ID:1 is duplicated" {
 		t.Fatal("failed test\n", err)
 	}
 }
 
-func TestLoadCsvStorageTable_joinColumnNotFound(t *testing.T) {
+func TestLoadCsvFileTable_joinColumnNotFound(t *testing.T) {
 
 	s := `ID,Name,Height,Weight
 1,Yamada,171,50
@@ -255,13 +255,13 @@ func TestLoadCsvStorageTable_joinColumnNotFound(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	_, err = LoadCsvStorageTable(r, "id")
+	_, err = LoadCsvFileTable(r, "id")
 	if err == nil || err.Error() != "id is not found" {
 		t.Fatal("failed test\n", err)
 	}
 }
 
-func TestLoadCsvStorageTable_empty(t *testing.T) {
+func TestLoadCsvFileTable_empty(t *testing.T) {
 
 	s := ""
 	r, err := NewCsvReader(strings.NewReader(s))
@@ -269,13 +269,13 @@ func TestLoadCsvStorageTable_empty(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	_, err = LoadCsvStorageTable(r, "ID")
+	_, err = LoadCsvFileTable(r, "ID")
 	if err != io.EOF {
 		t.Fatal("failed test\n", err)
 	}
 }
 
-func TestLoadCsvStorageTable_changeLineOnly(t *testing.T) {
+func TestLoadCsvFileTable_changeLineOnly(t *testing.T) {
 
 	s := "\n"
 	r, err := NewCsvReader(strings.NewReader(s))
@@ -283,17 +283,15 @@ func TestLoadCsvStorageTable_changeLineOnly(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	_, err = LoadCsvStorageTable(r, "ID")
+	_, err = LoadCsvFileTable(r, "ID")
 	if err != io.EOF {
 		t.Fatal("failed test\n", err)
 	}
 }
 
-func TestLoadCsvStorageTable_big(t *testing.T) {
+func TestLoadCsvFileTable_big(t *testing.T) {
 
-	// boltだとメモリに比べて遅いので、件数押さえて実行
-	const maxId = 100000
-	//const maxId = 1000000
+	const maxId = 1000000
 
 	s := [maxId]string{}
 	s[0] = "ID,Name,Age"
@@ -306,7 +304,7 @@ func TestLoadCsvStorageTable_big(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	table, err := LoadCsvStorageTable(r, "ID")
+	table, err := LoadCsvFileTable(r, "ID")
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}

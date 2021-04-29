@@ -19,8 +19,9 @@ var joinCmd = &cobra.Command{
 		secondPath, _ := cmd.Flags().GetString("second")
 		joinColumnName, _ := cmd.Flags().GetString("column")
 		outputPath, _ := cmd.Flags().GetString("output")
+		useFileTable, _ := cmd.Flags().GetBool("usingfile")
 
-		return runJoin(firstPath, secondPath, joinColumnName, outputPath)
+		return runJoin(firstPath, secondPath, joinColumnName, outputPath, useFileTable)
 	},
 }
 
@@ -35,10 +36,11 @@ func init() {
 	joinCmd.MarkFlagRequired("column")
 	joinCmd.Flags().StringP("output", "o", "", "Output CSV file path")
 	joinCmd.MarkFlagRequired("output")
+	joinCmd.Flags().BoolP("usingfile", "", false, "Use temporary files for join (Use this when joining large files that will not fit in memory)")
 	joinCmd.Flags().SortFlags = false
 }
 
-func runJoin(firstPath string, secondPath string, joinColumnName string, outputPath string) error {
+func runJoin(firstPath string, secondPath string, joinColumnName string, outputPath string, useFileTable bool) error {
 
 	firstFile, err := os.Open(firstPath)
 	if err != nil {
@@ -69,16 +71,23 @@ func runJoin(firstPath string, secondPath string, joinColumnName string, outputP
 	defer outputFile.Close()
 	out := csv.NewCsvWriter(outputFile)
 
-	err = join(firstReader, secondReader, joinColumnName, out)
+	err = join(firstReader, secondReader, joinColumnName, out, useFileTable)
 
 	out.Flush()
 
 	return err
 }
 
-func join(first csv.CsvReader, second csv.CsvReader, joinColumnName string, out csv.CsvWriter) error {
+func join(first csv.CsvReader, second csv.CsvReader, joinColumnName string, out csv.CsvWriter, useFileTable bool) error {
 
-	secondTable, err := csv.LoadCsvMemoryTable(second, joinColumnName)
+	var secondTable csv.CsvTable
+	var err error
+
+	if useFileTable {
+		secondTable, err = csv.LoadCsvFileTable(second, joinColumnName)
+	} else {
+		secondTable, err = csv.LoadCsvMemoryTable(second, joinColumnName)
+	}
 	if err != nil {
 		return errors.Wrap(err, "failed to read the second CSV file")
 	}

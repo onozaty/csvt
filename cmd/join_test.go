@@ -72,6 +72,68 @@ func TestJoinCmd(t *testing.T) {
 	}
 }
 
+func TestJoinCmd_usingfile(t *testing.T) {
+
+	s1 := `ID,Name,CompanyID
+1,Yamada,1
+5,Ichikawa,1
+2,"Hanako, Sato",3
+`
+	f1, err := createTempFile(s1)
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(f1.Name())
+
+	s2 := `CompanyID,CompanyName
+1,CompanyA
+2,CompanyB
+3,会社C
+`
+	f2, err := createTempFile(s2)
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(f2.Name())
+
+	fo, err := createTempFile("")
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fo.Name())
+
+	rootCmd.SetArgs([]string{
+		"join",
+		"-1", f1.Name(),
+		"-2", f2.Name(),
+		"-o", fo.Name(),
+		"-c", "CompanyID",
+		"--usingfile",
+	})
+
+	err = rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	bo, err := os.ReadFile(fo.Name())
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := string(bo)
+
+	expect := `ID,Name,CompanyID,CompanyName
+1,Yamada,1,CompanyA
+5,Ichikawa,1,CompanyA
+2,"Hanako, Sato",3,会社C
+`
+
+	if result != expect {
+		t.Fatal("failed test\n", result)
+	}
+}
+
 func TestRunJoin_firstFileNotFound(t *testing.T) {
 
 	f1, err := createTempFile("")
@@ -93,7 +155,7 @@ func TestRunJoin_firstFileNotFound(t *testing.T) {
 	defer os.Remove(fo.Name())
 
 	// 存在しないファイルを指定
-	err = runJoin(f1.Name()+"___", f2.Name(), "CompanyID", fo.Name())
+	err = runJoin(f1.Name()+"___", f2.Name(), "CompanyID", fo.Name(), false)
 	if err == nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -125,7 +187,7 @@ func TestRunJoin_secondFileNotFound(t *testing.T) {
 	defer os.Remove(fo.Name())
 
 	// 存在しないファイルを指定
-	err = runJoin(f1.Name(), f2.Name()+"___", "CompanyID", fo.Name())
+	err = runJoin(f1.Name(), f2.Name()+"___", "CompanyID", fo.Name(), false)
 	if err == nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -157,7 +219,7 @@ func TestRunJoin_outputFileNotFound(t *testing.T) {
 	defer os.Remove(fo.Name())
 
 	// 存在しないディレクトリのファイルを指定
-	err = runJoin(f1.Name(), f2.Name(), "CompanyID", filepath.Join(fo.Name(), "___"))
+	err = runJoin(f1.Name(), f2.Name(), "CompanyID", filepath.Join(fo.Name(), "___"), false)
 	if err == nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -194,7 +256,7 @@ func TestJoin(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	out := csv.NewCsvWriter(w)
 
-	err = join(r1, r2, "ID", out)
+	err = join(r1, r2, "ID", out, false)
 
 	if err != nil {
 		t.Fatal("failed test\n", err)
@@ -238,7 +300,7 @@ func TestJoin_rightNone(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	out := csv.NewCsvWriter(w)
 
-	err = join(r1, r2, "ID", out)
+	err = join(r1, r2, "ID", out, false)
 
 	if err != nil {
 		t.Fatal("failed test\n", err)
@@ -284,7 +346,7 @@ func TestJoin_firstFileJoinColumnNotFount(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	out := csv.NewCsvWriter(w)
 
-	err = join(r1, r2, "CompanyID", out)
+	err = join(r1, r2, "CompanyID", out, false)
 	if err == nil || err.Error() != "missing CompanyID in the first CSV file" {
 		t.Fatal("failed test\n", err)
 	}
@@ -316,7 +378,7 @@ func TestJoin_secondFileJoinColumnNotFount(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	out := csv.NewCsvWriter(w)
 
-	err = join(r1, r2, "CompanyID", out)
+	err = join(r1, r2, "CompanyID", out, false)
 	if err == nil || err.Error() != "failed to read the second CSV file: CompanyID is not found" {
 		t.Fatal("failed test\n", err)
 	}
@@ -345,7 +407,7 @@ func TestJoin_firstFileEmpty(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	out := csv.NewCsvWriter(w)
 
-	err = join(r1, r2, "CompanyID", out)
+	err = join(r1, r2, "CompanyID", out, false)
 	if err == nil || err.Error() != "failed to read the first CSV file: EOF" {
 		t.Fatal("failed test\n", err)
 	}
@@ -373,7 +435,7 @@ func TestJoin_secondFileEmpty(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	out := csv.NewCsvWriter(w)
 
-	err = join(r1, r2, "CompanyID", out)
+	err = join(r1, r2, "CompanyID", out, false)
 	if err == nil || err.Error() != "failed to read the second CSV file: EOF" {
 		t.Fatal("failed test\n", err)
 	}
