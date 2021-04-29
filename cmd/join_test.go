@@ -134,7 +134,7 @@ func TestJoinCmd_usingfile(t *testing.T) {
 	}
 }
 
-func TestRunJoin_rightNoneNoError(t *testing.T) {
+func TestRunJoin_norecord(t *testing.T) {
 
 	s1 := `ID,Name,CompanyID
 1,Yamada,1
