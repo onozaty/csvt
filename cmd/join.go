@@ -23,11 +23,13 @@ var joinCmd = &cobra.Command{
 		joinColumnName, _ := cmd.Flags().GetString("column")
 		outputPath, _ := cmd.Flags().GetString("output")
 
+		secondJoinColumnName, _ := cmd.Flags().GetString("column2")
 		useFileTable, _ := cmd.Flags().GetBool("usingfile")
 		noRecordNoError, _ := cmd.Flags().GetBool("norecord")
 		joinOptions := JoinOptions{
-			useFileTable:    useFileTable,
-			noRecordNoError: noRecordNoError,
+			secondJoinColumnName: secondJoinColumnName,
+			useFileTable:         useFileTable,
+			noRecordNoError:      noRecordNoError,
 		}
 
 		return runJoin(firstPath, secondPath, joinColumnName, outputPath, joinOptions)
@@ -35,23 +37,25 @@ var joinCmd = &cobra.Command{
 }
 
 type JoinOptions struct {
-	useFileTable    bool
-	noRecordNoError bool
+	secondJoinColumnName string
+	useFileTable         bool
+	noRecordNoError      bool
 }
 
 func init() {
 	rootCmd.AddCommand(joinCmd)
 
-	joinCmd.Flags().StringP("first", "1", "", "First CSV file path")
+	joinCmd.Flags().StringP("first", "1", "", "First CSV file path.")
 	joinCmd.MarkFlagRequired("first")
-	joinCmd.Flags().StringP("second", "2", "", "Second CSV file path")
+	joinCmd.Flags().StringP("second", "2", "", "Second CSV file path.")
 	joinCmd.MarkFlagRequired("second")
-	joinCmd.Flags().StringP("column", "c", "", "Name of the column to use for the join")
+	joinCmd.Flags().StringP("column", "c", "", "Name of the column to use for joining.")
 	joinCmd.MarkFlagRequired("column")
-	joinCmd.Flags().StringP("output", "o", "", "Output CSV file path")
+	joinCmd.Flags().StringP("column2", "", "", "Name of the column to use for joining in the second CSV file. (Specify if different from the first CSV file)")
+	joinCmd.Flags().StringP("output", "o", "", "Output CSV file path.")
 	joinCmd.MarkFlagRequired("output")
-	joinCmd.Flags().BoolP("usingfile", "", false, "Use temporary files for join (Use this when joining large files that will not fit in memory)")
-	joinCmd.Flags().BoolP("norecord", "", false, "No error even if there is no record corresponding to sencod CSV")
+	joinCmd.Flags().BoolP("usingfile", "", false, "Use temporary files for joining. (Use this when joining large files that will not fit in memory)")
+	joinCmd.Flags().BoolP("norecord", "", false, "No error even if there is no record corresponding to sencod CSV.")
 	joinCmd.Flags().SortFlags = false
 }
 
@@ -95,13 +99,19 @@ func runJoin(firstPath string, secondPath string, joinColumnName string, outputP
 
 func join(first csv.CsvReader, second csv.CsvReader, joinColumnName string, out csv.CsvWriter, joinOptions JoinOptions) error {
 
+	firstJoinColumnName := joinColumnName
+	secondJoinColumnName := joinColumnName
+	if joinOptions.secondJoinColumnName != "" {
+		secondJoinColumnName = joinOptions.secondJoinColumnName
+	}
+
 	var secondTable csv.CsvTable
 	var err error
 
 	if joinOptions.useFileTable {
-		secondTable, err = csv.LoadCsvFileTable(second, joinColumnName)
+		secondTable, err = csv.LoadCsvFileTable(second, secondJoinColumnName)
 	} else {
-		secondTable, err = csv.LoadCsvMemoryTable(second, joinColumnName)
+		secondTable, err = csv.LoadCsvMemoryTable(second, secondJoinColumnName)
 	}
 	if err != nil {
 		return errors.Wrap(err, "failed to read the second CSV file")
@@ -112,13 +122,13 @@ func join(first csv.CsvReader, second csv.CsvReader, joinColumnName string, out 
 	if err != nil {
 		return errors.Wrap(err, "failed to read the first CSV file")
 	}
-	firstJoinColumnIndex := util.IndexOf(firstColumnNames, joinColumnName)
+	firstJoinColumnIndex := util.IndexOf(firstColumnNames, firstJoinColumnName)
 	if firstJoinColumnIndex == -1 {
-		return fmt.Errorf("missing %s in the first CSV file", joinColumnName)
+		return fmt.Errorf("missing %s in the first CSV file", firstJoinColumnName)
 	}
 
 	// 追加するものは、結合用のカラムを除く
-	appendsecondColumnNames := util.Remove(secondTable.ColumnNames(), joinColumnName)
+	appendsecondColumnNames := util.Remove(secondTable.ColumnNames(), secondJoinColumnName)
 	outColumnNames := append(firstColumnNames, appendsecondColumnNames...)
 	out.Write(outColumnNames)
 

@@ -195,6 +195,69 @@ func TestRunJoin_norecord(t *testing.T) {
 	}
 }
 
+func TestRunJoin_column2(t *testing.T) {
+
+	s1 := `ID,Name,CompanyID
+1,Yamada,1
+5,Ichikawa,2
+2,"Hanako, Sato",3
+`
+	f1, err := createTempFile(s1)
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(f1.Name())
+
+	s2 := `ID,CompanyName
+1,CompanyA
+2,CompanyB
+3,会社C
+4,会社D
+`
+	f2, err := createTempFile(s2)
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(f2.Name())
+
+	fo, err := createTempFile("")
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fo.Name())
+
+	rootCmd.SetArgs([]string{
+		"join",
+		"-1", f1.Name(),
+		"-2", f2.Name(),
+		"-o", fo.Name(),
+		"-c", "CompanyID",
+		"--column2", "ID",
+	})
+
+	err = rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	bo, err := os.ReadFile(fo.Name())
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := string(bo)
+
+	expect := `ID,Name,CompanyID,CompanyName
+1,Yamada,1,CompanyA
+5,Ichikawa,2,CompanyB
+2,"Hanako, Sato",3,会社C
+`
+
+	if result != expect {
+		t.Fatal("failed test\n", result)
+	}
+}
+
 func TestRunJoin_firstFileNotFound(t *testing.T) {
 
 	f1, err := createTempFile("")
