@@ -41,6 +41,7 @@ func TestJoinCmd(t *testing.T) {
 	}
 	defer os.Remove(fo.Name())
 
+	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"join",
 		"-1", f1.Name(),
@@ -102,6 +103,7 @@ func TestJoinCmd_usingfile(t *testing.T) {
 	}
 	defer os.Remove(fo.Name())
 
+	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"join",
 		"-1", f1.Name(),
@@ -163,6 +165,7 @@ func TestRunJoin_norecord(t *testing.T) {
 	}
 	defer os.Remove(fo.Name())
 
+	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"join",
 		"-1", f1.Name(),
@@ -226,6 +229,7 @@ func TestRunJoin_column2(t *testing.T) {
 	}
 	defer os.Remove(fo.Name())
 
+	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"join",
 		"-1", f1.Name(),
@@ -476,7 +480,7 @@ func TestJoin_rightNoneNoError(t *testing.T) {
 	}
 }
 
-func TestJoin_firstFileJoinColumnNotFount(t *testing.T) {
+func TestJoin_firstFileJoinColumnNotFound(t *testing.T) {
 
 	s1 := `ID,Name,CID
 1,Yamada,1
@@ -508,7 +512,7 @@ func TestJoin_firstFileJoinColumnNotFount(t *testing.T) {
 	}
 }
 
-func TestJoin_secondFileJoinColumnNotFount(t *testing.T) {
+func TestJoin_secondFileJoinColumnNotFound(t *testing.T) {
 
 	s1 := `ID,Name,CompanyID
 1,Yamada,1

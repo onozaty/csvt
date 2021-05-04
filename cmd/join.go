@@ -11,39 +11,32 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var joinCmd = &cobra.Command{
-	Use: "join",
-	RunE: func(cmd *cobra.Command, args []string) error {
+func newJoinCmd() *cobra.Command {
 
-		// 引数の解析に成功した時点で、エラーが起きてもUsageは表示しない
-		cmd.SilenceUsage = true
+	joinCmd := &cobra.Command{
+		Use: "join",
+		RunE: func(cmd *cobra.Command, args []string) error {
 
-		firstPath, _ := cmd.Flags().GetString("first")
-		secondPath, _ := cmd.Flags().GetString("second")
-		joinColumnName, _ := cmd.Flags().GetString("column")
-		outputPath, _ := cmd.Flags().GetString("output")
+			// 引数の解析に成功した時点で、エラーが起きてもUsageは表示しない
+			cmd.SilenceUsage = true
 
-		secondJoinColumnName, _ := cmd.Flags().GetString("column2")
-		useFileTable, _ := cmd.Flags().GetBool("usingfile")
-		noRecordNoError, _ := cmd.Flags().GetBool("norecord")
-		joinOptions := JoinOptions{
-			secondJoinColumnName: secondJoinColumnName,
-			useFileTable:         useFileTable,
-			noRecordNoError:      noRecordNoError,
-		}
+			firstPath, _ := cmd.Flags().GetString("first")
+			secondPath, _ := cmd.Flags().GetString("second")
+			joinColumnName, _ := cmd.Flags().GetString("column")
+			outputPath, _ := cmd.Flags().GetString("output")
 
-		return runJoin(firstPath, secondPath, joinColumnName, outputPath, joinOptions)
-	},
-}
+			secondJoinColumnName, _ := cmd.Flags().GetString("column2")
+			useFileTable, _ := cmd.Flags().GetBool("usingfile")
+			noRecordNoError, _ := cmd.Flags().GetBool("norecord")
+			joinOptions := JoinOptions{
+				secondJoinColumnName: secondJoinColumnName,
+				useFileTable:         useFileTable,
+				noRecordNoError:      noRecordNoError,
+			}
 
-type JoinOptions struct {
-	secondJoinColumnName string
-	useFileTable         bool
-	noRecordNoError      bool
-}
-
-func init() {
-	rootCmd.AddCommand(joinCmd)
+			return runJoin(firstPath, secondPath, joinColumnName, outputPath, joinOptions)
+		},
+	}
 
 	joinCmd.Flags().StringP("first", "1", "", "First CSV file path.")
 	joinCmd.MarkFlagRequired("first")
@@ -57,9 +50,17 @@ func init() {
 	joinCmd.Flags().BoolP("usingfile", "", false, "Use temporary files for joining. (Use this when joining large files that will not fit in memory)")
 	joinCmd.Flags().BoolP("norecord", "", false, "No error even if there is no record corresponding to sencod CSV.")
 	joinCmd.Flags().SortFlags = false
+
+	return joinCmd
 }
 
-func runJoin(firstPath string, secondPath string, joinColumnName string, outputPath string, joinOptions JoinOptions) error {
+type JoinOptions struct {
+	secondJoinColumnName string
+	useFileTable         bool
+	noRecordNoError      bool
+}
+
+func runJoin(firstPath string, secondPath string, joinColumnName string, outputPath string, options JoinOptions) error {
 
 	firstFile, err := os.Open(firstPath)
 	if err != nil {
@@ -90,25 +91,25 @@ func runJoin(firstPath string, secondPath string, joinColumnName string, outputP
 	defer outputFile.Close()
 	out := csv.NewCsvWriter(outputFile)
 
-	err = join(firstReader, secondReader, joinColumnName, out, joinOptions)
+	err = join(firstReader, secondReader, joinColumnName, out, options)
 
 	out.Flush()
 
 	return err
 }
 
-func join(first csv.CsvReader, second csv.CsvReader, joinColumnName string, out csv.CsvWriter, joinOptions JoinOptions) error {
+func join(first csv.CsvReader, second csv.CsvReader, joinColumnName string, out csv.CsvWriter, options JoinOptions) error {
 
 	firstJoinColumnName := joinColumnName
 	secondJoinColumnName := joinColumnName
-	if joinOptions.secondJoinColumnName != "" {
-		secondJoinColumnName = joinOptions.secondJoinColumnName
+	if options.secondJoinColumnName != "" {
+		secondJoinColumnName = options.secondJoinColumnName
 	}
 
 	var secondTable csv.CsvTable
 	var err error
 
-	if joinOptions.useFileTable {
+	if options.useFileTable {
 		secondTable, err = csv.LoadCsvFileTable(second, secondJoinColumnName)
 	} else {
 		secondTable, err = csv.LoadCsvMemoryTable(second, secondJoinColumnName)
@@ -147,7 +148,7 @@ func join(first csv.CsvReader, second csv.CsvReader, joinColumnName string, out 
 			return errors.Wrap(err, "failed to find the second CSV file")
 		}
 
-		if secondRowMap == nil && !joinOptions.noRecordNoError {
+		if secondRowMap == nil && !options.noRecordNoError {
 			// 対応するレコードが無かった場合にエラーに
 			return fmt.Errorf(
 				"%s was not found in the second CSV file\nif you don't want to raise an error, use the 'norecord' option",
