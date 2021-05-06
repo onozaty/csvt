@@ -14,7 +14,8 @@ import (
 func newJoinCmd() *cobra.Command {
 
 	joinCmd := &cobra.Command{
-		Use: "join",
+		Use:   "join",
+		Short: "Join CSV files",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			// 引数の解析に成功した時点で、エラーが起きてもUsageは表示しない

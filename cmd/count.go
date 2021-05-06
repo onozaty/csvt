@@ -14,7 +14,8 @@ import (
 func newCountCmd() *cobra.Command {
 
 	countCmd := &cobra.Command{
-		Use: "count",
+		Use:   "count",
+		Short: "Count the number of records in CSV file",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			// 引数の解析に成功した時点で、エラーが起きてもUsageは表示しない
