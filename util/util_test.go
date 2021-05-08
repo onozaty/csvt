@@ -66,3 +66,24 @@ func TestRemove_multi(t *testing.T) {
 		t.Fatal("failed test\n", removed)
 	}
 }
+
+func TestContains(t *testing.T) {
+
+	array := []int{10, 11, 20}
+
+	if !Contains(array, 10) {
+		t.Fatal("failed test\n")
+	}
+
+	if !Contains(array, 11) {
+		t.Fatal("failed test\n")
+	}
+
+	if !Contains(array, 20) {
+		t.Fatal("failed test\n")
+	}
+
+	if Contains(array, 2) {
+		t.Fatal("failed test\n")
+	}
+}

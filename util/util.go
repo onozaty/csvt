@@ -20,3 +20,12 @@ func Remove(strings []string, search string) []string {
 	}
 	return result
 }
+
+func Contains(a []int, e int) bool {
+	for _, v := range a {
+		if e == v {
+			return true
+		}
+	}
+	return false
+}
