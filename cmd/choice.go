@@ -11,11 +11,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newRemoveCmd() *cobra.Command {
+func newChoiceCmd() *cobra.Command {
 
-	removeCmd := &cobra.Command{
-		Use:   "remove",
-		Short: "Remove columns from CSV file",
+	choiceCmd := &cobra.Command{
+		Use:   "choice",
+		Short: "Choice columns from CSV file",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			// 引数の解析に成功した時点で、エラーが起きてもUsageは表示しない
@@ -25,25 +25,25 @@ func newRemoveCmd() *cobra.Command {
 			targetColumnNames, _ := cmd.Flags().GetStringArray("column")
 			outputPath, _ := cmd.Flags().GetString("output")
 
-			return runRemove(
+			return runChoice(
 				inputPath,
 				targetColumnNames,
 				outputPath)
 		},
 	}
 
-	removeCmd.Flags().StringP("input", "i", "", "Input CSV file path.")
-	removeCmd.MarkFlagRequired("input")
-	removeCmd.Flags().StringArrayP("column", "c", []string{}, "Name of the column to remove.")
-	removeCmd.MarkFlagRequired("columns")
-	removeCmd.Flags().StringP("output", "o", "", "Output CSV file path.")
-	removeCmd.MarkFlagRequired("output")
-	removeCmd.Flags().SortFlags = false
+	choiceCmd.Flags().StringP("input", "i", "", "Input CSV file path.")
+	choiceCmd.MarkFlagRequired("input")
+	choiceCmd.Flags().StringArrayP("column", "c", []string{}, "Name of the column to choice.")
+	choiceCmd.MarkFlagRequired("columns")
+	choiceCmd.Flags().StringP("output", "o", "", "Output CSV file path.")
+	choiceCmd.MarkFlagRequired("output")
+	choiceCmd.Flags().SortFlags = false
 
-	return removeCmd
+	return choiceCmd
 }
 
-func runRemove(inputPath string, targetColumnNames []string, outputPath string) error {
+func runChoice(inputPath string, targetColumnNames []string, outputPath string) error {
 
 	inputFile, err := os.Open(inputPath)
 	if err != nil {
@@ -63,7 +63,7 @@ func runRemove(inputPath string, targetColumnNames []string, outputPath string) 
 	defer outputFile.Close()
 	writer := csv.NewCsvWriter(outputFile)
 
-	err = remove(reader, targetColumnNames, writer)
+	err = choice(reader, targetColumnNames, writer)
 
 	if err != nil {
 		return err
@@ -74,7 +74,7 @@ func runRemove(inputPath string, targetColumnNames []string, outputPath string) 
 	return nil
 }
 
-func remove(reader csv.CsvReader, removeColumnNames []string, writer csv.CsvWriter) error {
+func choice(reader csv.CsvReader, choiceColumnNames []string, writer csv.CsvWriter) error {
 
 	// ヘッダ
 	columnNames, err := reader.Read()
@@ -82,25 +82,25 @@ func remove(reader csv.CsvReader, removeColumnNames []string, writer csv.CsvWrit
 		return errors.Wrap(err, "failed to read the CSV file")
 	}
 
-	removeColumnIndexes := []int{}
-	for _, removeColumnName := range removeColumnNames {
+	choiceColumnIndexes := []int{}
+	for _, choiceColumnName := range choiceColumnNames {
 
-		removeColumnIndex := util.IndexOf(columnNames, removeColumnName)
-		if removeColumnIndex == -1 {
-			return fmt.Errorf("missing %s in the CSV file", removeColumnName)
+		choiceColumnIndex := util.IndexOf(columnNames, choiceColumnName)
+		if choiceColumnIndex == -1 {
+			return fmt.Errorf("missing %s in the CSV file", choiceColumnName)
 		}
 
-		removeColumnIndexes = append(removeColumnIndexes, removeColumnIndex)
+		choiceColumnIndexes = append(choiceColumnIndexes, choiceColumnIndex)
 	}
 
-	// 指定したカラム以外に絞るフィルタを定義
+	// 指定されたカラムのみに絞るフィルタを定義
 	filter := func(row []string) []string {
 
 		filtered := []string{}
 
 		for i, item := range row {
 
-			if !util.Contains(removeColumnIndexes, i) {
+			if util.Contains(choiceColumnIndexes, i) {
 				filtered = append(filtered, item)
 			}
 		}
