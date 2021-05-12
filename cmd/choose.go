@@ -11,11 +11,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newChoiceCmd() *cobra.Command {
+func newChooseCmd() *cobra.Command {
 
-	choiceCmd := &cobra.Command{
-		Use:   "choice",
-		Short: "Choice columns from CSV file",
+	chooseCmd := &cobra.Command{
+		Use:   "choose",
+		Short: "Choose columns from CSV file",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			// 引数の解析に成功した時点で、エラーが起きてもUsageは表示しない
@@ -25,25 +25,25 @@ func newChoiceCmd() *cobra.Command {
 			targetColumnNames, _ := cmd.Flags().GetStringArray("column")
 			outputPath, _ := cmd.Flags().GetString("output")
 
-			return runChoice(
+			return runChoose(
 				inputPath,
 				targetColumnNames,
 				outputPath)
 		},
 	}
 
-	choiceCmd.Flags().StringP("input", "i", "", "Input CSV file path.")
-	choiceCmd.MarkFlagRequired("input")
-	choiceCmd.Flags().StringArrayP("column", "c", []string{}, "Name of the column to choice.")
-	choiceCmd.MarkFlagRequired("columns")
-	choiceCmd.Flags().StringP("output", "o", "", "Output CSV file path.")
-	choiceCmd.MarkFlagRequired("output")
-	choiceCmd.Flags().SortFlags = false
+	chooseCmd.Flags().StringP("input", "i", "", "Input CSV file path.")
+	chooseCmd.MarkFlagRequired("input")
+	chooseCmd.Flags().StringArrayP("column", "c", []string{}, "Name of the column to choose.")
+	chooseCmd.MarkFlagRequired("columns")
+	chooseCmd.Flags().StringP("output", "o", "", "Output CSV file path.")
+	chooseCmd.MarkFlagRequired("output")
+	chooseCmd.Flags().SortFlags = false
 
-	return choiceCmd
+	return chooseCmd
 }
 
-func runChoice(inputPath string, targetColumnNames []string, outputPath string) error {
+func runChoose(inputPath string, targetColumnNames []string, outputPath string) error {
 
 	inputFile, err := os.Open(inputPath)
 	if err != nil {
@@ -63,7 +63,7 @@ func runChoice(inputPath string, targetColumnNames []string, outputPath string) 
 	defer outputFile.Close()
 	writer := csv.NewCsvWriter(outputFile)
 
-	err = choice(reader, targetColumnNames, writer)
+	err = choose(reader, targetColumnNames, writer)
 
 	if err != nil {
 		return err
@@ -74,7 +74,7 @@ func runChoice(inputPath string, targetColumnNames []string, outputPath string) 
 	return nil
 }
 
-func choice(reader csv.CsvReader, choiceColumnNames []string, writer csv.CsvWriter) error {
+func choose(reader csv.CsvReader, chooseColumnNames []string, writer csv.CsvWriter) error {
 
 	// ヘッダ
 	columnNames, err := reader.Read()
@@ -82,15 +82,15 @@ func choice(reader csv.CsvReader, choiceColumnNames []string, writer csv.CsvWrit
 		return errors.Wrap(err, "failed to read the CSV file")
 	}
 
-	choiceColumnIndexes := []int{}
-	for _, choiceColumnName := range choiceColumnNames {
+	chooseColumnIndexes := []int{}
+	for _, chooseColumnName := range chooseColumnNames {
 
-		choiceColumnIndex := util.IndexOf(columnNames, choiceColumnName)
-		if choiceColumnIndex == -1 {
-			return fmt.Errorf("missing %s in the CSV file", choiceColumnName)
+		chooseColumnIndex := util.IndexOf(columnNames, chooseColumnName)
+		if chooseColumnIndex == -1 {
+			return fmt.Errorf("missing %s in the CSV file", chooseColumnName)
 		}
 
-		choiceColumnIndexes = append(choiceColumnIndexes, choiceColumnIndex)
+		chooseColumnIndexes = append(chooseColumnIndexes, chooseColumnIndex)
 	}
 
 	// 指定されたカラムのみに絞るフィルタを定義
@@ -100,7 +100,7 @@ func choice(reader csv.CsvReader, choiceColumnNames []string, writer csv.CsvWrit
 
 		for i, item := range row {
 
-			if util.Contains(choiceColumnIndexes, i) {
+			if util.Contains(chooseColumnIndexes, i) {
 				filtered = append(filtered, item)
 			}
 		}

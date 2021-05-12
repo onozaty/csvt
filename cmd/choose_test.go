@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestChoiceCmd(t *testing.T) {
+func TestChooseCmd(t *testing.T) {
 
 	s := `ID,Name,CompanyID
 1,Yamada,1
@@ -26,7 +26,7 @@ func TestChoiceCmd(t *testing.T) {
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
-		"choice",
+		"choose",
 		"-i", fi.Name(),
 		"-o", fo.Name(),
 		"-c", "CompanyID",
@@ -55,7 +55,7 @@ func TestChoiceCmd(t *testing.T) {
 	}
 }
 
-func TestChoiceCmd_columns(t *testing.T) {
+func TestChooseCmd_columns(t *testing.T) {
 
 	s := `ID,Name,CompanyID
 1,Yamada,1
@@ -76,7 +76,7 @@ func TestChoiceCmd_columns(t *testing.T) {
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
-		"choice",
+		"choose",
 		"-i", fi.Name(),
 		"-o", fo.Name(),
 		"-c", "CompanyID",
@@ -106,7 +106,7 @@ func TestChoiceCmd_columns(t *testing.T) {
 	}
 }
 
-func TestChoiceCmd_fileNotFound(t *testing.T) {
+func TestChooseCmd_fileNotFound(t *testing.T) {
 
 	fi, err := createTempFile("")
 	if err != nil {
@@ -122,7 +122,7 @@ func TestChoiceCmd_fileNotFound(t *testing.T) {
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
-		"choice",
+		"choose",
 		"-i", fi.Name() + "____", // 存在しないファイル名を指定
 		"-o", fo.Name(),
 		"-c", "CompanyID",
@@ -139,7 +139,7 @@ func TestChoiceCmd_fileNotFound(t *testing.T) {
 	}
 }
 
-func TestChoiceCmd_columnNotFound(t *testing.T) {
+func TestChooseCmd_columnNotFound(t *testing.T) {
 
 	s := `ID,Name,CompanyID
 1,Yamada,1
@@ -160,7 +160,7 @@ func TestChoiceCmd_columnNotFound(t *testing.T) {
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
-		"choice",
+		"choose",
 		"-i", fi.Name(),
 		"-o", fo.Name(),
 		"-c", "Company", // 存在しないカラム
@@ -172,7 +172,7 @@ func TestChoiceCmd_columnNotFound(t *testing.T) {
 	}
 }
 
-func TestChoiceCmd_empty(t *testing.T) {
+func TestChooseCmd_empty(t *testing.T) {
 
 	s := ""
 
@@ -190,7 +190,7 @@ func TestChoiceCmd_empty(t *testing.T) {
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
-		"choice",
+		"choose",
 		"-i", fi.Name(),
 		"-o", fo.Name(),
 		"-c", "CompanyID",
