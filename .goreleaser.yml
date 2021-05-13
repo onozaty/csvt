@@ -5,6 +5,10 @@ before:
 builds:
   - env:
       - CGO_ENABLED=0
+    ldflags:
+      - -s -w
+      - -X github.com/onozaty/csvt/cmd.Version={{.Version}}
+      - -X github.com/onozaty/csvt/cmd.Revision={{.ShortCommit}}
     goos:
       - linux
       - windows

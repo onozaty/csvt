@@ -14,6 +14,7 @@ func newRootCmd() *cobra.Command {
 		SilenceErrors: true,
 	}
 
+	rootCmd.AddCommand(newVersionCmd())
 	rootCmd.AddCommand(newJoinCmd())
 	rootCmd.AddCommand(newCountCmd())
 	rootCmd.AddCommand(newRemoveCmd())
