@@ -35,7 +35,7 @@ func newChooseCmd() *cobra.Command {
 	chooseCmd.Flags().StringP("input", "i", "", "Input CSV file path.")
 	chooseCmd.MarkFlagRequired("input")
 	chooseCmd.Flags().StringArrayP("column", "c", []string{}, "Name of the column to choose.")
-	chooseCmd.MarkFlagRequired("columns")
+	chooseCmd.MarkFlagRequired("column")
 	chooseCmd.Flags().StringP("output", "o", "", "Output CSV file path.")
 	chooseCmd.MarkFlagRequired("output")
 	chooseCmd.Flags().SortFlags = false
