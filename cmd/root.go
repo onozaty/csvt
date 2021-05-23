@@ -20,6 +20,7 @@ func newRootCmd() *cobra.Command {
 	rootCmd.AddCommand(newRemoveCmd())
 	rootCmd.AddCommand(newChooseCmd())
 	rootCmd.AddCommand(newHeaderCmd())
+	rootCmd.AddCommand(newFilterCmd())
 
 	return rootCmd
 }
