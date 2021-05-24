@@ -6,6 +6,7 @@
 
 * [choose](#choose) Choose columns from CSV file.
 * [count](#count) Count the number of records in CSV file.
+* [filter](#filter) Filter rows of CSV file.
 * [header](#header) Show the header of CSV file.
 * [join](#join) Join CSV files.
 * [remove](#remove) Remove columns from CSV file.
@@ -112,6 +113,83 @@ Counts the number of records for which a value exists in "CompanyID".
 $ csvt count -i input.csv -c CompanyID
 3
 ```
+
+## filter
+
+Create a new CSV file by filtering the input CSV file to rows that match the conditions.
+
+### Usage
+
+```
+$ csvt filter -i INPUT -c COLUMN -o OUTPUT
+```
+
+```
+Usage:
+  csvt filter [flags]
+
+Flags:
+  -i, --input string    Input CSV file path.
+  -c, --column string   Name of the column to use for filtering. If neither --equal nor --regex is specified, it will filter by those with values.
+  -o, --output string   Output CSV file path.
+      --equal string    (optional) Filter by matching value.
+      --regex string    (optional) Filter by regular expression.
+  -h, --help            help for filter
+```
+
+### Example
+
+The contents of `input.csv`.
+
+```
+UserID,Name,Age,CompanyID
+1,"Taro, Yamada",10,2
+2,Hanako,21,1
+3,yamada,30,
+4,Jun,22,2
+```
+
+Create `output.csv` by filter by non-empty values of "CompanyID" from `input.csv`.
+
+```
+$ csvt filter -i input.csv -c CompanyID -o output.csv
+```
+
+The contents of the created `output.csv`.
+
+```
+UserID,Name,Age,CompanyID
+1,"Taro, Yamada",10,2
+2,Hanako,21,1
+4,Jun,22,2
+```
+
+You can also filter by matching the specified value.  
+Specify a value by using `--equal`.
+
+```
+$ csvt filter -i input.csv -c CompanyID --equal 2 -o output.csv 
+```
+
+```
+UserID,Name,Age,CompanyID
+1,"Taro, Yamada",10,2
+4,Jun,22,2
+```
+
+Regular expressions can also be used.  
+Use `--regex` to specify a regular expression.
+
+```
+$ csvt filter -i input.csv -c Name --regex [Yy]amada -o output.csv 
+```
+
+```
+UserID,Name,Age,CompanyID
+1,"Taro, Yamada",10,2
+3,yamada,30,
+```
+
 
 ## header
 
@@ -293,3 +371,17 @@ UserID,CompanyID
 3,2
 4,4
 ```
+
+## Install
+
+You can download the binary from the following.
+
+* https://github.com/onozaty/csvt/releases/latest
+
+## License
+
+MIT
+
+## Author
+
+[onozaty](https://github.com/onozaty)
