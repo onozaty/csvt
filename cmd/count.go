@@ -44,8 +44,8 @@ func newCountCmd() *cobra.Command {
 
 	countCmd.Flags().StringP("input", "i", "", "CSV file path.")
 	countCmd.MarkFlagRequired("input")
-	countCmd.Flags().StringP("column", "c", "", "Name of the column to be counted. Only those with values will be counted.")
-	countCmd.Flags().BoolP("header", "", false, "Counting including header. The default is to exclude header.")
+	countCmd.Flags().StringP("column", "c", "", "(optional) Name of the column to be counted. Only those with values will be counted.")
+	countCmd.Flags().BoolP("header", "", false, "(optional) Counting including header. The default is to exclude header.")
 	countCmd.Flags().SortFlags = false
 
 	return countCmd

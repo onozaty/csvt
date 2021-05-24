@@ -35,7 +35,7 @@ func newRemoveCmd() *cobra.Command {
 	removeCmd.Flags().StringP("input", "i", "", "Input CSV file path.")
 	removeCmd.MarkFlagRequired("input")
 	removeCmd.Flags().StringArrayP("column", "c", []string{}, "Name of the column to remove.")
-	removeCmd.MarkFlagRequired("columns")
+	removeCmd.MarkFlagRequired("column")
 	removeCmd.Flags().StringP("output", "o", "", "Output CSV file path.")
 	removeCmd.MarkFlagRequired("output")
 	removeCmd.Flags().SortFlags = false

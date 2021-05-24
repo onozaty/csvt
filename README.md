@@ -76,8 +76,8 @@ Usage:
 
 Flags:
   -i, --input string    CSV file path.
-  -c, --column string   Name of the column to be counted. Only those with values will be counted.
-      --header          Counting including header. The default is to exclude header.
+  -c, --column string   (optional) Name of the column to be counted. Only those with values will be counted.
+      --header          (optional) Counting including header. The default is to exclude header.
   -h, --help            help for count
 ```
 
@@ -251,10 +251,10 @@ Flags:
   -1, --first string     First CSV file path.
   -2, --second string    Second CSV file path.
   -c, --column string    Name of the column to use for joining.
-      --column2 string   Name of the column to use for joining in the second CSV file. (Specify if different from the first CSV file)
+      --column2 string   (optional) Name of the column to use for joining in the second CSV file. Specify if different from the first CSV file.
   -o, --output string    Output CSV file path.
-      --usingfile        Use temporary files for joining. (Use this when joining large files that will not fit in memory)
-      --norecord         No error even if there is no record corresponding to sencod CSV.
+      --usingfile        (optional) Use temporary files for joining. Use this when joining large files that will not fit in memory.
+      --norecord         (optional) No error even if there is no record corresponding to sencod CSV.
   -h, --help             help for join
 ```
 
