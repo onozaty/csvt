@@ -10,6 +10,7 @@
 * [header](#header) Show the header of CSV file.
 * [join](#join) Join CSV files.
 * [remove](#remove) Remove columns from CSV file.
+* [rename](#rename) Rename columns from CSV file.
 
 ## choose
 
@@ -370,6 +371,52 @@ UserID,CompanyID
 2,1
 3,2
 4,4
+```
+
+## rename
+
+Create a new CSV file by rename columns from the input CSV file.
+
+### Usage
+
+```
+$ csvt rename -i INPUT -c BEFORE_COLUMN1 -a AFTER_COLUMN1 -c BEFORE_COLUMN2 -a AFTER_COLUMN2 -o OUTPUT
+```
+
+```
+Usage:
+  csvt rename [flags]
+
+Flags:
+  -i, --input string         Input CSV file path.
+  -c, --column stringArray   Name of column before renaming.
+  -a, --after stringArray    Name of column after renaming.
+  -o, --output string        Output CSV file path.
+  -h, --help                 help for rename
+```
+
+### Example
+
+The contents of `input.csv`.
+
+```
+UserID,Name,Age,CompanyID
+1,"Taro, Yamada",10,2
+2,Hanako,21,1
+```
+
+Create `output.csv` by renmae "UserID" to "ID" and "CompanyID" to "Company" from `input.csv`.
+
+```
+$ csvt rename -i input.csv -c UserID -a ID -c CompanyID -a Company -o output.csv
+```
+
+The contents of the created `output.csv`.
+
+```
+ID,Name,Age,Company
+1,"Taro, Yamada",10,2
+2,Hanako,21,1
 ```
 
 ## Install
