@@ -89,10 +89,9 @@ func TestNewCsvWriter(t *testing.T) {
 	cw.Flush()
 	result := b.String()
 
-	expect := `1,2
-あ,a
-",",
-`
+	expect := "1,2\r\n" +
+		"あ,a\r\n" +
+		"\",\",\r\n"
 
 	if result != expect {
 		t.Fatal("failed test\n", result)

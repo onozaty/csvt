@@ -36,5 +36,8 @@ func NewCsvReader(r io.Reader) (CsvReader, error) {
 
 func NewCsvWriter(w io.Writer) CsvWriter {
 
-	return csv.NewWriter(w)
+	cw := csv.NewWriter(w)
+	// https://datatracker.ietf.org/doc/html/rfc4180#section-2
+	cw.UseCRLF = true
+	return cw
 }

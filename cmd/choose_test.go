@@ -44,11 +44,10 @@ func TestChooseCmd(t *testing.T) {
 
 	result := string(bo)
 
-	expect := `CompanyID
-1
-1
-3
-`
+	expect := "CompanyID\r\n" +
+		"1\r\n" +
+		"1\r\n" +
+		"3\r\n"
 
 	if result != expect {
 		t.Fatal("failed test\n", result)
@@ -95,11 +94,10 @@ func TestChooseCmd_columns(t *testing.T) {
 
 	result := string(bo)
 
-	expect := `ID,CompanyID
-1,1
-5,1
-2,3
-`
+	expect := "ID,CompanyID\r\n" +
+		"1,1\r\n" +
+		"5,1\r\n" +
+		"2,3\r\n"
 
 	if result != expect {
 		t.Fatal("failed test\n", result)

@@ -62,11 +62,10 @@ func TestJoinCmd(t *testing.T) {
 
 	result := string(bo)
 
-	expect := `ID,Name,CompanyID,CompanyName
-1,Yamada,1,CompanyA
-5,Ichikawa,1,CompanyA
-2,"Hanako, Sato",3,会社C
-`
+	expect := "ID,Name,CompanyID,CompanyName\r\n" +
+		"1,Yamada,1,CompanyA\r\n" +
+		"5,Ichikawa,1,CompanyA\r\n" +
+		"2,\"Hanako, Sato\",3,会社C\r\n"
 
 	if result != expect {
 		t.Fatal("failed test\n", result)
@@ -125,11 +124,10 @@ func TestJoinCmd_usingfile(t *testing.T) {
 
 	result := string(bo)
 
-	expect := `ID,Name,CompanyID,CompanyName
-1,Yamada,1,CompanyA
-5,Ichikawa,1,CompanyA
-2,"Hanako, Sato",3,会社C
-`
+	expect := "ID,Name,CompanyID,CompanyName\r\n" +
+		"1,Yamada,1,CompanyA\r\n" +
+		"5,Ichikawa,1,CompanyA\r\n" +
+		"2,\"Hanako, Sato\",3,会社C\r\n"
 
 	if result != expect {
 		t.Fatal("failed test\n", result)
@@ -187,11 +185,10 @@ func TestRunJoin_norecord(t *testing.T) {
 
 	result := string(bo)
 
-	expect := `ID,Name,CompanyID,CompanyName
-1,Yamada,1,CompanyA
-5,Ichikawa,2,
-2,"Hanako, Sato",3,会社C
-`
+	expect := "ID,Name,CompanyID,CompanyName\r\n" +
+		"1,Yamada,1,CompanyA\r\n" +
+		"5,Ichikawa,2,\r\n" +
+		"2,\"Hanako, Sato\",3,会社C\r\n"
 
 	if result != expect {
 		t.Fatal("failed test\n", result)
@@ -251,11 +248,10 @@ func TestRunJoin_column2(t *testing.T) {
 
 	result := string(bo)
 
-	expect := `ID,Name,CompanyID,CompanyName
-1,Yamada,1,CompanyA
-5,Ichikawa,2,CompanyB
-2,"Hanako, Sato",3,会社C
-`
+	expect := "ID,Name,CompanyID,CompanyName\r\n" +
+		"1,Yamada,1,CompanyA\r\n" +
+		"5,Ichikawa,2,CompanyB\r\n" +
+		"2,\"Hanako, Sato\",3,会社C\r\n"
 
 	if result != expect {
 		t.Fatal("failed test\n", result)
@@ -393,11 +389,10 @@ func TestJoin(t *testing.T) {
 	out.Flush()
 	result := b.String()
 
-	expect := `ID,Name,Height,Weight
-1,Yamada,171,50
-5,Ichikawa,152,50
-2,"Hanako, Sato",160,60
-`
+	expect := "ID,Name,Height,Weight\r\n" +
+		"1,Yamada,171,50\r\n" +
+		"5,Ichikawa,152,50\r\n" +
+		"2,\"Hanako, Sato\",160,60\r\n"
 
 	if result != expect {
 		t.Fatal("failed test\n", result)
@@ -469,11 +464,10 @@ func TestJoin_rightNoneNoError(t *testing.T) {
 	out.Flush()
 	result := b.String()
 
-	expect := `ID,Name,Height,Weight
-1,Yamada,,
-5,Ichikawa,152,50
-2,"Hanako, Sato",,
-`
+	expect := "ID,Name,Height,Weight\r\n" +
+		"1,Yamada,,\r\n" +
+		"5,Ichikawa,152,50\r\n" +
+		"2,\"Hanako, Sato\",,\r\n"
 
 	if result != expect {
 		t.Fatal("failed test\n", result)

@@ -44,9 +44,8 @@ func TestFilterCmd(t *testing.T) {
 
 	result := string(bo)
 
-	expect := `ID,Name,CompanyID
-1,Yamada,1
-`
+	expect := "ID,Name,CompanyID\r\n" +
+		"1,Yamada,1\r\n"
 
 	if result != expect {
 		t.Fatal("failed test\n", result)
@@ -93,9 +92,8 @@ func TestFilterCmd_equal(t *testing.T) {
 
 	result := string(bo)
 
-	expect := `ID,Name,CompanyID
-1,Yamada,1
-`
+	expect := "ID,Name,CompanyID\r\n" +
+		"1,Yamada,1\r\n"
 
 	if result != expect {
 		t.Fatal("failed test\n", result)
@@ -142,10 +140,9 @@ func TestFilterCmd_regex(t *testing.T) {
 
 	result := string(bo)
 
-	expect := `ID,Name,CompanyID
-1,Yamada,1
-2,"Hanako, yamada",3
-`
+	expect := "ID,Name,CompanyID\r\n" +
+		"1,Yamada,1\r\n" +
+		"2,\"Hanako, yamada\",3\r\n"
 
 	if result != expect {
 		t.Fatal("failed test\n", result)

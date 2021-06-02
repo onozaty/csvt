@@ -46,11 +46,10 @@ func TestRenameCmd(t *testing.T) {
 
 	result := string(bo)
 
-	expect := `A,B-before,C,D
-1,x,a,_
-2,y,b,_
-3,z,c,_
-`
+	expect := "A,B-before,C,D\r\n" +
+		"1,x,a,_\r\n" +
+		"2,y,b,_\r\n" +
+		"3,z,c,_\r\n"
 
 	if result != expect {
 		t.Fatal("failed test\n", result)
@@ -100,11 +99,10 @@ func TestRenameCmd_columns(t *testing.T) {
 
 	result := string(bo)
 
-	expect := `C,B,A,D
-1,x,a,_
-2,y,b,_
-3,z,c,_
-`
+	expect := "C,B,A,D\r\n" +
+		"1,x,a,_\r\n" +
+		"2,y,b,_\r\n" +
+		"3,z,c,_\r\n"
 
 	if result != expect {
 		t.Fatal("failed test\n", result)

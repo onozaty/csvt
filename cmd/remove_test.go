@@ -44,11 +44,10 @@ func TestRemoveCmd(t *testing.T) {
 
 	result := string(bo)
 
-	expect := `ID,Name
-1,Yamada
-5,Ichikawa
-2,"Hanako, Sato"
-`
+	expect := "ID,Name\r\n" +
+		"1,Yamada\r\n" +
+		"5,Ichikawa\r\n" +
+		"2,\"Hanako, Sato\"\r\n"
 
 	if result != expect {
 		t.Fatal("failed test\n", result)
@@ -95,11 +94,10 @@ func TestRemoveCmd_columns(t *testing.T) {
 
 	result := string(bo)
 
-	expect := `Name
-Yamada
-Ichikawa
-"Hanako, Sato"
-`
+	expect := "Name\r\n" +
+		"Yamada\r\n" +
+		"Ichikawa\r\n" +
+		"\"Hanako, Sato\"\r\n"
 
 	if result != expect {
 		t.Fatal("failed test\n", result)
