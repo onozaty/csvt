@@ -78,10 +78,7 @@ func runFilter(inputPath string, targetColumnName string, outputPath string, opt
 	}
 	defer inputFile.Close()
 
-	reader, err := csv.NewCsvReader(inputFile)
-	if err != nil {
-		return err
-	}
+	reader := csv.NewCsvReader(inputFile)
 
 	outputFile, err := os.Create(outputPath)
 	if err != nil {
@@ -96,9 +93,7 @@ func runFilter(inputPath string, targetColumnName string, outputPath string, opt
 		return err
 	}
 
-	writer.Flush()
-
-	return nil
+	return writer.Flush()
 }
 
 func filter(reader csv.CsvReader, targetColumnName string, writer csv.CsvWriter, options FilterOptions) error {

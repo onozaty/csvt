@@ -51,10 +51,7 @@ func runRemove(inputPath string, targetColumnNames []string, outputPath string) 
 	}
 	defer inputFile.Close()
 
-	reader, err := csv.NewCsvReader(inputFile)
-	if err != nil {
-		return err
-	}
+	reader := csv.NewCsvReader(inputFile)
 
 	outputFile, err := os.Create(outputPath)
 	if err != nil {
@@ -69,9 +66,7 @@ func runRemove(inputPath string, targetColumnNames []string, outputPath string) 
 		return err
 	}
 
-	writer.Flush()
-
-	return nil
+	return writer.Flush()
 }
 
 func remove(reader csv.CsvReader, removeColumnNames []string, writer csv.CsvWriter) error {

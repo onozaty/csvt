@@ -49,10 +49,7 @@ func runHeader(inputCsvPath string) ([]string, error) {
 	}
 	defer file.Close()
 
-	reader, err := csv.NewCsvReader(file)
-	if err != nil {
-		return nil, err
-	}
+	reader := csv.NewCsvReader(file)
 
 	return header(reader)
 }

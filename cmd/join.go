@@ -69,10 +69,7 @@ func runJoin(firstPath string, secondPath string, joinColumnName string, outputP
 	}
 	defer firstFile.Close()
 
-	firstReader, err := csv.NewCsvReader(firstFile)
-	if err != nil {
-		return err
-	}
+	firstReader := csv.NewCsvReader(firstFile)
 
 	secondFile, err := os.Open(secondPath)
 	if err != nil {
@@ -80,10 +77,7 @@ func runJoin(firstPath string, secondPath string, joinColumnName string, outputP
 	}
 	defer secondFile.Close()
 
-	secondReader, err := csv.NewCsvReader(secondFile)
-	if err != nil {
-		return err
-	}
+	secondReader := csv.NewCsvReader(secondFile)
 
 	outputFile, err := os.Create(outputPath)
 	if err != nil {
@@ -93,10 +87,11 @@ func runJoin(firstPath string, secondPath string, joinColumnName string, outputP
 	out := csv.NewCsvWriter(outputFile)
 
 	err = join(firstReader, secondReader, joinColumnName, out, options)
+	if err != nil {
+		return err
+	}
 
-	out.Flush()
-
-	return err
+	return out.Flush()
 }
 
 func join(first csv.CsvReader, second csv.CsvReader, joinColumnName string, out csv.CsvWriter, options JoinOptions) error {

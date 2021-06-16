@@ -64,11 +64,7 @@ func runCount(csvPath string, options CountOptions) (int, error) {
 	}
 	defer file.Close()
 
-	reader, err := csv.NewCsvReader(file)
-	if err != nil {
-		return 0, err
-	}
-
+	reader := csv.NewCsvReader(file)
 	return count(reader, options)
 }
 

@@ -361,26 +361,20 @@ func TestJoin(t *testing.T) {
 5,Ichikawa
 2,"Hanako, Sato"
 `
-	r1, err := csv.NewCsvReader(strings.NewReader(s1))
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	r1 := csv.NewCsvReader(strings.NewReader(s1))
 
 	s2 := `ID,Height,Weight
 1,171,50
 2,160,60
 5,152,50
 `
-	r2, err := csv.NewCsvReader(strings.NewReader(s2))
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	r2 := csv.NewCsvReader(strings.NewReader(s2))
 
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	out := csv.NewCsvWriter(w)
 
-	err = join(r1, r2, "ID", out, JoinOptions{})
+	err := join(r1, r2, "ID", out, JoinOptions{})
 
 	if err != nil {
 		t.Fatal("failed test\n", err)
@@ -406,24 +400,18 @@ func TestJoin_rightNoneError(t *testing.T) {
 5,Ichikawa
 2,"Hanako, Sato"
 `
-	r1, err := csv.NewCsvReader(strings.NewReader(s1))
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	r1 := csv.NewCsvReader(strings.NewReader(s1))
 
 	s2 := `ID,Height,Weight
 5,152,50
 `
-	r2, err := csv.NewCsvReader(strings.NewReader(s2))
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	r2 := csv.NewCsvReader(strings.NewReader(s2))
 
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	out := csv.NewCsvWriter(w)
 
-	err = join(r1, r2, "ID", out, JoinOptions{})
+	err := join(r1, r2, "ID", out, JoinOptions{})
 
 	if err == nil || err.Error() != "1 was not found in the second CSV file\nif you don't want to raise an error, use the 'norecord' option" {
 		t.Fatal("failed test\n", err)
@@ -438,24 +426,18 @@ func TestJoin_rightNoneNoError(t *testing.T) {
 5,Ichikawa
 2,"Hanako, Sato"
 `
-	r1, err := csv.NewCsvReader(strings.NewReader(s1))
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	r1 := csv.NewCsvReader(strings.NewReader(s1))
 
 	s2 := `ID,Height,Weight
 5,152,50
 `
-	r2, err := csv.NewCsvReader(strings.NewReader(s2))
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	r2 := csv.NewCsvReader(strings.NewReader(s2))
 
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	out := csv.NewCsvWriter(w)
 
-	err = join(r1, r2, "ID", out, JoinOptions{noRecordNoError: true})
+	err := join(r1, r2, "ID", out, JoinOptions{noRecordNoError: true})
 
 	if err != nil {
 		t.Fatal("failed test\n", err)
@@ -481,26 +463,20 @@ func TestJoin_firstFileJoinColumnNotFound(t *testing.T) {
 5,Ichikawa,1
 2,"Hanako, Sato",3
 `
-	r1, err := csv.NewCsvReader(strings.NewReader(s1))
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	r1 := csv.NewCsvReader(strings.NewReader(s1))
 
 	s2 := `CompanyID,CompanyName
 1,CompanyA
 2,CompanyB
 3,会社C
 `
-	r2, err := csv.NewCsvReader(strings.NewReader(s2))
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	r2 := csv.NewCsvReader(strings.NewReader(s2))
 
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	out := csv.NewCsvWriter(w)
 
-	err = join(r1, r2, "CompanyID", out, JoinOptions{})
+	err := join(r1, r2, "CompanyID", out, JoinOptions{})
 	if err == nil || err.Error() != "missing CompanyID in the first CSV file" {
 		t.Fatal("failed test\n", err)
 	}
@@ -513,26 +489,20 @@ func TestJoin_secondFileJoinColumnNotFound(t *testing.T) {
 5,Ichikawa,1
 2,"Hanako, Sato",3
 `
-	r1, err := csv.NewCsvReader(strings.NewReader(s1))
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	r1 := csv.NewCsvReader(strings.NewReader(s1))
 
 	s2 := `ID,CompanyName
 1,CompanyA
 2,CompanyB
 3,会社C
 `
-	r2, err := csv.NewCsvReader(strings.NewReader(s2))
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	r2 := csv.NewCsvReader(strings.NewReader(s2))
 
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	out := csv.NewCsvWriter(w)
 
-	err = join(r1, r2, "CompanyID", out, JoinOptions{})
+	err := join(r1, r2, "CompanyID", out, JoinOptions{})
 	if err == nil || err.Error() != "failed to read the second CSV file: CompanyID is not found" {
 		t.Fatal("failed test\n", err)
 	}
@@ -542,26 +512,20 @@ func TestJoin_firstFileEmpty(t *testing.T) {
 
 	s1 := ""
 
-	r1, err := csv.NewCsvReader(strings.NewReader(s1))
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	r1 := csv.NewCsvReader(strings.NewReader(s1))
 
 	s2 := `CompanyID,CompanyName
 1,CompanyA
 2,CompanyB
 3,会社C
 `
-	r2, err := csv.NewCsvReader(strings.NewReader(s2))
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	r2 := csv.NewCsvReader(strings.NewReader(s2))
 
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	out := csv.NewCsvWriter(w)
 
-	err = join(r1, r2, "CompanyID", out, JoinOptions{})
+	err := join(r1, r2, "CompanyID", out, JoinOptions{})
 	if err == nil || err.Error() != "failed to read the first CSV file: EOF" {
 		t.Fatal("failed test\n", err)
 	}
@@ -574,22 +538,16 @@ func TestJoin_secondFileEmpty(t *testing.T) {
 5,Ichikawa,1
 2,"Hanako, Sato",3
 `
-	r1, err := csv.NewCsvReader(strings.NewReader(s1))
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	r1 := csv.NewCsvReader(strings.NewReader(s1))
 
 	s2 := ""
-	r2, err := csv.NewCsvReader(strings.NewReader(s2))
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	r2 := csv.NewCsvReader(strings.NewReader(s2))
 
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	out := csv.NewCsvWriter(w)
 
-	err = join(r1, r2, "CompanyID", out, JoinOptions{})
+	err := join(r1, r2, "CompanyID", out, JoinOptions{})
 	if err == nil || err.Error() != "failed to read the second CSV file: EOF" {
 		t.Fatal("failed test\n", err)
 	}

@@ -14,10 +14,7 @@ func TestNewCsvReader_withBOM(t *testing.T) {
 	// 先頭にBOM
 	s := "\uFEFFID,Name\n1,Yamada"
 
-	r, err := NewCsvReader(strings.NewReader(s))
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	r := NewCsvReader(strings.NewReader(s))
 
 	header, err := r.Read()
 	if err != nil {
@@ -47,10 +44,7 @@ func TestNewCsvReader_withoutBOM(t *testing.T) {
 
 	s := "ID,Name\n1,Yamada"
 
-	r, err := NewCsvReader(strings.NewReader(s))
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	r := NewCsvReader(strings.NewReader(s))
 
 	header, err := r.Read()
 	if err != nil {
@@ -80,10 +74,7 @@ func TestNewCsvReader_LF_CRLF(t *testing.T) {
 
 	s := "ID,Name\n1,Yamada\r\n2,Ichikawa"
 
-	r, err := NewCsvReader(strings.NewReader(s))
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	r := NewCsvReader(strings.NewReader(s))
 
 	header, err := r.Read()
 	if err != nil {
