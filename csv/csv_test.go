@@ -14,7 +14,7 @@ func TestNewCsvReader_withBOM(t *testing.T) {
 	// 先頭にBOM
 	s := "\uFEFFID,Name\n1,Yamada"
 
-	r := NewCsvReader(strings.NewReader(s))
+	r := NewCsvReader(strings.NewReader(s), Format{})
 
 	header, err := r.Read()
 	if err != nil {
@@ -44,7 +44,7 @@ func TestNewCsvReader_withoutBOM(t *testing.T) {
 
 	s := "ID,Name\n1,Yamada"
 
-	r := NewCsvReader(strings.NewReader(s))
+	r := NewCsvReader(strings.NewReader(s), Format{})
 
 	header, err := r.Read()
 	if err != nil {
@@ -74,7 +74,7 @@ func TestNewCsvReader_LF_CRLF(t *testing.T) {
 
 	s := "ID,Name\n1,Yamada\r\n2,Ichikawa"
 
-	r := NewCsvReader(strings.NewReader(s))
+	r := NewCsvReader(strings.NewReader(s), Format{})
 
 	header, err := r.Read()
 	if err != nil {
@@ -110,7 +110,7 @@ func TestNewCsvWriter(t *testing.T) {
 
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	cw := NewCsvWriter(w)
+	cw := NewCsvWriter(w, Format{})
 
 	cw.Write([]string{"1", "2"})
 	cw.Write([]string{"あ", "a"})

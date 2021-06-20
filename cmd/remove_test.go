@@ -54,6 +54,55 @@ func TestRemoveCmd(t *testing.T) {
 	}
 }
 
+func TestRemoveCmd_custom(t *testing.T) {
+
+	s := "ID,Name,CompanyID\tx\t" +
+		"1,Yamada,1\tx\t" +
+		"5,Ichikawa,1\tx\t" +
+		"2,\"Hanako, Sato\",3\tx\t"
+	fi, err := createTempFile(s)
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fi.Name())
+
+	fo, err := createTempFile("")
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"remove",
+		"-i", fi.Name(),
+		"-o", fo.Name(),
+		"-c", "CompanyID",
+		"--sep", `\tx\t`,
+	})
+
+	err = rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	bo, err := os.ReadFile(fo.Name())
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := string(bo)
+
+	expect := "ID,Name\tx\t" +
+		"1,Yamada\tx\t" +
+		"5,Ichikawa\tx\t" +
+		"2,\"Hanako, Sato\"\tx\t"
+
+	if result != expect {
+		t.Fatal("failed test\n", result)
+	}
+}
+
 func TestRemoveCmd_columns(t *testing.T) {
 
 	s := `ID,Name,CompanyID

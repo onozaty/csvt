@@ -56,6 +56,54 @@ func TestRenameCmd(t *testing.T) {
 	}
 }
 
+func TestRenameCmd_custom(t *testing.T) {
+
+	s := `A	B
+1	x
+`
+
+	fi, err := createTempFile(s)
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fi.Name())
+
+	fo, err := createTempFile("")
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"rename",
+		"-i", fi.Name(),
+		"-o", fo.Name(),
+		"-c", "B",
+		"-a", "B-before",
+		"--delim", `\t`,
+	})
+
+	err = rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	bo, err := os.ReadFile(fo.Name())
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := string(bo)
+
+	expect := "A\tB-before\r\n" +
+		"1\tx\r\n"
+
+	if result != expect {
+		t.Fatal("failed test\n", result)
+	}
+}
+
 func TestRenameCmd_columns(t *testing.T) {
 
 	s := `A,B,C,D

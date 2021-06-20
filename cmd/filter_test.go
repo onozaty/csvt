@@ -52,6 +52,52 @@ func TestFilterCmd(t *testing.T) {
 	}
 }
 
+func TestFilterCmd_custom(t *testing.T) {
+
+	s := "ID;Name;CompanyID|1;Yamada;1|5;Ichikawa;|2;'Hanako; Sato';"
+	fi, err := createTempFile(s)
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fi.Name())
+
+	fo, err := createTempFile("")
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"filter",
+		"-i", fi.Name(),
+		"-o", fo.Name(),
+		"-c", "CompanyID",
+		"--delim", ";",
+		"--quote", "'",
+		"--sep", "|",
+		"--allquote",
+	})
+
+	err = rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	bo, err := os.ReadFile(fo.Name())
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := string(bo)
+
+	expect := "'ID';'Name';'CompanyID'|'1';'Yamada';'1'|"
+
+	if result != expect {
+		t.Fatal("failed test\n", result)
+	}
+}
+
 func TestFilterCmd_equal(t *testing.T) {
 
 	s := `ID,Name,CompanyID

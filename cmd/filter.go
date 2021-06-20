@@ -19,6 +19,11 @@ func newFilterCmd() *cobra.Command {
 		Short: "Filter rows of CSV file",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
+			format, err := getFlagCsvFormat(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
 			inputPath, _ := cmd.Flags().GetString("input")
 			targetColumnName, _ := cmd.Flags().GetString("column")
 			outputPath, _ := cmd.Flags().GetString("output")
@@ -30,7 +35,6 @@ func newFilterCmd() *cobra.Command {
 			}
 
 			var regex *regexp.Regexp = nil
-			var err error = nil
 			if regexValue != "" {
 				regex, err = regexp.Compile(regexValue)
 				if err != nil {
@@ -42,6 +46,7 @@ func newFilterCmd() *cobra.Command {
 			cmd.SilenceUsage = true
 
 			return runFilter(
+				format,
 				inputPath,
 				targetColumnName,
 				outputPath,
@@ -60,7 +65,6 @@ func newFilterCmd() *cobra.Command {
 	filterCmd.MarkFlagRequired("output")
 	filterCmd.Flags().StringP("equal", "", "", "(optional) Filter by matching value.")
 	filterCmd.Flags().StringP("regex", "", "", "(optional) Filter by regular expression.")
-	filterCmd.Flags().SortFlags = false
 
 	return filterCmd
 }
@@ -70,7 +74,7 @@ type FilterOptions struct {
 	regex      *regexp.Regexp
 }
 
-func runFilter(inputPath string, targetColumnName string, outputPath string, options FilterOptions) error {
+func runFilter(format csv.Format, inputPath string, targetColumnName string, outputPath string, options FilterOptions) error {
 
 	inputFile, err := os.Open(inputPath)
 	if err != nil {
@@ -78,14 +82,14 @@ func runFilter(inputPath string, targetColumnName string, outputPath string, opt
 	}
 	defer inputFile.Close()
 
-	reader := csv.NewCsvReader(inputFile)
+	reader := csv.NewCsvReader(inputFile, format)
 
 	outputFile, err := os.Create(outputPath)
 	if err != nil {
 		return err
 	}
 	defer outputFile.Close()
-	writer := csv.NewCsvWriter(outputFile)
+	writer := csv.NewCsvWriter(outputFile, format)
 
 	err = filter(reader, targetColumnName, writer, options)
 

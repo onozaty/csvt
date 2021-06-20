@@ -15,12 +15,17 @@ func newHeaderCmd() *cobra.Command {
 		Short: "Show the header of CSV file",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			// 引数の解析に成功した時点で、エラーが起きてもUsageは表示しない
-			cmd.SilenceUsage = true
+			format, err := getFlagCsvFormat(cmd.Flags())
+			if err != nil {
+				return err
+			}
 
 			inputCsvPath, _ := cmd.Flags().GetString("input")
 
-			columnNames, err := runHeader(inputCsvPath)
+			// 引数の解析に成功した時点で、エラーが起きてもUsageは表示しない
+			cmd.SilenceUsage = true
+
+			columnNames, err := runHeader(format, inputCsvPath)
 
 			if err != nil {
 				return err
@@ -36,12 +41,11 @@ func newHeaderCmd() *cobra.Command {
 
 	countCmd.Flags().StringP("input", "i", "", "CSV file path.")
 	countCmd.MarkFlagRequired("input")
-	countCmd.Flags().SortFlags = false
 
 	return countCmd
 }
 
-func runHeader(inputCsvPath string) ([]string, error) {
+func runHeader(format csv.Format, inputCsvPath string) ([]string, error) {
 
 	file, err := os.Open(inputCsvPath)
 	if err != nil {
@@ -49,7 +53,7 @@ func runHeader(inputCsvPath string) ([]string, error) {
 	}
 	defer file.Close()
 
-	reader := csv.NewCsvReader(file)
+	reader := csv.NewCsvReader(file, format)
 
 	return header(reader)
 }

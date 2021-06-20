@@ -18,8 +18,10 @@ func newJoinCmd() *cobra.Command {
 		Short: "Join CSV files",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			// 引数の解析に成功した時点で、エラーが起きてもUsageは表示しない
-			cmd.SilenceUsage = true
+			format, err := getFlagCsvFormat(cmd.Flags())
+			if err != nil {
+				return err
+			}
 
 			firstPath, _ := cmd.Flags().GetString("first")
 			secondPath, _ := cmd.Flags().GetString("second")
@@ -35,7 +37,10 @@ func newJoinCmd() *cobra.Command {
 				noRecordNoError:      noRecordNoError,
 			}
 
-			return runJoin(firstPath, secondPath, joinColumnName, outputPath, joinOptions)
+			// 引数の解析に成功した時点で、エラーが起きてもUsageは表示しない
+			cmd.SilenceUsage = true
+
+			return runJoin(format, firstPath, secondPath, joinColumnName, outputPath, joinOptions)
 		},
 	}
 
@@ -50,7 +55,6 @@ func newJoinCmd() *cobra.Command {
 	joinCmd.MarkFlagRequired("output")
 	joinCmd.Flags().BoolP("usingfile", "", false, "(optional) Use temporary files for joining. Use this when joining large files that will not fit in memory.")
 	joinCmd.Flags().BoolP("norecord", "", false, "(optional) No error even if there is no record corresponding to sencod CSV.")
-	joinCmd.Flags().SortFlags = false
 
 	return joinCmd
 }
@@ -61,7 +65,7 @@ type JoinOptions struct {
 	noRecordNoError      bool
 }
 
-func runJoin(firstPath string, secondPath string, joinColumnName string, outputPath string, options JoinOptions) error {
+func runJoin(format csv.Format, firstPath string, secondPath string, joinColumnName string, outputPath string, options JoinOptions) error {
 
 	firstFile, err := os.Open(firstPath)
 	if err != nil {
@@ -69,7 +73,7 @@ func runJoin(firstPath string, secondPath string, joinColumnName string, outputP
 	}
 	defer firstFile.Close()
 
-	firstReader := csv.NewCsvReader(firstFile)
+	firstReader := csv.NewCsvReader(firstFile, format)
 
 	secondFile, err := os.Open(secondPath)
 	if err != nil {
@@ -77,14 +81,14 @@ func runJoin(firstPath string, secondPath string, joinColumnName string, outputP
 	}
 	defer secondFile.Close()
 
-	secondReader := csv.NewCsvReader(secondFile)
+	secondReader := csv.NewCsvReader(secondFile, format)
 
 	outputFile, err := os.Create(outputPath)
 	if err != nil {
 		return err
 	}
 	defer outputFile.Close()
-	out := csv.NewCsvWriter(outputFile)
+	out := csv.NewCsvWriter(outputFile, format)
 
 	err = join(firstReader, secondReader, joinColumnName, out, options)
 	if err != nil {

@@ -18,6 +18,11 @@ func newRenameCmd() *cobra.Command {
 		Short: "Rename columns from CSV file",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
+			format, err := getFlagCsvFormat(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
 			inputPath, _ := cmd.Flags().GetString("input")
 			targetColumnNames, _ := cmd.Flags().GetStringArray("column")
 			afterColumnNames, _ := cmd.Flags().GetStringArray("after")
@@ -31,6 +36,7 @@ func newRenameCmd() *cobra.Command {
 			cmd.SilenceUsage = true
 
 			return runRename(
+				format,
 				inputPath,
 				targetColumnNames,
 				afterColumnNames,
@@ -46,12 +52,11 @@ func newRenameCmd() *cobra.Command {
 	renameCmd.MarkFlagRequired("after")
 	renameCmd.Flags().StringP("output", "o", "", "Output CSV file path.")
 	renameCmd.MarkFlagRequired("output")
-	renameCmd.Flags().SortFlags = false
 
 	return renameCmd
 }
 
-func runRename(inputPath string, targetColumnNames []string, afterColumnNames []string, outputPath string) error {
+func runRename(format csv.Format, inputPath string, targetColumnNames []string, afterColumnNames []string, outputPath string) error {
 
 	inputFile, err := os.Open(inputPath)
 	if err != nil {
@@ -59,14 +64,14 @@ func runRename(inputPath string, targetColumnNames []string, afterColumnNames []
 	}
 	defer inputFile.Close()
 
-	reader := csv.NewCsvReader(inputFile)
+	reader := csv.NewCsvReader(inputFile, format)
 
 	outputFile, err := os.Create(outputPath)
 	if err != nil {
 		return err
 	}
 	defer outputFile.Close()
-	writer := csv.NewCsvWriter(outputFile)
+	writer := csv.NewCsvWriter(outputFile, format)
 
 	err = rename(reader, targetColumnNames, afterColumnNames, writer)
 

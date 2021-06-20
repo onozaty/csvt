@@ -40,6 +40,41 @@ func TestCountCmd(t *testing.T) {
 	}
 }
 
+func TestCountCmd_custom(t *testing.T) {
+
+	s := `ID	Name	CompanyID
+1	Yamada	1
+5	Ichikawa	
+2	"Hanako	Sato"	3
+`
+	f, err := createTempFile(s)
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(f.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"count",
+		"-i", f.Name(),
+		"--delim", `\t`,
+	})
+
+	buf := new(bytes.Buffer)
+	rootCmd.SetOutput(buf)
+
+	err = rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := buf.String()
+
+	if result != "3\n" {
+		t.Fatal("failed test\n", result)
+	}
+}
+
 func TestCountCmd_column(t *testing.T) {
 
 	s := `ID,Name,CompanyID

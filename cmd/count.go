@@ -18,14 +18,20 @@ func newCountCmd() *cobra.Command {
 		Short: "Count the number of records in CSV file",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			// 引数の解析に成功した時点で、エラーが起きてもUsageは表示しない
-			cmd.SilenceUsage = true
+			format, err := getFlagCsvFormat(cmd.Flags())
+			if err != nil {
+				return err
+			}
 
 			csvPath, _ := cmd.Flags().GetString("input")
 			targetColumnName, _ := cmd.Flags().GetString("column")
 			includeHeader, _ := cmd.Flags().GetBool("header")
 
+			// 引数の解析に成功した時点で、エラーが起きてもUsageは表示しない
+			cmd.SilenceUsage = true
+
 			count, err := runCount(
+				format,
 				csvPath,
 				CountOptions{
 					targetColumnName: targetColumnName,
@@ -46,7 +52,6 @@ func newCountCmd() *cobra.Command {
 	countCmd.MarkFlagRequired("input")
 	countCmd.Flags().StringP("column", "c", "", "(optional) Name of the column to be counted. Only those with values will be counted.")
 	countCmd.Flags().BoolP("header", "", false, "(optional) Counting including header. The default is to exclude header.")
-	countCmd.Flags().SortFlags = false
 
 	return countCmd
 }
@@ -56,7 +61,7 @@ type CountOptions struct {
 	includeHeader    bool
 }
 
-func runCount(csvPath string, options CountOptions) (int, error) {
+func runCount(format csv.Format, csvPath string, options CountOptions) (int, error) {
 
 	file, err := os.Open(csvPath)
 	if err != nil {
@@ -64,7 +69,7 @@ func runCount(csvPath string, options CountOptions) (int, error) {
 	}
 	defer file.Close()
 
-	reader := csv.NewCsvReader(file)
+	reader := csv.NewCsvReader(file, format)
 	return count(reader, options)
 }
 

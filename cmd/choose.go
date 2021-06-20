@@ -18,14 +18,20 @@ func newChooseCmd() *cobra.Command {
 		Short: "Choose columns from CSV file",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			// 引数の解析に成功した時点で、エラーが起きてもUsageは表示しない
-			cmd.SilenceUsage = true
+			format, err := getFlagCsvFormat(cmd.Flags())
+			if err != nil {
+				return err
+			}
 
 			inputPath, _ := cmd.Flags().GetString("input")
 			targetColumnNames, _ := cmd.Flags().GetStringArray("column")
 			outputPath, _ := cmd.Flags().GetString("output")
 
+			// 引数の解析に成功した時点で、エラーが起きてもUsageは表示しない
+			cmd.SilenceUsage = true
+
 			return runChoose(
+				format,
 				inputPath,
 				targetColumnNames,
 				outputPath)
@@ -38,12 +44,11 @@ func newChooseCmd() *cobra.Command {
 	chooseCmd.MarkFlagRequired("column")
 	chooseCmd.Flags().StringP("output", "o", "", "Output CSV file path.")
 	chooseCmd.MarkFlagRequired("output")
-	chooseCmd.Flags().SortFlags = false
 
 	return chooseCmd
 }
 
-func runChoose(inputPath string, targetColumnNames []string, outputPath string) error {
+func runChoose(format csv.Format, inputPath string, targetColumnNames []string, outputPath string) error {
 
 	inputFile, err := os.Open(inputPath)
 	if err != nil {
@@ -51,14 +56,14 @@ func runChoose(inputPath string, targetColumnNames []string, outputPath string) 
 	}
 	defer inputFile.Close()
 
-	reader := csv.NewCsvReader(inputFile)
+	reader := csv.NewCsvReader(inputFile, format)
 
 	outputFile, err := os.Create(outputPath)
 	if err != nil {
 		return err
 	}
 	defer outputFile.Close()
-	writer := csv.NewCsvWriter(outputFile)
+	writer := csv.NewCsvWriter(outputFile, format)
 
 	err = choose(reader, targetColumnNames, writer)
 

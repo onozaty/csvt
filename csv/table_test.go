@@ -16,7 +16,7 @@ func TestLoadCsvMemoryTable(t *testing.T) {
 5,Ichikawa,152,50
 2,"Hanako, Sato",160,60
 `
-	r := NewCsvReader(strings.NewReader(s))
+	r := NewCsvReader(strings.NewReader(s), Format{})
 
 	table, err := LoadCsvMemoryTable(r, "ID")
 	if err != nil {
@@ -64,7 +64,7 @@ func TestLoadCsvMemoryTable_duplicateKey(t *testing.T) {
 5,Ichikawa,152,50
 1,"Dup",160,60
 `
-	r := NewCsvReader(strings.NewReader(s))
+	r := NewCsvReader(strings.NewReader(s), Format{})
 
 	_, err := LoadCsvMemoryTable(r, "ID")
 	if err == nil || err.Error() != "ID:1 is duplicated" {
@@ -78,7 +78,7 @@ func TestLoadCsvMemoryTable_joinColumnNotFound(t *testing.T) {
 1,Yamada,171,50
 5,Ichikawa,152,50
 `
-	r := NewCsvReader(strings.NewReader(s))
+	r := NewCsvReader(strings.NewReader(s), Format{})
 
 	_, err := LoadCsvMemoryTable(r, "id")
 	if err == nil || err.Error() != "id is not found" {
@@ -89,7 +89,7 @@ func TestLoadCsvMemoryTable_joinColumnNotFound(t *testing.T) {
 func TestLoadCsvMemoryTable_empty(t *testing.T) {
 
 	s := ""
-	r := NewCsvReader(strings.NewReader(s))
+	r := NewCsvReader(strings.NewReader(s), Format{})
 
 	_, err := LoadCsvMemoryTable(r, "ID")
 	if err != io.EOF {
@@ -100,7 +100,7 @@ func TestLoadCsvMemoryTable_empty(t *testing.T) {
 func TestLoadCsvMemoryTable_changeLineOnly(t *testing.T) {
 
 	s := "\n"
-	r := NewCsvReader(strings.NewReader(s))
+	r := NewCsvReader(strings.NewReader(s), Format{})
 
 	_, err := LoadCsvMemoryTable(r, "ID")
 	if err == nil || err.Error() != "ID is not found" {
@@ -118,7 +118,7 @@ func TestLoadCsvMemoryTable_big(t *testing.T) {
 		s[i] = strconv.Itoa(i) + ",ABCDEFGHIJ,10"
 	}
 
-	r := NewCsvReader(strings.NewReader(strings.Join(s[:], "\n")))
+	r := NewCsvReader(strings.NewReader(strings.Join(s[:], "\n")), Format{})
 
 	table, err := LoadCsvMemoryTable(r, "ID")
 	if err != nil {
@@ -163,7 +163,7 @@ func TestLoadCsvFileTable(t *testing.T) {
 5,Ichikawa,152,50
 2,"Hanako, Sato",160,60
 `
-	r := NewCsvReader(strings.NewReader(s))
+	r := NewCsvReader(strings.NewReader(s), Format{})
 
 	table, err := LoadCsvFileTable(r, "ID")
 	if err != nil {
@@ -212,7 +212,7 @@ func TestLoadCsvFileTable_duplicateKey(t *testing.T) {
 5,Ichikawa,152,50
 1,"Dup",160,60
 `
-	r := NewCsvReader(strings.NewReader(s))
+	r := NewCsvReader(strings.NewReader(s), Format{})
 
 	_, err := LoadCsvFileTable(r, "ID")
 	if err == nil || err.Error() != "ID:1 is duplicated" {
@@ -226,7 +226,7 @@ func TestLoadCsvFileTable_joinColumnNotFound(t *testing.T) {
 1,Yamada,171,50
 5,Ichikawa,152,50
 `
-	r := NewCsvReader(strings.NewReader(s))
+	r := NewCsvReader(strings.NewReader(s), Format{})
 
 	_, err := LoadCsvFileTable(r, "id")
 	if err == nil || err.Error() != "id is not found" {
@@ -237,7 +237,7 @@ func TestLoadCsvFileTable_joinColumnNotFound(t *testing.T) {
 func TestLoadCsvFileTable_empty(t *testing.T) {
 
 	s := ""
-	r := NewCsvReader(strings.NewReader(s))
+	r := NewCsvReader(strings.NewReader(s), Format{})
 
 	_, err := LoadCsvFileTable(r, "ID")
 	if err != io.EOF {
@@ -248,7 +248,7 @@ func TestLoadCsvFileTable_empty(t *testing.T) {
 func TestLoadCsvFileTable_changeLineOnly(t *testing.T) {
 
 	s := "\n"
-	r := NewCsvReader(strings.NewReader(s))
+	r := NewCsvReader(strings.NewReader(s), Format{})
 
 	_, err := LoadCsvFileTable(r, "ID")
 	if err == nil || err.Error() != "ID is not found" {
@@ -266,7 +266,7 @@ func TestLoadCsvFileTable_big(t *testing.T) {
 		s[i] = strconv.Itoa(i) + ",ABCDEFGHIJ,10"
 	}
 
-	r := NewCsvReader(strings.NewReader(strings.Join(s[:], "\n")))
+	r := NewCsvReader(strings.NewReader(strings.Join(s[:], "\n")), Format{})
 
 	table, err := LoadCsvFileTable(r, "ID")
 	if err != nil {

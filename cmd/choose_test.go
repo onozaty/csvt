@@ -54,6 +54,52 @@ func TestChooseCmd(t *testing.T) {
 	}
 }
 
+func TestChooseCmd_custom(t *testing.T) {
+
+	s := "ID;Name;CompanyID|1;Yamada;1|5;Ichikawa;1|2;'Hanako; Sato';3"
+	fi, err := createTempFile(s)
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fi.Name())
+
+	fo, err := createTempFile("")
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"choose",
+		"-i", fi.Name(),
+		"-o", fo.Name(),
+		"-c", "CompanyID",
+		"--delim", ";",
+		"--quote", "'",
+		"--sep", "|",
+		"--allquote",
+	})
+
+	err = rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	bo, err := os.ReadFile(fo.Name())
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := string(bo)
+
+	expect := "'CompanyID'|'1'|'1'|'3'|"
+
+	if result != expect {
+		t.Fatal("failed test\n", result)
+	}
+}
+
 func TestChooseCmd_columns(t *testing.T) {
 
 	s := `ID,Name,CompanyID

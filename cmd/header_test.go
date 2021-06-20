@@ -40,6 +40,39 @@ func TestHeaderCmd(t *testing.T) {
 	}
 }
 
+func TestHeaderCmd_custom(t *testing.T) {
+
+	s := "ID;Name;CompanyID|1;Yamada;1|5;Ichikawa;1|2;'Hanako; Sato';3"
+	f, err := createTempFile(s)
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(f.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"header",
+		"-i", f.Name(),
+		"--delim", ";",
+		"--quote", "'",
+		"--sep", "|",
+	})
+
+	buf := new(bytes.Buffer)
+	rootCmd.SetOutput(buf)
+
+	err = rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := buf.String()
+
+	if result != "ID\nName\nCompanyID\n" {
+		t.Fatal("failed test\n", result)
+	}
+}
+
 func TestHeaderCmd_fileNotFound(t *testing.T) {
 
 	f, err := createTempFile("")
