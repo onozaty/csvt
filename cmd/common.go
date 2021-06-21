@@ -10,25 +10,30 @@ import (
 	"github.com/spf13/pflag"
 )
 
-func getFlagCsvFormat(f *pflag.FlagSet) (csv.Format, error) {
+func getFlagBaseCsvFormat(f *pflag.FlagSet) (csv.Format, error) {
+
+	return getFlagCsvFormat(f, "delim", "quote", "sep", "allquote")
+}
+
+func getFlagCsvFormat(f *pflag.FlagSet, delimName string, quoteName string, sepName string, allquoteName string) (csv.Format, error) {
 
 	format := csv.Format{}
-	if v, err := getFlagRune(f, "delim"); err != nil {
+	if v, err := getFlagRune(f, delimName); err != nil {
 		return format, err
 	} else {
 		format.Delimiter = v
 	}
-	if v, err := getFlagRune(f, "quote"); err != nil {
+	if v, err := getFlagRune(f, quoteName); err != nil {
 		return format, err
 	} else {
 		format.Quote = v
 	}
-	if v, err := getFlagString(f, "sep"); err != nil {
+	if v, err := getFlagString(f, sepName); err != nil {
 		return format, err
 	} else {
 		format.RecordSeparator = v
 	}
-	if v, err := f.GetBool("allquote"); err != nil {
+	if v, err := f.GetBool(allquoteName); err != nil {
 		return format, err
 	} else {
 		format.AllQuotes = v

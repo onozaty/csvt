@@ -18,7 +18,7 @@ func newJoinCmd() *cobra.Command {
 		Short: "Join CSV files",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			format, err := getFlagCsvFormat(cmd.Flags())
+			format, err := getFlagBaseCsvFormat(cmd.Flags())
 			if err != nil {
 				return err
 			}
