@@ -106,6 +106,40 @@ func TestNewCsvReader_LF_CRLF(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 }
+
+func TestNewCsvReader_format(t *testing.T) {
+
+	s := "ID;Name|1;'Yamada'"
+
+	r := NewCsvReader(strings.NewReader(s), Format{
+		Delimiter:       ';',
+		Quote:           '\'',
+		RecordSeparator: "|",
+	})
+
+	header, err := r.Read()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	if !reflect.DeepEqual(header, []string{"ID", "Name"}) {
+		t.Fatal("failed test\n", header)
+	}
+
+	firstRow, err := r.Read()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	if !reflect.DeepEqual(firstRow, []string{"1", "Yamada"}) {
+		t.Fatal("failed test\n", header)
+	}
+
+	_, err = r.Read()
+	if err != io.EOF {
+		t.Fatal("failed test\n", err)
+	}
+}
+
 func TestNewCsvWriter(t *testing.T) {
 
 	var b bytes.Buffer
@@ -122,6 +156,31 @@ func TestNewCsvWriter(t *testing.T) {
 	expect := "1,2\r\n" +
 		"あ,a\r\n" +
 		"\",\",\r\n"
+
+	if result != expect {
+		t.Fatal("failed test\n", result)
+	}
+}
+
+func TestNewCsvWriter_format(t *testing.T) {
+
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	cw := NewCsvWriter(w, Format{
+		Delimiter:       ';',
+		Quote:           '\'',
+		RecordSeparator: "|",
+		AllQuotes:       true,
+	})
+
+	cw.Write([]string{"1", "2"})
+	cw.Write([]string{"あ", "a"})
+	cw.Write([]string{";", ""})
+
+	cw.Flush()
+	result := b.String()
+
+	expect := "'1';'2'|'あ';'a'|';';''|"
 
 	if result != expect {
 		t.Fatal("failed test\n", result)
