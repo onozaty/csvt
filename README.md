@@ -11,6 +11,25 @@
 * [join](#join) Join CSV files.
 * [remove](#remove) Remove columns from CSV file.
 * [rename](#rename) Rename columns from CSV file.
+* [transform](#transform) Transform the format of CSV file.
+
+## Common flags
+
+Flags related to the CSV format are available in each subcommand as common flags.
+
+```
+Global Flags:
+      --delim string   (optional) CSV delimiter. The default is ','
+      --quote string   (optional) CSV quote. The default is '"'
+      --sep string     (optional) CSV record separator. The default is CRLF.
+      --allquote       (optional) Always quote CSV fields. The default is to quote only the necessary fields.
+```
+
+For example, when dealing with TSV files, change the delimiter to a tab as shown below.
+
+```
+$ csvt count -i INPUT --delim "\t"
+```
 
 ## choose
 
@@ -417,6 +436,60 @@ The contents of the created `output.csv`.
 ID,Name,Age,Company
 1,"Taro, Yamada",10,2
 2,Hanako,21,1
+```
+
+## transform
+
+Transform the format of CSV file.
+
+### Usage
+
+```
+$ csvt transform -i INPUT -o OUTPUT --out-delim DELIMITER --out-quote QUOTE --out-sep SEPARATOR --out-allquote
+```
+
+```
+Usage:
+  csvt transform [flags]
+
+Flags:
+  -i, --input string       Input CSV file path.
+  -o, --output string      Output CSV file path.
+      --out-delim string   (optional) Output CSV delimiter. The default is ','
+      --out-quote string   (optional) Output CSV quote. The default is '"'
+      --out-sep string     (optional) Output CSV record separator. The default is CRLF.
+      --out-allquote       (optional) Always quote output CSV fields. The default is to quote only the necessary fields.
+  -h, --help               help for transform
+```
+
+### Example
+
+The contents of `input.csv`.
+
+```
+UserID,Name
+1,"Taro, Yamada"
+2,Hanako
+```
+
+Create `output.tsv` by transform `input.csv` to a TSV file.
+
+```
+$ csvt transform -i input.csv -o output.tsv --out-delim "\t"
+```
+
+The contents of the created `output.tsv`.
+
+```
+UserID  Name
+1 Taro, Yamada
+2 Hanako
+```
+
+Use common flag `--delim` to transform TSV file back to CSV file.
+
+```
+$ csvt transform -i output.tsv -o output2.csv --delim "\t"
 ```
 
 ## Install
