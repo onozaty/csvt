@@ -65,13 +65,15 @@ func getFlagRune(f *pflag.FlagSet, name string) (rune, error) {
 		return 0, err
 	}
 
-	if len(str) == 0 {
+	rs := []rune(str)
+
+	if len(rs) == 0 {
 		return 0, nil
 	}
 
-	if len(str) != 1 {
+	if len(rs) != 1 {
 		return 0, fmt.Errorf("flag %s should be specified with a single character", name)
 	}
 
-	return []rune(str)[0], nil
+	return rs[0], nil
 }
