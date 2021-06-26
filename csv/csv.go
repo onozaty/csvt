@@ -11,6 +11,7 @@ type Format struct {
 	Quote           rune
 	RecordSeparator string
 	AllQuotes       bool
+	WithBom         bool
 }
 
 type CsvReader interface {
@@ -21,8 +22,11 @@ type CsvWriter interface {
 	Flush() error
 }
 
+var utf8bom = []byte{0xEF, 0xBB, 0xBF}
+
 func NewCsvReader(r io.Reader, f Format) CsvReader {
 
+	// ReaderではBOMは自動的に除去
 	cr := customcsv.NewReader(r)
 	if f.Delimiter != 0 {
 		cr.Delimiter = f.Delimiter
@@ -38,6 +42,10 @@ func NewCsvReader(r io.Reader, f Format) CsvReader {
 }
 
 func NewCsvWriter(w io.Writer, f Format) CsvWriter {
+
+	if f.WithBom {
+		w.Write(utf8bom)
+	}
 
 	cw := customcsv.NewWriter(w)
 	if f.Delimiter != 0 {

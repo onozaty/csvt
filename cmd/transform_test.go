@@ -80,6 +80,7 @@ func TestTransformCmd_custom(t *testing.T) {
 		"--out-quote", "'",
 		"--out-sep", "|",
 		"--out-allquote",
+		"--out-bom",
 	})
 
 	err = rootCmd.Execute()
@@ -94,7 +95,7 @@ func TestTransformCmd_custom(t *testing.T) {
 
 	result := string(bo)
 
-	expect := "'ID';'Name'|'1';'Taro; Yamada'|'2';'Hanako, Sato'|"
+	expect := "\uFEFF'ID';'Name'|'1';'Taro; Yamada'|'2';'Hanako, Sato'|"
 	if result != expect {
 		t.Fatal("failed test\n", result)
 	}

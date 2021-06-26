@@ -26,6 +26,7 @@ Global Flags:
       --quote string   (optional) CSV quote. The default is '"'
       --sep string     (optional) CSV record separator. The default is CRLF.
       --allquote       (optional) Always quote CSV fields. The default is to quote only the necessary fields.
+      --bom            (optional) CSV with BOM. When reading, the BOM will be automatically removed without this flag.
 ```
 
 For example, when dealing with TSV files, change the delimiter to a tab as shown below.
@@ -462,6 +463,7 @@ Flags:
       --out-quote string   (optional) Output CSV quote. The default is '"'
       --out-sep string     (optional) Output CSV record separator. The default is CRLF.
       --out-allquote       (optional) Always quote output CSV fields. The default is to quote only the necessary fields.
+      --out-bom            (optional) Output CSV with BOM.
   -h, --help               help for transform
 ```
 

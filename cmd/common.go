@@ -12,10 +12,10 @@ import (
 
 func getFlagBaseCsvFormat(f *pflag.FlagSet) (csv.Format, error) {
 
-	return getFlagCsvFormat(f, "delim", "quote", "sep", "allquote")
+	return getFlagCsvFormat(f, "delim", "quote", "sep", "allquote", "bom")
 }
 
-func getFlagCsvFormat(f *pflag.FlagSet, delimName string, quoteName string, sepName string, allquoteName string) (csv.Format, error) {
+func getFlagCsvFormat(f *pflag.FlagSet, delimName string, quoteName string, sepName string, allquoteName string, bomName string) (csv.Format, error) {
 
 	format := csv.Format{}
 	if v, err := getFlagRune(f, delimName); err != nil {
@@ -37,6 +37,11 @@ func getFlagCsvFormat(f *pflag.FlagSet, delimName string, quoteName string, sepN
 		return format, err
 	} else {
 		format.AllQuotes = v
+	}
+	if v, err := f.GetBool(bomName); err != nil {
+		return format, err
+	} else {
+		format.WithBom = v
 	}
 	return format, nil
 }

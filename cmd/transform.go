@@ -22,7 +22,7 @@ func newTransformCmd() *cobra.Command {
 			}
 
 			outputPath, _ := cmd.Flags().GetString("output")
-			outputFormat, err := getFlagCsvFormat(cmd.Flags(), "out-delim", "out-quote", "out-sep", "out-allquote")
+			outputFormat, err := getFlagCsvFormat(cmd.Flags(), "out-delim", "out-quote", "out-sep", "out-allquote", "out-bom")
 			if err != nil {
 				return err
 			}
@@ -46,6 +46,7 @@ func newTransformCmd() *cobra.Command {
 	transformCmd.Flags().StringP("out-quote", "", "", "(optional) Output CSV quote. The default is '\"'")
 	transformCmd.Flags().StringP("out-sep", "", "", "(optional) Output CSV record separator. The default is CRLF.")
 	transformCmd.Flags().BoolP("out-allquote", "", false, "(optional) Always quote output CSV fields. The default is to quote only the necessary fields.")
+	transformCmd.Flags().BoolP("out-bom", "", false, "(optional) Output CSV with BOM.")
 
 	return transformCmd
 }
