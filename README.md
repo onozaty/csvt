@@ -1,5 +1,8 @@
 # csvt
 
+[![GitHub license](https://img.shields.io/github/license/onozaty/csvt)](https://github.com/onozaty/csvt/blob/main/LICENSE)
+[![Test](https://github.com/onozaty/csvt/actions/workflows/test.yaml/badge.svg)](https://github.com/onozaty/csvt/actions/workflows/test.yaml)
+
 `csvt` is a command line tool for processing CSV.
 
 `csvt` consists of multiple subcommands.
