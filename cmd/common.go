@@ -8,14 +8,15 @@ import (
 	"github.com/onozaty/csvt/csv"
 	"github.com/pkg/errors"
 	"github.com/spf13/pflag"
+	"golang.org/x/text/encoding"
 )
 
 func getFlagBaseCsvFormat(f *pflag.FlagSet) (csv.Format, error) {
 
-	return getFlagCsvFormat(f, "delim", "quote", "sep", "allquote", "bom")
+	return getFlagCsvFormat(f, "delim", "quote", "sep", "allquote", "encoding", "bom")
 }
 
-func getFlagCsvFormat(f *pflag.FlagSet, delimName string, quoteName string, sepName string, allquoteName string, bomName string) (csv.Format, error) {
+func getFlagCsvFormat(f *pflag.FlagSet, delimName string, quoteName string, sepName string, allquoteName string, encodingName string, bomName string) (csv.Format, error) {
 
 	format := csv.Format{}
 	if v, err := getFlagRune(f, delimName); err != nil {
@@ -37,6 +38,11 @@ func getFlagCsvFormat(f *pflag.FlagSet, delimName string, quoteName string, sepN
 		return format, err
 	} else {
 		format.AllQuotes = v
+	}
+	if v, err := getFlagEncoding(f, encodingName); err != nil {
+		return format, err
+	} else {
+		format.Encoding = v
 	}
 	if v, err := f.GetBool(bomName); err != nil {
 		return format, err
@@ -81,4 +87,15 @@ func getFlagRune(f *pflag.FlagSet, name string) (rune, error) {
 	}
 
 	return rs[0], nil
+}
+
+func getFlagEncoding(f *pflag.FlagSet, name string) (encoding.Encoding, error) {
+
+	str, _ := f.GetString(name)
+
+	if str == "" {
+		return nil, nil
+	}
+
+	return csv.Encoding(str)
 }

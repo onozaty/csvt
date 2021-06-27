@@ -22,11 +22,12 @@ Flags related to the CSV format are available in each subcommand as common flags
 
 ```
 Global Flags:
-      --delim string   (optional) CSV delimiter. The default is ','
-      --quote string   (optional) CSV quote. The default is '"'
-      --sep string     (optional) CSV record separator. The default is CRLF.
-      --allquote       (optional) Always quote CSV fields. The default is to quote only the necessary fields.
-      --bom            (optional) CSV with BOM. When reading, the BOM will be automatically removed without this flag.
+      --delim string      (optional) CSV delimiter. The default is ','
+      --quote string      (optional) CSV quote. The default is '"'
+      --sep string        (optional) CSV record separator. The default is CRLF.
+      --allquote          (optional) Always quote CSV fields. The default is to quote only the necessary fields.
+      --encoding string   (optional) CSV encoding. The default is utf-8. Supported encodings: utf-8, shift_jis, euc-jp
+      --bom               (optional) CSV with BOM. When reading, the BOM will be automatically removed without this flag.
 ```
 
 For example, when dealing with TSV files, change the delimiter to a tab as shown below.
@@ -457,14 +458,15 @@ Usage:
   csvt transform [flags]
 
 Flags:
-  -i, --input string       Input CSV file path.
-  -o, --output string      Output CSV file path.
-      --out-delim string   (optional) Output CSV delimiter. The default is ','
-      --out-quote string   (optional) Output CSV quote. The default is '"'
-      --out-sep string     (optional) Output CSV record separator. The default is CRLF.
-      --out-allquote       (optional) Always quote output CSV fields. The default is to quote only the necessary fields.
-      --out-bom            (optional) Output CSV with BOM.
-  -h, --help               help for transform
+  -i, --input string          Input CSV file path.
+  -o, --output string         Output CSV file path.
+      --out-delim string      (optional) Output CSV delimiter. The default is ','
+      --out-quote string      (optional) Output CSV quote. The default is '"'
+      --out-sep string        (optional) Output CSV record separator. The default is CRLF.
+      --out-allquote          (optional) Always quote output CSV fields. The default is to quote only the necessary fields.
+      --out-encoding string   (optional) Output CSV encoding. The default is utf-8. Supported encodings: utf-8, shift_jis, euc-jp
+      --out-bom               (optional) Output CSV with BOM.
+  -h, --help                  help for transform
 ```
 
 ### Example
