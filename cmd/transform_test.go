@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"os"
+	"reflect"
 	"testing"
 )
 
@@ -80,6 +81,7 @@ func TestTransformCmd_custom(t *testing.T) {
 		"--out-quote", "'",
 		"--out-sep", "|",
 		"--out-allquote",
+		"--out-bom",
 	})
 
 	err = rootCmd.Execute()
@@ -94,7 +96,7 @@ func TestTransformCmd_custom(t *testing.T) {
 
 	result := string(bo)
 
-	expect := "'ID';'Name'|'1';'Taro; Yamada'|'2';'Hanako, Sato'|"
+	expect := "\uFEFF'ID';'Name'|'1';'Taro; Yamada'|'2';'Hanako, Sato'|"
 	if result != expect {
 		t.Fatal("failed test\n", result)
 	}
@@ -472,6 +474,109 @@ func TestTransformCmd_sep_parseError(t *testing.T) {
 
 	err = rootCmd.Execute()
 	if err == nil || err.Error() != `Could not parse value \r" of flag sep: invalid syntax` {
+		t.Fatal("failed test\n", err)
+	}
+}
+
+func TestTransformCmd_encoding(t *testing.T) {
+
+	fo, err := createTempFile("")
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"transform",
+		"-i", "../testdata/users-sjis.csv",
+		"-o", fo.Name(),
+		"--encoding", "sjis",
+	})
+
+	err = rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	bo, err := os.ReadFile(fo.Name())
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := string(bo)
+
+	expect := "ID,名前,年齢\r\n" +
+		"1,\"Taro, Yamada\",20\r\n" +
+		"2,山田 花子,21\r\n"
+
+	if result != expect {
+		t.Fatal("failed test\n", result)
+	}
+}
+
+func TestTransformCmd_out_encoding(t *testing.T) {
+
+	fo, err := createTempFile("")
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"transform",
+		"-i", "../testdata/users-utf8.csv",
+		"-o", fo.Name(),
+		"--out-encoding", "sjis",
+		"--out-bom", // UTF-8ではないのでBOM指定しても付かない
+	})
+
+	err = rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result, err := os.ReadFile(fo.Name())
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	expect, err := os.ReadFile("../testdata/users-sjis.csv")
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	if !reflect.DeepEqual(result, expect) {
+		t.Fatal("failed test\n", result)
+	}
+}
+
+func TestTransformCmd_encoding_invalid(t *testing.T) {
+
+	s := ""
+	fi, err := createTempFile(s)
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fi.Name())
+
+	fo, err := createTempFile("")
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"transform",
+		"-i", fi.Name(),
+		"-o", fo.Name(),
+		"--out-encoding", "utf",
+	})
+
+	err = rootCmd.Execute()
+	if err == nil || err.Error() != "invalid encoding name: utf" {
 		t.Fatal("failed test\n", err)
 	}
 }

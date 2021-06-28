@@ -3,6 +3,9 @@ package cmd
 import (
 	"os"
 	"testing"
+
+	"golang.org/x/text/encoding/japanese"
+	"golang.org/x/text/transform"
 )
 
 func TestChooseCmd(t *testing.T) {
@@ -243,5 +246,45 @@ func TestChooseCmd_empty(t *testing.T) {
 	err = rootCmd.Execute()
 	if err == nil || err.Error() != "failed to read the CSV file: EOF" {
 		t.Fatal("failed test\n", err)
+	}
+}
+
+func TestChooseCmd_encoding(t *testing.T) {
+
+	fo, err := createTempFile("")
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"choose",
+		"-i", "../testdata/users-sjis.csv",
+		"-o", fo.Name(),
+		"-c", "名前",
+		"--encoding", "shift_jis",
+	})
+
+	err = rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	b, err := os.ReadFile(fo.Name())
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	// Shift_JIS->UTF-8に変換して期待値と比較
+	ub, _, _ := transform.Bytes(japanese.ShiftJIS.NewDecoder(), b)
+	result := string(ub)
+
+	expect := "名前\r\n" +
+		"\"Taro, Yamada\"\r\n" +
+		"山田 花子\r\n"
+
+	if result != expect {
+		t.Fatal("failed test\n", result)
 	}
 }

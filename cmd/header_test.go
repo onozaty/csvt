@@ -119,3 +119,146 @@ func TestHeaderCmd_empty(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 }
+
+func TestHeaderCmd_encoding_default(t *testing.T) {
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"header",
+		"-i", "../testdata/users-utf8.csv",
+	})
+
+	buf := new(bytes.Buffer)
+	rootCmd.SetOutput(buf)
+
+	err := rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := buf.String()
+
+	if result != "ID\n名前\n年齢\n" {
+		t.Fatal("failed test\n", result)
+	}
+}
+
+func TestHeaderCmd_encoding_utf8(t *testing.T) {
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"header",
+		"-i", "../testdata/users-utf8.csv",
+		"--encoding", "utf-8",
+	})
+
+	buf := new(bytes.Buffer)
+	rootCmd.SetOutput(buf)
+
+	err := rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := buf.String()
+
+	if result != "ID\n名前\n年齢\n" {
+		t.Fatal("failed test\n", result)
+	}
+}
+
+func TestHeaderCmd_encoding_sjis(t *testing.T) {
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"header",
+		"-i", "../testdata/users-sjis.csv",
+		"--encoding", "sjis",
+	})
+
+	buf := new(bytes.Buffer)
+	rootCmd.SetOutput(buf)
+
+	err := rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := buf.String()
+
+	if result != "ID\n名前\n年齢\n" {
+		t.Fatal("failed test\n", result)
+	}
+}
+
+func TestHeaderCmd_encoding_shift_jis(t *testing.T) {
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"header",
+		"-i", "../testdata/users-sjis.csv",
+		"--encoding", "Shift_JIS",
+	})
+
+	buf := new(bytes.Buffer)
+	rootCmd.SetOutput(buf)
+
+	err := rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := buf.String()
+
+	if result != "ID\n名前\n年齢\n" {
+		t.Fatal("failed test\n", result)
+	}
+}
+
+func TestHeaderCmd_encoding_eucjp(t *testing.T) {
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"header",
+		"-i", "../testdata/users-eucjp.csv",
+		"--encoding", "eucjp",
+	})
+
+	buf := new(bytes.Buffer)
+	rootCmd.SetOutput(buf)
+
+	err := rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := buf.String()
+
+	if result != "ID\n名前\n年齢\n" {
+		t.Fatal("failed test\n", result)
+	}
+}
+
+func TestHeaderCmd_encoding_euc_jp(t *testing.T) {
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"header",
+		"-i", "../testdata/users-eucjp.csv",
+		"--encoding", "EUC-JP",
+	})
+
+	buf := new(bytes.Buffer)
+	rootCmd.SetOutput(buf)
+
+	err := rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := buf.String()
+
+	if result != "ID\n名前\n年齢\n" {
+		t.Fatal("failed test\n", result)
+	}
+}

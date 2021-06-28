@@ -77,6 +77,7 @@ func TestFilterCmd_custom(t *testing.T) {
 		"--quote", "'",
 		"--sep", "|",
 		"--allquote",
+		"--bom",
 	})
 
 	err = rootCmd.Execute()
@@ -91,7 +92,7 @@ func TestFilterCmd_custom(t *testing.T) {
 
 	result := string(bo)
 
-	expect := "'ID';'Name';'CompanyID'|'1';'Yamada';'1'|"
+	expect := "\uFEFF'ID';'Name';'CompanyID'|'1';'Yamada';'1'|"
 
 	if result != expect {
 		t.Fatal("failed test\n", result)
