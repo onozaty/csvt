@@ -53,7 +53,7 @@ func TestTransformCmd(t *testing.T) {
 	}
 }
 
-func TestTransformCmd_custom(t *testing.T) {
+func TestTransformCmd_format(t *testing.T) {
 
 	s := "ID/Name%1/Taro; Yamada%2/$Hanako, Sato$%"
 

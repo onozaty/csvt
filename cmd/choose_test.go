@@ -57,7 +57,7 @@ func TestChooseCmd(t *testing.T) {
 	}
 }
 
-func TestChooseCmd_custom(t *testing.T) {
+func TestChooseCmd_format(t *testing.T) {
 
 	s := "ID;Name;CompanyID|1;Yamada;1|5;Ichikawa;1|2;'Hanako; Sato';3"
 	fi, err := createTempFile(s)

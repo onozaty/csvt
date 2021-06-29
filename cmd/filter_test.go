@@ -52,7 +52,7 @@ func TestFilterCmd(t *testing.T) {
 	}
 }
 
-func TestFilterCmd_custom(t *testing.T) {
+func TestFilterCmd_format(t *testing.T) {
 
 	s := "ID;Name;CompanyID|1;Yamada;1|5;Ichikawa;|2;'Hanako; Sato';"
 	fi, err := createTempFile(s)
