@@ -108,6 +108,56 @@ func TestReplaceCmd_multiColumn(t *testing.T) {
 	}
 }
 
+func TestReplaceCmd_allColumn(t *testing.T) {
+
+	s := `col1,col2,col3
+z,abc,abc
+a,a,
+x,aa  aa,A
+`
+	fi, err := createTempFile(s)
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fi.Name())
+
+	fo, err := createTempFile("")
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"replace",
+		"-i", fi.Name(),
+		"-o", fo.Name(),
+		"-r", "a",
+		"-t", "x",
+	})
+
+	err = rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	bo, err := os.ReadFile(fo.Name())
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := string(bo)
+
+	expect := "col1,col2,col3\r\n" +
+		"z,xbc,xbc\r\n" +
+		"x,x,\r\n" +
+		"x,xx  xx,A\r\n"
+
+	if result != expect {
+		t.Fatal("failed test\n", result)
+	}
+}
+
 func TestReplaceCmd_regex_full(t *testing.T) {
 
 	s := `id,col1,col2

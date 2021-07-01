@@ -456,7 +456,7 @@ Regular expression are used for replace.
 ### Usage
 
 ```
-$ csvt replace -i INPUT -c COLUMN1 -c COLUMN2 -r REGEX -t REPLACEMENT -o OUTPUT
+$ csvt replace -i INPUT -r REGEX -t REPLACEMENT -o OUTPUT
 ```
 
 ```
@@ -465,7 +465,7 @@ Usage:
 
 Flags:
   -i, --input string         Input CSV file path.
-  -c, --column stringArray   Name of the column to replace.
+  -c, --column stringArray   (optional) Name of the column to replace. If not specified, all columns are targeted.
   -r, --regex string         The regular expression to replace.
   -t, --replacement string   The string after replace.
   -o, --output string        Output CSV file path.
@@ -482,13 +482,26 @@ aa,abc,a1
 bb,aabb,99
 ```
 
-Create `output.csv` by replacing `a` with `x` in "col1" and "col2".
+Create `output.csv` by replacing `a` with `x` in all columns.
+
+```
+$ csvt replace -i input.csv -r a -t x -o output.csv
+```
+
+The contents of the created `output.csv`.
+
+```
+col1,col2,col3
+xx,xbc,x1
+bb,xxbb,99
+```
+
+You can specify the target column with `-c`.  
+Replacing `a` with `x` in "col1" and "col2".
 
 ```
 $ csvt replace -i input.csv -c col1 -c col2 -r a -t x -o output.csv
 ```
-
-The contents of the created `output.csv`.
 
 ```
 col1,col2,col3
@@ -496,7 +509,7 @@ xx,xbc,a1
 bb,xxbb,99
 ```
 
-You can also use the capture group as `--replacement`.
+You can also use the capture group as `-t`.
 
 ```
 $ csvt replace -i input.csv -c col3 -r ".*?([0-9]+)" -t "#$1" x -o output.csv

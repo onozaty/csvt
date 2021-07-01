@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/onozaty/csvt/csv"
+	"github.com/onozaty/csvt/util"
 	"github.com/pkg/errors"
 	"github.com/spf13/pflag"
 	"golang.org/x/text/encoding"
@@ -98,4 +99,34 @@ func getFlagEncoding(f *pflag.FlagSet, name string) (encoding.Encoding, error) {
 	}
 
 	return csv.Encoding(str)
+}
+
+func getTargetColumnIndexes(allColumnNames []string, targetColumnNames []string) ([]int, error) {
+
+	if len(targetColumnNames) == 0 {
+		// 指定カラムが無かった場合、全てのカラムが対象
+
+		targetColumnIndexes := []int{}
+
+		for i, _ := range allColumnNames {
+			targetColumnIndexes = append(targetColumnIndexes, i)
+		}
+
+		return targetColumnIndexes, nil
+
+	} else {
+
+		targetColumnIndexes := []int{}
+		for _, targetColumnName := range targetColumnNames {
+
+			targetColumnIndex := util.IndexOf(allColumnNames, targetColumnName)
+			if targetColumnIndex == -1 {
+				return nil, fmt.Errorf("missing %s in the CSV file", targetColumnName)
+			}
+
+			targetColumnIndexes = append(targetColumnIndexes, targetColumnIndex)
+		}
+
+		return targetColumnIndexes, nil
+	}
 }
