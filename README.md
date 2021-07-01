@@ -14,6 +14,7 @@
 * [join](#join) Join CSV files.
 * [remove](#remove) Remove columns from CSV file.
 * [rename](#rename) Rename columns from CSV file.
+* [replace](#replace) Replace values in CSV file.
 * [transform](#transform) Transform the format of CSV file.
 
 ## Common flags
@@ -215,6 +216,9 @@ UserID,Name,Age,CompanyID
 3,yamada,30,
 ```
 
+Please refer to the following for the syntax of regular expressions.
+
+* https://golang.org/pkg/regexp/syntax/
 
 ## header
 
@@ -442,6 +446,71 @@ ID,Name,Age,Company
 1,"Taro, Yamada",10,2
 2,Hanako,21,1
 ```
+
+## replace
+
+Create a new CSV file by replacing the values in the input CSV file.
+
+Regular expression are used for replace.
+
+### Usage
+
+```
+$ csvt replace -i INPUT -c COLUMN1 -c COLUMN2 -r REGEX -t REPLACEMENT -o OUTPUT
+```
+
+```
+Usage:
+  csvt replace [flags]
+
+Flags:
+  -i, --input string         Input CSV file path.
+  -c, --column stringArray   Name of the column to replace.
+  -r, --regex string         The regular expression to replace.
+  -t, --replacement string   The string after replace.
+  -o, --output string        Output CSV file path.
+  -h, --help                 help for replace
+```
+
+### Example
+
+The contents of `input.csv`.
+
+```
+col1,col2,col3
+aa,abc,a1
+bb,aabb,99
+```
+
+Create `output.csv` by replacing `a` with `x` in "col1" and "col2".
+
+```
+$ csvt replace -i input.csv -c col1 -c col2 -r a -t x -o output.csv
+```
+
+The contents of the created `output.csv`.
+
+```
+col1,col2,col3
+xx,xbc,a1
+bb,xxbb,99
+```
+
+You can also use the capture group as `--replacement`.
+
+```
+$ csvt replace -i input.csv -c col3 -r ".*?([0-9]+)" -t "#$1" x -o output.csv
+```
+
+```
+col1,col2,col3
+aa,abc,#1
+bb,aabb,#99
+```
+
+Please refer to the following for the syntax of regular expressions.
+
+* https://golang.org/pkg/regexp/syntax/
 
 ## transform
 

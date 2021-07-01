@@ -16,7 +16,7 @@ func newReplaceCmd() *cobra.Command {
 
 	replaceCmd := &cobra.Command{
 		Use:   "replace",
-		Short: "Replace row values in CSV file",
+		Short: "Replace values in CSV file",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			format, err := getFlagBaseCsvFormat(cmd.Flags())
