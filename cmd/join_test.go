@@ -72,7 +72,7 @@ func TestJoinCmd(t *testing.T) {
 	}
 }
 
-func TestJoinCmd_custom(t *testing.T) {
+func TestJoinCmd_format(t *testing.T) {
 
 	s1 := "ID;Name;CompanyID|1;Yamada;1|5;Ichikawa;1|2;'Hanako; Sato';3"
 	f1, err := createTempFile(s1)

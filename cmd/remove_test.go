@@ -54,7 +54,7 @@ func TestRemoveCmd(t *testing.T) {
 	}
 }
 
-func TestRemoveCmd_custom(t *testing.T) {
+func TestRemoveCmd_format(t *testing.T) {
 
 	s := "ID,Name,CompanyID\tx\t" +
 		"1,Yamada,1\tx\t" +

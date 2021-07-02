@@ -32,6 +32,7 @@ func newRootCmd() *cobra.Command {
 	rootCmd.AddCommand(newFilterCmd())
 	rootCmd.AddCommand(newRenameCmd())
 	rootCmd.AddCommand(newTransformCmd())
+	rootCmd.AddCommand(newReplaceCmd())
 
 	for _, c := range rootCmd.Commands() {
 		c.Flags().SortFlags = false

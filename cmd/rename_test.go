@@ -56,7 +56,7 @@ func TestRenameCmd(t *testing.T) {
 	}
 }
 
-func TestRenameCmd_custom(t *testing.T) {
+func TestRenameCmd_format(t *testing.T) {
 
 	s := `A	B
 1	x

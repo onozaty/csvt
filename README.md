@@ -14,6 +14,7 @@
 * [join](#join) Join CSV files.
 * [remove](#remove) Remove columns from CSV file.
 * [rename](#rename) Rename columns from CSV file.
+* [replace](#replace) Replace values in CSV file.
 * [transform](#transform) Transform the format of CSV file.
 
 ## Common flags
@@ -43,7 +44,7 @@ Create a new CSV file by choosing columns from the input CSV file.
 ### Usage
 
 ```
-$ csvt choose -i INPUT -c COLUMN1 -c COLUMN2 -o OUTPUT
+csvt choose -i INPUT -c COLUMN1 ... -o OUTPUT
 ```
 
 ```
@@ -92,7 +93,7 @@ Count the number of records in CSV file.
 ### Usage
 
 ```
-$ csvt count -i INPUT
+csvt count -i INPUT [-c COLUMN] [--header]
 ```
 
 ```
@@ -146,7 +147,7 @@ Create a new CSV file by filtering the input CSV file to rows that match the con
 ### Usage
 
 ```
-$ csvt filter -i INPUT -c COLUMN -o OUTPUT
+csvt filter -i INPUT [[-c COLUMN1] ...] [--equal VALUE|--regex REGEX] -o OUTPUT
 ```
 
 ```
@@ -154,12 +155,12 @@ Usage:
   csvt filter [flags]
 
 Flags:
-  -i, --input string    Input CSV file path.
-  -c, --column string   Name of the column to use for filtering. If neither --equal nor --regex is specified, it will filter by those with values.
-  -o, --output string   Output CSV file path.
-      --equal string    (optional) Filter by matching value.
-      --regex string    (optional) Filter by regular expression.
-  -h, --help            help for filter
+  -i, --input string         Input CSV file path.
+  -c, --column stringArray   (optional) Name of the column to use for filtering. If not specified, all columns are targeted.
+      --equal string         (optional) Filter by matching value. If neither --equal nor --regex is specified, it will filter by those with values.
+      --regex string         (optional) Filter by regular expression. If neither --equal nor --regex is specified, it will filter by those with values.
+  -o, --output string        Output CSV file path.
+  -h, --help                 help for filter
 ```
 
 ### Example
@@ -215,6 +216,9 @@ UserID,Name,Age,CompanyID
 3,yamada,30,
 ```
 
+Please refer to the following for the syntax of regular expressions.
+
+* https://golang.org/pkg/regexp/syntax/
 
 ## header
 
@@ -223,7 +227,7 @@ Show the header of CSV file.
 ### Usage
 
 ```
-$ csvt header -i INPUT
+csvt header -i INPUT
 ```
 
 ```
@@ -265,7 +269,7 @@ It is similar to EXCEL's VLOOKUP.
 ### Usage
 
 ```
-$ csvt join -1 INPUT1 -2 INPUT2 -c COLUMN -o OUTPUT
+csvt join -1 INPUT1 -2 INPUT2 -c COLUMN [--column2 COLUMN2] -o OUTPUT [--usingfile] [--norecord]
 ```
 
 ```
@@ -355,7 +359,7 @@ Create a new CSV file by remove columns from the input CSV file.
 ### Usage
 
 ```
-$ csvt remove -i INPUT -c COLUMN1 -c COLUMN2 -o OUTPUT
+csvt remove -i INPUT -c COLUMN1 ... -o OUTPUT
 ```
 
 ```
@@ -404,7 +408,7 @@ Create a new CSV file by rename columns from the input CSV file.
 ### Usage
 
 ```
-$ csvt rename -i INPUT -c BEFORE_COLUMN1 -a AFTER_COLUMN1 -c BEFORE_COLUMN2 -a AFTER_COLUMN2 -o OUTPUT
+csvt rename -i INPUT -c BEFORE_COLUMN1 ... -a AFTER_COLUMN1 ... -o OUTPUT
 ```
 
 ```
@@ -443,6 +447,84 @@ ID,Name,Age,Company
 2,Hanako,21,1
 ```
 
+## replace
+
+Create a new CSV file by replacing the values in the input CSV file.
+
+Regular expression are used for replace.
+
+### Usage
+
+```
+csvt replace -i INPUT [[-c COLUMN1] ...] -r REGEX -t REPLACEMENT -o OUTPUT
+```
+
+```
+Usage:
+  csvt replace [flags]
+
+Flags:
+  -i, --input string         Input CSV file path.
+  -c, --column stringArray   (optional) Name of the column to replace. If not specified, all columns are targeted.
+  -r, --regex string         The regular expression to replace.
+  -t, --replacement string   The string after replace.
+  -o, --output string        Output CSV file path.
+  -h, --help                 help for replace
+```
+
+### Example
+
+The contents of `input.csv`.
+
+```
+col1,col2,col3
+aa,abc,a1
+bb,aabb,99
+```
+
+Create `output.csv` by replacing `a` with `x` in all columns.
+
+```
+$ csvt replace -i input.csv -r a -t x -o output.csv
+```
+
+The contents of the created `output.csv`.
+
+```
+col1,col2,col3
+xx,xbc,x1
+bb,xxbb,99
+```
+
+You can specify the target column with `-c`.  
+Replacing `a` with `x` in "col1" and "col2".
+
+```
+$ csvt replace -i input.csv -c col1 -c col2 -r a -t x -o output.csv
+```
+
+```
+col1,col2,col3
+xx,xbc,a1
+bb,xxbb,99
+```
+
+You can also use the capture group as `-t`.
+
+```
+$ csvt replace -i input.csv -c col3 -r ".*?([0-9]+)" -t "#$1" x -o output.csv
+```
+
+```
+col1,col2,col3
+aa,abc,#1
+bb,aabb,#99
+```
+
+Please refer to the following for the syntax of regular expressions.
+
+* https://golang.org/pkg/regexp/syntax/
+
 ## transform
 
 Transform the format of CSV file.
@@ -450,7 +532,7 @@ Transform the format of CSV file.
 ### Usage
 
 ```
-$ csvt transform -i INPUT -o OUTPUT --out-delim DELIMITER --out-quote QUOTE --out-sep SEPARATOR --out-allquote
+csvt transform -i INPUT -o OUTPUT [--out-delim DELIMITER] [--out-quote QUOTE] [--out-sep SEPARATOR] [--out-allquote] [out-encoding ENCODING] [--out-bom]
 ```
 
 ```

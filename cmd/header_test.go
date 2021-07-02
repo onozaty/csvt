@@ -40,7 +40,7 @@ func TestHeaderCmd(t *testing.T) {
 	}
 }
 
-func TestHeaderCmd_custom(t *testing.T) {
+func TestHeaderCmd_format(t *testing.T) {
 
 	s := "ID;Name;CompanyID|1;Yamada;1|5;Ichikawa;1|2;'Hanako; Sato';3"
 	f, err := createTempFile(s)

@@ -40,7 +40,7 @@ func TestCountCmd(t *testing.T) {
 	}
 }
 
-func TestCountCmd_custom(t *testing.T) {
+func TestCountCmd_format(t *testing.T) {
 
 	s := `ID	Name	CompanyID
 1	Yamada	1
