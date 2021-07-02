@@ -147,7 +147,7 @@ Create a new CSV file by filtering the input CSV file to rows that match the con
 ### Usage
 
 ```
-$ csvt filter -i INPUT -c COLUMN -o OUTPUT
+$ csvt filter -i INPUT -o OUTPUT
 ```
 
 ```
@@ -155,12 +155,12 @@ Usage:
   csvt filter [flags]
 
 Flags:
-  -i, --input string    Input CSV file path.
-  -c, --column string   Name of the column to use for filtering. If neither --equal nor --regex is specified, it will filter by those with values.
-  -o, --output string   Output CSV file path.
-      --equal string    (optional) Filter by matching value.
-      --regex string    (optional) Filter by regular expression.
-  -h, --help            help for filter
+  -i, --input string         Input CSV file path.
+  -c, --column stringArray   (optional) Name of the column to use for filtering. If not specified, all columns are targeted.
+      --equal string         (optional) Filter by matching value. If neither --equal nor --regex is specified, it will filter by those with values.
+      --regex string         (optional) Filter by regular expression. If neither --equal nor --regex is specified, it will filter by those with values.
+  -o, --output string        Output CSV file path.
+  -h, --help                 help for filter
 ```
 
 ### Example

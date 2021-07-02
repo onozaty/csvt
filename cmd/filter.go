@@ -7,7 +7,6 @@ import (
 	"regexp"
 
 	"github.com/onozaty/csvt/csv"
-	"github.com/onozaty/csvt/util"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -25,7 +24,7 @@ func newFilterCmd() *cobra.Command {
 			}
 
 			inputPath, _ := cmd.Flags().GetString("input")
-			targetColumnName, _ := cmd.Flags().GetString("column")
+			targetColumnNames, _ := cmd.Flags().GetStringArray("column")
 			outputPath, _ := cmd.Flags().GetString("output")
 			equalValue, _ := cmd.Flags().GetString("equal")
 			regexValue, _ := cmd.Flags().GetString("regex")
@@ -48,7 +47,7 @@ func newFilterCmd() *cobra.Command {
 			return runFilter(
 				format,
 				inputPath,
-				targetColumnName,
+				targetColumnNames,
 				outputPath,
 				FilterOptions{
 					equalValue: equalValue,
@@ -59,12 +58,11 @@ func newFilterCmd() *cobra.Command {
 
 	filterCmd.Flags().StringP("input", "i", "", "Input CSV file path.")
 	filterCmd.MarkFlagRequired("input")
-	filterCmd.Flags().StringP("column", "c", "", "Name of the column to use for filtering. If neither --equal nor --regex is specified, it will filter by those with values.")
-	filterCmd.MarkFlagRequired("column")
+	filterCmd.Flags().StringArrayP("column", "c", []string{}, "(optional) Name of the column to use for filtering. If not specified, all columns are targeted.")
+	filterCmd.Flags().StringP("equal", "", "", "(optional) Filter by matching value. If neither --equal nor --regex is specified, it will filter by those with values.")
+	filterCmd.Flags().StringP("regex", "", "", "(optional) Filter by regular expression. If neither --equal nor --regex is specified, it will filter by those with values.")
 	filterCmd.Flags().StringP("output", "o", "", "Output CSV file path.")
 	filterCmd.MarkFlagRequired("output")
-	filterCmd.Flags().StringP("equal", "", "", "(optional) Filter by matching value.")
-	filterCmd.Flags().StringP("regex", "", "", "(optional) Filter by regular expression.")
 
 	return filterCmd
 }
@@ -74,7 +72,7 @@ type FilterOptions struct {
 	regex      *regexp.Regexp
 }
 
-func runFilter(format csv.Format, inputPath string, targetColumnName string, outputPath string, options FilterOptions) error {
+func runFilter(format csv.Format, inputPath string, targetColumnNames []string, outputPath string, options FilterOptions) error {
 
 	inputFile, err := os.Open(inputPath)
 	if err != nil {
@@ -91,7 +89,7 @@ func runFilter(format csv.Format, inputPath string, targetColumnName string, out
 	defer outputFile.Close()
 	writer := csv.NewCsvWriter(outputFile, format)
 
-	err = filter(reader, targetColumnName, writer, options)
+	err = filter(reader, targetColumnNames, writer, options)
 
 	if err != nil {
 		return err
@@ -100,7 +98,7 @@ func runFilter(format csv.Format, inputPath string, targetColumnName string, out
 	return writer.Flush()
 }
 
-func filter(reader csv.CsvReader, targetColumnName string, writer csv.CsvWriter, options FilterOptions) error {
+func filter(reader csv.CsvReader, targetColumnNames []string, writer csv.CsvWriter, options FilterOptions) error {
 
 	// ヘッダ
 	columnNames, err := reader.Read()
@@ -108,25 +106,34 @@ func filter(reader csv.CsvReader, targetColumnName string, writer csv.CsvWriter,
 		return errors.Wrap(err, "failed to read the CSV file")
 	}
 
-	targetColumnIndex := util.IndexOf(columnNames, targetColumnName)
-	if targetColumnIndex == -1 {
-		return fmt.Errorf("missing %s in the CSV file", targetColumnName)
+	targetColumnIndexes, err := getTargetColumnIndexes(columnNames, targetColumnNames)
+	if err != nil {
+		return err
 	}
 
 	// 行を絞るフィルタを定義
 	filter := func(row []string) bool {
 
-		value := row[targetColumnIndex]
+		// 対象のカラムを順次比較していく
+		for _, targetColumnIndex := range targetColumnIndexes {
+			value := row[targetColumnIndex]
 
-		if options.equalValue != "" {
-			return value == options.equalValue
+			if options.equalValue != "" {
+				if value == options.equalValue {
+					return true
+				}
+			} else if options.regex != nil {
+				if options.regex.MatchString(value) {
+					return true
+				}
+			} else {
+				if value != "" {
+					return true
+				}
+			}
 		}
 
-		if options.regex != nil {
-			return options.regex.MatchString(value)
-		}
-
-		return value != ""
+		return false
 	}
 
 	err = writer.Write(columnNames)
