@@ -44,7 +44,7 @@ Create a new CSV file by choosing columns from the input CSV file.
 ### Usage
 
 ```
-$ csvt choose -i INPUT -c COLUMN1 -c COLUMN2 -o OUTPUT
+csvt choose -i INPUT -c COLUMN1 ... -o OUTPUT
 ```
 
 ```
@@ -93,7 +93,7 @@ Count the number of records in CSV file.
 ### Usage
 
 ```
-$ csvt count -i INPUT
+csvt count -i INPUT [-c COLUMN] [--header]
 ```
 
 ```
@@ -147,7 +147,7 @@ Create a new CSV file by filtering the input CSV file to rows that match the con
 ### Usage
 
 ```
-$ csvt filter -i INPUT -o OUTPUT
+csvt filter -i INPUT [[-c COLUMN1] ...] [--equal VALUE|--regex REGEX] -o OUTPUT
 ```
 
 ```
@@ -227,7 +227,7 @@ Show the header of CSV file.
 ### Usage
 
 ```
-$ csvt header -i INPUT
+csvt header -i INPUT
 ```
 
 ```
@@ -269,7 +269,7 @@ It is similar to EXCEL's VLOOKUP.
 ### Usage
 
 ```
-$ csvt join -1 INPUT1 -2 INPUT2 -c COLUMN -o OUTPUT
+csvt join -1 INPUT1 -2 INPUT2 -c COLUMN [--column2 COLUMN2] -o OUTPUT [--usingfile] [--norecord]
 ```
 
 ```
@@ -359,7 +359,7 @@ Create a new CSV file by remove columns from the input CSV file.
 ### Usage
 
 ```
-$ csvt remove -i INPUT -c COLUMN1 -c COLUMN2 -o OUTPUT
+csvt remove -i INPUT -c COLUMN1 ... -o OUTPUT
 ```
 
 ```
@@ -408,7 +408,7 @@ Create a new CSV file by rename columns from the input CSV file.
 ### Usage
 
 ```
-$ csvt rename -i INPUT -c BEFORE_COLUMN1 -a AFTER_COLUMN1 -c BEFORE_COLUMN2 -a AFTER_COLUMN2 -o OUTPUT
+csvt rename -i INPUT -c BEFORE_COLUMN1 ... -a AFTER_COLUMN1 ... -o OUTPUT
 ```
 
 ```
@@ -456,7 +456,7 @@ Regular expression are used for replace.
 ### Usage
 
 ```
-$ csvt replace -i INPUT -r REGEX -t REPLACEMENT -o OUTPUT
+csvt replace -i INPUT [[-c COLUMN1] ...] -r REGEX -t REPLACEMENT -o OUTPUT
 ```
 
 ```
@@ -532,7 +532,7 @@ Transform the format of CSV file.
 ### Usage
 
 ```
-$ csvt transform -i INPUT -o OUTPUT --out-delim DELIMITER --out-quote QUOTE --out-sep SEPARATOR --out-allquote
+csvt transform -i INPUT -o OUTPUT [--out-delim DELIMITER] [--out-quote QUOTE] [--out-sep SEPARATOR] [--out-allquote] [out-encoding ENCODING] [--out-bom]
 ```
 
 ```
