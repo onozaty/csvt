@@ -392,7 +392,7 @@ func TestFilterCmd_regex(t *testing.T) {
 	}
 }
 
-func TestFilterCmd_equal_regex_multiColumn(t *testing.T) {
+func TestFilterCmd_regex_multiColumn(t *testing.T) {
 
 	s := `col1,col2,col3
 Ab,bc,
@@ -443,7 +443,7 @@ abb,,ab
 	}
 }
 
-func TestFilterCmd_equal_regex_allColumn(t *testing.T) {
+func TestFilterCmd_regex_allColumn(t *testing.T) {
 
 	s := `col1,col2,col3
 ab,a,c
@@ -494,6 +494,108 @@ a,,
 	}
 }
 
+func TestFilterCmd_equalColumn(t *testing.T) {
+
+	s := `col1,col2,col3
+a,b,a
+b,c,a
+b,b,b
+a,a,b
+`
+	fi, err := createTempFile(s)
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fi.Name())
+
+	fo, err := createTempFile("")
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"filter",
+		"-i", fi.Name(),
+		"-o", fo.Name(),
+		"--column", "col1",
+		"--equal-column", "col3",
+	})
+
+	err = rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	bo, err := os.ReadFile(fo.Name())
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := string(bo)
+
+	expect := "col1,col2,col3\r\n" +
+		"a,b,a\r\n" +
+		"b,b,b\r\n"
+
+	if result != expect {
+		t.Fatal("failed test\n", result)
+	}
+}
+
+func TestFilterCmd_equalColumn_multiColumn(t *testing.T) {
+
+	s := `col1,col2,col3
+a,b,a
+a,b,b
+b,b,b
+a,a,b
+`
+	fi, err := createTempFile(s)
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fi.Name())
+
+	fo, err := createTempFile("")
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"filter",
+		"-i", fi.Name(),
+		"-o", fo.Name(),
+		"--column", "col1",
+		"--column", "col2",
+		"--equal-column", "col3",
+	})
+
+	err = rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	bo, err := os.ReadFile(fo.Name())
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := string(bo)
+
+	expect := "col1,col2,col3\r\n" +
+		"a,b,a\r\n" +
+		"a,b,b\r\n" +
+		"b,b,b\r\n"
+
+	if result != expect {
+		t.Fatal("failed test\n", result)
+	}
+}
+
 func TestFilterCmd_regex_invalid(t *testing.T) {
 
 	s := `ID,Name,CompanyID
@@ -530,11 +632,8 @@ func TestFilterCmd_regex_invalid(t *testing.T) {
 
 func TestFilterCmd_equal_regex(t *testing.T) {
 
-	s := `ID,Name,CompanyID
-1,Yamada,1
-5,Ichikawa,1
-2,"Hanako, yamada",3
-`
+	s := ""
+
 	fi, err := createTempFile(s)
 	if err != nil {
 		t.Fatal("failed test\n", err)
@@ -558,7 +657,104 @@ func TestFilterCmd_equal_regex(t *testing.T) {
 	})
 
 	err = rootCmd.Execute()
-	if err == nil || err.Error() != "not allowed to specify both --equal and --regex" {
+	if err == nil || err.Error() != "not allowed to specify both --equal and --regex and --equal-column" {
+		t.Fatal("failed test\n", err)
+	}
+}
+
+func TestFilterCmd_equal_equalColumn(t *testing.T) {
+
+	s := ""
+
+	fi, err := createTempFile(s)
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fi.Name())
+
+	fo, err := createTempFile("")
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"filter",
+		"-i", fi.Name(),
+		"-o", fo.Name(),
+		"-c", "Name",
+		"--equal", "A",
+		"--equal-column", "col1",
+	})
+
+	err = rootCmd.Execute()
+	if err == nil || err.Error() != "not allowed to specify both --equal and --regex and --equal-column" {
+		t.Fatal("failed test\n", err)
+	}
+}
+
+func TestFilterCmd_regex_equalColumn(t *testing.T) {
+
+	s := ""
+
+	fi, err := createTempFile(s)
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fi.Name())
+
+	fo, err := createTempFile("")
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"filter",
+		"-i", fi.Name(),
+		"-o", fo.Name(),
+		"-c", "Name",
+		"--regex", "A",
+		"--equal-column", "col1",
+	})
+
+	err = rootCmd.Execute()
+	if err == nil || err.Error() != "not allowed to specify both --equal and --regex and --equal-column" {
+		t.Fatal("failed test\n", err)
+	}
+}
+
+func TestFilterCmd_equal_regex_equalColumn(t *testing.T) {
+
+	s := ""
+
+	fi, err := createTempFile(s)
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fi.Name())
+
+	fo, err := createTempFile("")
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"filter",
+		"-i", fi.Name(),
+		"-o", fo.Name(),
+		"-c", "Name",
+		"--equal", "A",
+		"--regex", "A",
+		"--equal-column", "col1",
+	})
+
+	err = rootCmd.Execute()
+	if err == nil || err.Error() != "not allowed to specify both --equal and --regex and --equal-column" {
 		t.Fatal("failed test\n", err)
 	}
 }

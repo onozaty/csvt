@@ -101,7 +101,7 @@ func getFlagEncoding(f *pflag.FlagSet, name string) (encoding.Encoding, error) {
 	return csv.Encoding(str)
 }
 
-func getTargetColumnIndexes(allColumnNames []string, targetColumnNames []string) ([]int, error) {
+func getTargetColumnsIndexes(allColumnNames []string, targetColumnNames []string) ([]int, error) {
 
 	if len(targetColumnNames) == 0 {
 		// 指定カラムが無かった場合、全てのカラムが対象
@@ -119,9 +119,9 @@ func getTargetColumnIndexes(allColumnNames []string, targetColumnNames []string)
 		targetColumnIndexes := []int{}
 		for _, targetColumnName := range targetColumnNames {
 
-			targetColumnIndex := util.IndexOf(allColumnNames, targetColumnName)
-			if targetColumnIndex == -1 {
-				return nil, fmt.Errorf("missing %s in the CSV file", targetColumnName)
+			targetColumnIndex, err := getTargetColumnIndex(allColumnNames, targetColumnName)
+			if err != nil {
+				return nil, err
 			}
 
 			targetColumnIndexes = append(targetColumnIndexes, targetColumnIndex)
@@ -129,4 +129,14 @@ func getTargetColumnIndexes(allColumnNames []string, targetColumnNames []string)
 
 		return targetColumnIndexes, nil
 	}
+}
+
+func getTargetColumnIndex(allColumnNames []string, targetColumnName string) (int, error) {
+
+	targetColumnIndex := util.IndexOf(allColumnNames, targetColumnName)
+	if targetColumnIndex == -1 {
+		return -1, fmt.Errorf("missing %s in the CSV file", targetColumnName)
+	}
+
+	return targetColumnIndex, nil
 }

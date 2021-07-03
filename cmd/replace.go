@@ -93,7 +93,7 @@ func replace(reader csv.CsvReader, targetColumnNames []string, regex *regexp.Reg
 		return errors.Wrap(err, "failed to read the CSV file")
 	}
 
-	targetColumnIndexes, err := getTargetColumnIndexes(columnNames, targetColumnNames)
+	targetColumnIndexes, err := getTargetColumnsIndexes(columnNames, targetColumnNames)
 	if err != nil {
 		return err
 	}
