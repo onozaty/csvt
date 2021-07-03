@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"io"
-	"os"
 
 	"github.com/onozaty/csvt/csv"
 	"github.com/onozaty/csvt/util"
@@ -67,38 +66,33 @@ type JoinOptions struct {
 
 func runJoin(format csv.Format, firstPath string, secondPath string, joinColumnName string, outputPath string, options JoinOptions) error {
 
-	firstFile, err := os.Open(firstPath)
+	firstReader, firstClose, err := setupInput(firstPath, format)
 	if err != nil {
 		return err
 	}
-	defer firstFile.Close()
+	defer firstClose()
 
-	firstReader := csv.NewCsvReader(firstFile, format)
-
-	secondFile, err := os.Open(secondPath)
+	secondReader, secondClose, err := setupInput(secondPath, format)
 	if err != nil {
 		return err
 	}
-	defer secondFile.Close()
+	defer secondClose()
 
-	secondReader := csv.NewCsvReader(secondFile, format)
-
-	outputFile, err := os.Create(outputPath)
+	writer, outputClose, err := setupOutput(outputPath, format)
 	if err != nil {
 		return err
 	}
-	defer outputFile.Close()
-	out := csv.NewCsvWriter(outputFile, format)
+	defer outputClose()
 
-	err = join(firstReader, secondReader, joinColumnName, out, options)
+	err = join(firstReader, secondReader, joinColumnName, writer, options)
 	if err != nil {
 		return err
 	}
 
-	return out.Flush()
+	return writer.Flush()
 }
 
-func join(first csv.CsvReader, second csv.CsvReader, joinColumnName string, out csv.CsvWriter, options JoinOptions) error {
+func join(first csv.CsvReader, second csv.CsvReader, joinColumnName string, writer csv.CsvWriter, options JoinOptions) error {
 
 	firstJoinColumnName := joinColumnName
 	secondJoinColumnName := joinColumnName
@@ -131,7 +125,7 @@ func join(first csv.CsvReader, second csv.CsvReader, joinColumnName string, out 
 	// 追加するものは、結合用のカラムを除く
 	appendsecondColumnNames := util.Remove(secondTable.ColumnNames(), secondJoinColumnName)
 	outColumnNames := append(firstColumnNames, appendsecondColumnNames...)
-	out.Write(outColumnNames)
+	writer.Write(outColumnNames)
 
 	// 基準となるCSVを読み込みながら、結合用のカラムの値をキーとしてもう片方のCSVから値を取得
 	for {
@@ -163,7 +157,7 @@ func join(first csv.CsvReader, second csv.CsvReader, joinColumnName string, out 
 			}
 		}
 
-		err = out.Write(append(firstRow, secondRow...))
+		err = writer.Write(append(firstRow, secondRow...))
 		if err != nil {
 			return err
 		}

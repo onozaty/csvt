@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"io"
-	"os"
 
 	"github.com/onozaty/csvt/csv"
 	"github.com/onozaty/csvt/util"
@@ -50,20 +49,11 @@ func newChooseCmd() *cobra.Command {
 
 func runChoose(format csv.Format, inputPath string, targetColumnNames []string, outputPath string) error {
 
-	inputFile, err := os.Open(inputPath)
+	reader, writer, close, err := setupInputOutput(inputPath, outputPath, format)
 	if err != nil {
 		return err
 	}
-	defer inputFile.Close()
-
-	reader := csv.NewCsvReader(inputFile, format)
-
-	outputFile, err := os.Create(outputPath)
-	if err != nil {
-		return err
-	}
-	defer outputFile.Close()
-	writer := csv.NewCsvWriter(outputFile, format)
+	defer close()
 
 	err = choose(reader, targetColumnNames, writer)
 

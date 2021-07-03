@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"io"
-	"os"
 
 	"github.com/onozaty/csvt/csv"
 	"github.com/onozaty/csvt/util"
@@ -61,15 +60,14 @@ type CountOptions struct {
 	includeHeader    bool
 }
 
-func runCount(format csv.Format, csvPath string, options CountOptions) (int, error) {
+func runCount(format csv.Format, inputPath string, options CountOptions) (int, error) {
 
-	file, err := os.Open(csvPath)
+	reader, close, err := setupInput(inputPath, format)
 	if err != nil {
 		return 0, err
 	}
-	defer file.Close()
+	defer close()
 
-	reader := csv.NewCsvReader(file, format)
 	return count(reader, options)
 }
 

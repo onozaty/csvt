@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 
@@ -139,4 +140,57 @@ func getTargetColumnIndex(allColumnNames []string, targetColumnName string) (int
 	}
 
 	return targetColumnIndex, nil
+}
+
+func setupInput(inputPath string, format csv.Format) (csv.CsvReader, func(), error) {
+
+	inputFile, err := os.Open(inputPath)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	reader := csv.NewCsvReader(inputFile, format)
+
+	close := func() {
+		inputFile.Close()
+	}
+
+	return reader, close, nil
+}
+
+func setupOutput(outputPath string, format csv.Format) (csv.CsvWriter, func(), error) {
+
+	outputFile, err := os.Create(outputPath)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	writer := csv.NewCsvWriter(outputFile, format)
+
+	close := func() {
+		outputFile.Close()
+	}
+
+	return writer, close, nil
+}
+
+func setupInputOutput(inputPath string, outputPath string, format csv.Format) (csv.CsvReader, csv.CsvWriter, func(), error) {
+
+	reader, inputClose, err := setupInput(inputPath, format)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	writer, outputClose, err := setupOutput(outputPath, format)
+	if err != nil {
+		inputClose()
+		return nil, nil, nil, err
+	}
+
+	allClose := func() {
+		inputClose()
+		outputClose()
+	}
+
+	return reader, writer, allClose, nil
 }

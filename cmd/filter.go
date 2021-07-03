@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"io"
-	"os"
 	"regexp"
 
 	"github.com/onozaty/csvt/csv"
@@ -88,20 +87,11 @@ type FilterOptions struct {
 
 func runFilter(format csv.Format, inputPath string, targetColumnNames []string, outputPath string, options FilterOptions) error {
 
-	inputFile, err := os.Open(inputPath)
+	reader, writer, close, err := setupInputOutput(inputPath, outputPath, format)
 	if err != nil {
 		return err
 	}
-	defer inputFile.Close()
-
-	reader := csv.NewCsvReader(inputFile, format)
-
-	outputFile, err := os.Create(outputPath)
-	if err != nil {
-		return err
-	}
-	defer outputFile.Close()
-	writer := csv.NewCsvWriter(outputFile, format)
+	defer close()
 
 	err = filter(reader, targetColumnNames, writer, options)
 
