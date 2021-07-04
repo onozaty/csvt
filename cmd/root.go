@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -35,6 +37,13 @@ func newRootCmd() *cobra.Command {
 	rootCmd.AddCommand(newReplaceCmd())
 
 	for _, c := range rootCmd.Commands() {
+		// フラグ以外は受け付けないように
+		c.Args = func(cmd *cobra.Command, args []string) error {
+			if len(args) > 0 {
+				return fmt.Errorf("only flags can be specified")
+			}
+			return nil
+		}
 		c.Flags().SortFlags = false
 		c.InheritedFlags().SortFlags = false
 	}
