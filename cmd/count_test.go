@@ -13,10 +13,7 @@ func TestCountCmd(t *testing.T) {
 5,Ichikawa,
 2,"Hanako, Sato",3
 `
-	f, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f := createTempFile(t, s)
 	defer os.Remove(f.Name())
 
 	rootCmd := newRootCmd()
@@ -28,7 +25,7 @@ func TestCountCmd(t *testing.T) {
 	buf := new(bytes.Buffer)
 	rootCmd.SetOutput(buf)
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -47,10 +44,7 @@ func TestCountCmd_format(t *testing.T) {
 5	Ichikawa	
 2	"Hanako	Sato"	3
 `
-	f, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f := createTempFile(t, s)
 	defer os.Remove(f.Name())
 
 	rootCmd := newRootCmd()
@@ -63,7 +57,7 @@ func TestCountCmd_format(t *testing.T) {
 	buf := new(bytes.Buffer)
 	rootCmd.SetOutput(buf)
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -82,10 +76,7 @@ func TestCountCmd_column(t *testing.T) {
 5,Ichikawa,
 2,"Hanako, Sato",3
 `
-	f, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f := createTempFile(t, s)
 	defer os.Remove(f.Name())
 
 	rootCmd := newRootCmd()
@@ -98,7 +89,7 @@ func TestCountCmd_column(t *testing.T) {
 	buf := new(bytes.Buffer)
 	rootCmd.SetOutput(buf)
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -117,10 +108,7 @@ func TestCountCmd_header(t *testing.T) {
 5,Ichikawa,
 2,"Hanako, Sato",3
 `
-	f, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f := createTempFile(t, s)
 	defer os.Remove(f.Name())
 
 	rootCmd := newRootCmd()
@@ -133,7 +121,7 @@ func TestCountCmd_header(t *testing.T) {
 	buf := new(bytes.Buffer)
 	rootCmd.SetOutput(buf)
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -147,10 +135,7 @@ func TestCountCmd_header(t *testing.T) {
 
 func TestCountCmd_fileNotFound(t *testing.T) {
 
-	f, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f := createTempFile(t, "")
 	defer os.Remove(f.Name())
 
 	rootCmd := newRootCmd()
@@ -159,7 +144,7 @@ func TestCountCmd_fileNotFound(t *testing.T) {
 		"-i", f.Name() + "____", // 存在しないファイル名を指定
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -177,10 +162,7 @@ func TestCountCmd_columnNotFound(t *testing.T) {
 5,Ichikawa,
 2,"Hanako, Sato",3
 `
-	f, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f := createTempFile(t, s)
 	defer os.Remove(f.Name())
 
 	rootCmd := newRootCmd()
@@ -190,7 +172,7 @@ func TestCountCmd_columnNotFound(t *testing.T) {
 		"-c", "Company", // 存在しないカラム
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil || err.Error() != "missing Company in the CSV file" {
 		t.Fatal("failed test\n", err)
 	}
@@ -198,12 +180,7 @@ func TestCountCmd_columnNotFound(t *testing.T) {
 
 func TestCountCmd_empty(t *testing.T) {
 
-	s := ""
-
-	f, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f := createTempFile(t, "")
 	defer os.Remove(f.Name())
 
 	rootCmd := newRootCmd()
@@ -212,8 +189,44 @@ func TestCountCmd_empty(t *testing.T) {
 		"-i", f.Name(),
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil || err.Error() != "failed to read the CSV file: EOF" {
+		t.Fatal("failed test\n", err)
+	}
+}
+
+func TestCountCmd_args(t *testing.T) {
+
+	f := createTempFile(t, "")
+	defer os.Remove(f.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"count",
+		"-i", f.Name(),
+		"aaaa", // フラグ以外を指定
+	})
+
+	err := rootCmd.Execute()
+	if err == nil || err.Error() != "only flags can be specified" {
+		t.Fatal("failed test\n", err)
+	}
+}
+
+func TestCountCmd_invalidFormat(t *testing.T) {
+
+	f := createTempFile(t, "")
+	defer os.Remove(f.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"count",
+		"-i", f.Name(),
+		"--delim", "aa",
+	})
+
+	err := rootCmd.Execute()
+	if err == nil || err.Error() != "flag delim should be specified with a single character" {
 		t.Fatal("failed test\n", err)
 	}
 }

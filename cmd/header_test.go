@@ -13,10 +13,7 @@ func TestHeaderCmd(t *testing.T) {
 5,Ichikawa,
 2,"Hanako, Sato",3
 `
-	f, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f := createTempFile(t, s)
 	defer os.Remove(f.Name())
 
 	rootCmd := newRootCmd()
@@ -28,7 +25,7 @@ func TestHeaderCmd(t *testing.T) {
 	buf := new(bytes.Buffer)
 	rootCmd.SetOutput(buf)
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -43,10 +40,7 @@ func TestHeaderCmd(t *testing.T) {
 func TestHeaderCmd_format(t *testing.T) {
 
 	s := "ID;Name;CompanyID|1;Yamada;1|5;Ichikawa;1|2;'Hanako; Sato';3"
-	f, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f := createTempFile(t, s)
 	defer os.Remove(f.Name())
 
 	rootCmd := newRootCmd()
@@ -61,7 +55,7 @@ func TestHeaderCmd_format(t *testing.T) {
 	buf := new(bytes.Buffer)
 	rootCmd.SetOutput(buf)
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -75,10 +69,7 @@ func TestHeaderCmd_format(t *testing.T) {
 
 func TestHeaderCmd_fileNotFound(t *testing.T) {
 
-	f, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f := createTempFile(t, "")
 	defer os.Remove(f.Name())
 
 	rootCmd := newRootCmd()
@@ -87,7 +78,7 @@ func TestHeaderCmd_fileNotFound(t *testing.T) {
 		"-i", f.Name() + "____", // 存在しないファイル名を指定
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -100,12 +91,7 @@ func TestHeaderCmd_fileNotFound(t *testing.T) {
 
 func TestHeaderCmd_empty(t *testing.T) {
 
-	s := ""
-
-	f, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f := createTempFile(t, "")
 	defer os.Remove(f.Name())
 
 	rootCmd := newRootCmd()
@@ -114,7 +100,7 @@ func TestHeaderCmd_empty(t *testing.T) {
 		"-i", f.Name(),
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil || err.Error() != "failed to read the CSV file: EOF" {
 		t.Fatal("failed test\n", err)
 	}
@@ -260,5 +246,23 @@ func TestHeaderCmd_encoding_euc_jp(t *testing.T) {
 
 	if result != "ID\n名前\n年齢\n" {
 		t.Fatal("failed test\n", result)
+	}
+}
+
+func TestHeaderCmd_invalidFormat(t *testing.T) {
+
+	f := createTempFile(t, "")
+	defer os.Remove(f.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"header",
+		"-i", f.Name(),
+		"--quote", "zz",
+	})
+
+	err := rootCmd.Execute()
+	if err == nil || err.Error() != "flag quote should be specified with a single character" {
+		t.Fatal("failed test\n", err)
 	}
 }

@@ -15,16 +15,10 @@ func TestChooseCmd(t *testing.T) {
 5,Ichikawa,1
 2,"Hanako, Sato",3
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -35,17 +29,12 @@ func TestChooseCmd(t *testing.T) {
 		"-c", "CompanyID",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "CompanyID\r\n" +
 		"1\r\n" +
@@ -60,16 +49,10 @@ func TestChooseCmd(t *testing.T) {
 func TestChooseCmd_format(t *testing.T) {
 
 	s := "ID;Name;CompanyID|1;Yamada;1|5;Ichikawa;1|2;'Hanako; Sato';3"
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -84,7 +67,7 @@ func TestChooseCmd_format(t *testing.T) {
 		"--allquote",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -110,16 +93,10 @@ func TestChooseCmd_columns(t *testing.T) {
 5,Ichikawa,1
 2,"Hanako, Sato",3
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -131,17 +108,12 @@ func TestChooseCmd_columns(t *testing.T) {
 		"-c", "ID",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "ID,CompanyID\r\n" +
 		"1,1\r\n" +
@@ -155,16 +127,10 @@ func TestChooseCmd_columns(t *testing.T) {
 
 func TestChooseCmd_fileNotFound(t *testing.T) {
 
-	fi, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, "")
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -175,7 +141,7 @@ func TestChooseCmd_fileNotFound(t *testing.T) {
 		"-c", "CompanyID",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -193,16 +159,10 @@ func TestChooseCmd_columnNotFound(t *testing.T) {
 5,Ichikawa,1
 2,"Hanako, Sato",3
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -213,7 +173,7 @@ func TestChooseCmd_columnNotFound(t *testing.T) {
 		"-c", "Company", // 存在しないカラム
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil || err.Error() != "missing Company in the CSV file" {
 		t.Fatal("failed test\n", err)
 	}
@@ -221,18 +181,10 @@ func TestChooseCmd_columnNotFound(t *testing.T) {
 
 func TestChooseCmd_empty(t *testing.T) {
 
-	s := ""
-
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, "")
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -243,7 +195,7 @@ func TestChooseCmd_empty(t *testing.T) {
 		"-c", "CompanyID",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil || err.Error() != "failed to read the CSV file: EOF" {
 		t.Fatal("failed test\n", err)
 	}
@@ -251,10 +203,7 @@ func TestChooseCmd_empty(t *testing.T) {
 
 func TestChooseCmd_encoding(t *testing.T) {
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -266,7 +215,7 @@ func TestChooseCmd_encoding(t *testing.T) {
 		"--encoding", "shift_jis",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -286,5 +235,28 @@ func TestChooseCmd_encoding(t *testing.T) {
 
 	if result != expect {
 		t.Fatal("failed test\n", result)
+	}
+}
+
+func TestChooseCmd_invalidFormat(t *testing.T) {
+
+	fi := createTempFile(t, "")
+	defer os.Remove(fi.Name())
+
+	fo := createTempFile(t, "")
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"choose",
+		"-i", fi.Name(),
+		"-o", fo.Name(),
+		"-c", "CompanyID",
+		"--quote", "xxx",
+	})
+
+	err := rootCmd.Execute()
+	if err == nil || err.Error() != "flag quote should be specified with a single character" {
+		t.Fatal("failed test\n", err)
 	}
 }

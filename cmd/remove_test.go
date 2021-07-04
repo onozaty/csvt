@@ -12,16 +12,10 @@ func TestRemoveCmd(t *testing.T) {
 5,Ichikawa,1
 2,"Hanako, Sato",3
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -32,17 +26,12 @@ func TestRemoveCmd(t *testing.T) {
 		"-c", "CompanyID",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "ID,Name\r\n" +
 		"1,Yamada\r\n" +
@@ -60,16 +49,10 @@ func TestRemoveCmd_format(t *testing.T) {
 		"1,Yamada,1\tx\t" +
 		"5,Ichikawa,1\tx\t" +
 		"2,\"Hanako, Sato\",3\tx\t"
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -81,17 +64,12 @@ func TestRemoveCmd_format(t *testing.T) {
 		"--sep", `\tx\t`,
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "ID,Name\tx\t" +
 		"1,Yamada\tx\t" +
@@ -110,16 +88,10 @@ func TestRemoveCmd_columns(t *testing.T) {
 5,Ichikawa,1
 2,"Hanako, Sato",3
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -131,17 +103,12 @@ func TestRemoveCmd_columns(t *testing.T) {
 		"-c", "ID",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "Name\r\n" +
 		"Yamada\r\n" +
@@ -155,16 +122,10 @@ func TestRemoveCmd_columns(t *testing.T) {
 
 func TestRemoveCmd_fileNotFound(t *testing.T) {
 
-	fi, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, "")
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -175,7 +136,7 @@ func TestRemoveCmd_fileNotFound(t *testing.T) {
 		"-c", "CompanyID",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -193,16 +154,10 @@ func TestRemoveCmd_columnNotFound(t *testing.T) {
 5,Ichikawa,1
 2,"Hanako, Sato",3
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -213,7 +168,7 @@ func TestRemoveCmd_columnNotFound(t *testing.T) {
 		"-c", "Company", // 存在しないカラム
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil || err.Error() != "missing Company in the CSV file" {
 		t.Fatal("failed test\n", err)
 	}
@@ -221,18 +176,10 @@ func TestRemoveCmd_columnNotFound(t *testing.T) {
 
 func TestRemoveCmd_empty(t *testing.T) {
 
-	s := ""
-
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, "")
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -243,8 +190,31 @@ func TestRemoveCmd_empty(t *testing.T) {
 		"-c", "CompanyID",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil || err.Error() != "failed to read the CSV file: EOF" {
+		t.Fatal("failed test\n", err)
+	}
+}
+
+func TestRemoveCmd_invalidFormat(t *testing.T) {
+
+	fi := createTempFile(t, "")
+	defer os.Remove(fi.Name())
+
+	fo := createTempFile(t, "")
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"remove",
+		"-i", fi.Name(),
+		"-o", fo.Name(),
+		"-c", "CompanyID",
+		"--encoding", "xxxx",
+	})
+
+	err := rootCmd.Execute()
+	if err == nil || err.Error() != "invalid encoding name: xxxx" {
 		t.Fatal("failed test\n", err)
 	}
 }

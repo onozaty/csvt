@@ -22,6 +22,7 @@ func TestLoadCsvMemoryTable(t *testing.T) {
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
+	defer table.Close()
 
 	if !reflect.DeepEqual(table.ColumnNames(), []string{"ID", "Name", "Height", "Weight"}) {
 		t.Fatal("failed test\n", table.ColumnNames())
@@ -124,6 +125,7 @@ func TestLoadCsvMemoryTable_big(t *testing.T) {
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
+	defer table.Close()
 
 	if !reflect.DeepEqual(table.ColumnNames(), []string{"ID", "Name", "Age"}) {
 		t.Fatal("failed test\n", table.ColumnNames())

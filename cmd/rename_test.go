@@ -13,16 +13,10 @@ func TestRenameCmd(t *testing.T) {
 3,z,c,_
 `
 
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -34,17 +28,12 @@ func TestRenameCmd(t *testing.T) {
 		"-a", "B-before",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "A,B-before,C,D\r\n" +
 		"1,x,a,_\r\n" +
@@ -62,16 +51,10 @@ func TestRenameCmd_format(t *testing.T) {
 1	x
 `
 
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -84,17 +67,12 @@ func TestRenameCmd_format(t *testing.T) {
 		"--delim", `\t`,
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "A\tB-before\r\n" +
 		"1\tx\r\n"
@@ -112,16 +90,10 @@ func TestRenameCmd_columns(t *testing.T) {
 3,z,c,_
 `
 
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -135,17 +107,12 @@ func TestRenameCmd_columns(t *testing.T) {
 		"-a", "C",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "C,B,A,D\r\n" +
 		"1,x,a,_\r\n" +
@@ -159,16 +126,10 @@ func TestRenameCmd_columns(t *testing.T) {
 
 func TestRenameCmd_fileNotFound(t *testing.T) {
 
-	fi, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, "")
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -180,7 +141,7 @@ func TestRenameCmd_fileNotFound(t *testing.T) {
 		"-a", "after",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -198,16 +159,10 @@ func TestRenameCmd_columnNotFound(t *testing.T) {
 2,y,b,_
 3,z,c,_
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -219,7 +174,7 @@ func TestRenameCmd_columnNotFound(t *testing.T) {
 		"-a", "after",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil || err.Error() != "missing a in the CSV file" {
 		t.Fatal("failed test\n", err)
 	}
@@ -227,18 +182,10 @@ func TestRenameCmd_columnNotFound(t *testing.T) {
 
 func TestRenameCmd_empty(t *testing.T) {
 
-	s := ""
-
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, "")
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -250,7 +197,7 @@ func TestRenameCmd_empty(t *testing.T) {
 		"-a", "a",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil || err.Error() != "failed to read the CSV file: EOF" {
 		t.Fatal("failed test\n", err)
 	}
@@ -258,18 +205,10 @@ func TestRenameCmd_empty(t *testing.T) {
 
 func TestRenameCmd_column_unmatched(t *testing.T) {
 
-	s := ""
-
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, "")
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -282,8 +221,32 @@ func TestRenameCmd_column_unmatched(t *testing.T) {
 		"-a", "a",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil || err.Error() != "the number of columns before and after the renaming is unmatched" {
+		t.Fatal("failed test\n", err)
+	}
+}
+
+func TestRenameCmd_invalidFormat(t *testing.T) {
+
+	fi := createTempFile(t, "")
+	defer os.Remove(fi.Name())
+
+	fo := createTempFile(t, "")
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"rename",
+		"-i", fi.Name(),
+		"-o", fo.Name(),
+		"-c", "A",
+		"-a", "a",
+		"--delim", "__",
+	})
+
+	err := rootCmd.Execute()
+	if err == nil || err.Error() != "flag delim should be specified with a single character" {
 		t.Fatal("failed test\n", err)
 	}
 }
