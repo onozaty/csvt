@@ -35,6 +35,7 @@ func newRootCmd() *cobra.Command {
 	rootCmd.AddCommand(newRenameCmd())
 	rootCmd.AddCommand(newTransformCmd())
 	rootCmd.AddCommand(newReplaceCmd())
+	rootCmd.AddCommand(newUniqueCmd())
 
 	for _, c := range rootCmd.Commands() {
 		// フラグ以外は受け付けないように

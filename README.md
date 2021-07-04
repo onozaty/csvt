@@ -16,6 +16,7 @@
 * [rename](#rename) Rename columns from CSV file.
 * [replace](#replace) Replace values in CSV file.
 * [transform](#transform) Transform the format of CSV file.
+* [unique](#unique) Extract unique rows.
 
 ## Common flags
 
@@ -605,6 +606,67 @@ Use common flag `--delim` to transform TSV file back to CSV file.
 
 ```
 $ csvt transform -i output.tsv -o output2.csv --delim "\t"
+```
+
+## unique
+
+Extract unique rows.
+
+### Usage
+
+```
+csvt unique -i INPUT -c COLUMN1 ... -o OUTPUT
+```
+
+```
+Usage:
+  csvt unique [flags]
+
+Flags:
+  -i, --input string         Input CSV file path.
+  -c, --column stringArray   Name of the column to use for extract unique rows.
+  -o, --output string        Output CSV file path.
+  -h, --help                 help for unique
+```
+
+### Example
+
+The contents of `input.csv`.
+
+```
+col1,col2
+1,2
+2,1
+1,1
+1,2
+```
+
+Extract the unique row in "col1".
+
+```
+$ csvt unique -i input.csv -c col1 -o output.tsv
+```
+
+The contents of the created `output.tsv`.
+
+```
+col1,col2
+1,2
+2,1
+```
+
+You can also specify multiple columns.  
+Extract unique rows with "col1" and "col2".
+
+```
+$ csvt unique -i input.csv -c col1 -c col2 -o output.tsv
+```
+
+```
+col1,col2
+1,2
+2,1
+1,1
 ```
 
 ## Install

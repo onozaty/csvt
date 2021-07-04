@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -28,4 +29,8 @@ func readString(t *testing.T, name string) string {
 	}
 
 	return string(bo)
+}
+
+func joinRows(rows ...string) string {
+	return strings.Join(rows, "\r\n") + "\r\n"
 }
