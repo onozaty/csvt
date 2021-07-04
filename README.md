@@ -147,7 +147,7 @@ Create a new CSV file by filtering the input CSV file to rows that match the con
 ### Usage
 
 ```
-csvt filter -i INPUT [[-c COLUMN1] ...] [--equal VALUE | --regex REGEX | --equal-column COLUMN] -o OUTPUT
+csvt filter -i INPUT [[-c COLUMN1] ...] [--equal VALUE | --regex REGEX | --equal-column COLUMN] [--not] -o OUTPUT
 ```
 
 ```
@@ -160,6 +160,7 @@ Flags:
       --equal string          (optional) Filter by matching value. If neither --equal nor --regex nor --equal-column is specified, it will filter by those with values.
       --regex string          (optional) Filter by regular expression.
       --equal-column string   (optional) Filter by other column value.
+      --not                   (optional) Filter by non-matches.
   -o, --output string         Output CSV file path.
   -h, --help                  help for filter
 ```
@@ -200,8 +201,20 @@ $ csvt filter -i input.csv -c CompanyID --equal 2 -o output.csv
 
 ```
 UserID,Name,Age,CompanyID
-1,"Taro, Yamada",10,1
 4,Jun,22,2
+```
+
+You can use `--not` to invert the filtering target.
+
+```
+$ csvt filter -i input.csv -c CompanyID --equal 2 --not -o output.csv 
+```
+
+```
+UserID,Name,Age,CompanyID
+1,"Taro, Yamada",10,1
+2,Hanako,21,1
+3,yamada,30,
 ```
 
 You can also filter by matching with other column.

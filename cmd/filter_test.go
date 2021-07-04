@@ -464,6 +464,45 @@ a,a,b
 	}
 }
 
+func TestFilterCmd_not(t *testing.T) {
+
+	s := `ID,Name,CompanyID
+1,Yamada,1
+5,Ichikawa,1
+2,"Hanako, Sato",3
+`
+	fi := createTempFile(t, s)
+	defer os.Remove(fi.Name())
+
+	fo := createTempFile(t, "")
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"filter",
+		"-i", fi.Name(),
+		"-o", fo.Name(),
+		"-c", "ID",
+		"--equal", "1",
+		"--not",
+	})
+
+	err := rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := readString(t, fo.Name())
+
+	expect := "ID,Name,CompanyID\r\n" +
+		"5,Ichikawa,1\r\n" +
+		"2,\"Hanako, Sato\",3\r\n"
+
+	if result != expect {
+		t.Fatal("failed test\n", result)
+	}
+}
+
 func TestFilterCmd_regex_invalid(t *testing.T) {
 
 	s := `ID,Name,CompanyID
