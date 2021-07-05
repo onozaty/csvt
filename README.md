@@ -9,7 +9,7 @@
 
 * [choose](#choose) Choose columns.
 * [count](#count) Count the number of records.
-* [filter](#filter) Filter rows.
+* [filter](#filter) Filter rows by condition.
 * [header](#header) Show header.
 * [join](#join) Join CSV files.
 * [remove](#remove) Remove columns.
@@ -304,14 +304,14 @@ Usage:
   csvt join [flags]
 
 Flags:
-  -1, --first string     First CSV file path.
-  -2, --second string    Second CSV file path.
-  -c, --column string    Name of the column to use for joining.
-      --column2 string   (optional) Name of the column to use for joining in the second CSV file. Specify if different from the first CSV file.
-  -o, --output string    Output CSV file path.
-      --usingfile        (optional) Use temporary files for joining. Use this when joining large files that will not fit in memory.
-      --norecord         (optional) No error even if there is no record corresponding to sencod CSV.
-  -h, --help             help for join
+  -1, --first string           First CSV file path.
+  -2, --second string          Second CSV file path.
+  -c, --column string          Name of the column to use for joining.
+      --column-second string   (optional) Name of the column to use for joining in the second CSV file. Specify if different from the first CSV file.
+  -o, --output string          Output CSV file path.
+      --usingfile              (optional) Use temporary files for joining. Use this when joining large files that will not fit in memory.
+      --norecord               (optional) No error even if there is no record corresponding to sencod CSV.
+  -h, --help                   help for join
 ```
 
 ### Example
@@ -366,7 +366,7 @@ If you don't want to raise an error even if there is no value, specify `--noreco
 $ csvt join -1 input1.csv -2 input2.csv -c CompanyID -o output.csv --norecord
 ```
 
-If the column name in the second CSV file is different from that in the first CSV file, specify it with `--column2`.
+If the column name in the second CSV file is different from that in the first CSV file, specify it with `--column-second`.
 
 ```
 $ csvt join -1 input1.csv -2 input2.csv -c CompanyID --column2 ID -o output.csv

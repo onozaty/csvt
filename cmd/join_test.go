@@ -223,7 +223,7 @@ func TestRunJoin_norecord(t *testing.T) {
 	}
 }
 
-func TestRunJoin_column2(t *testing.T) {
+func TestRunJoin_columnSecond(t *testing.T) {
 
 	s1 := `ID,Name,CompanyID
 1,Yamada,1
@@ -252,7 +252,7 @@ func TestRunJoin_column2(t *testing.T) {
 		"-2", f2.Name(),
 		"-o", fo.Name(),
 		"-c", "CompanyID",
-		"--column2", "ID",
+		"--column-second", "ID",
 	})
 
 	err := rootCmd.Execute()
