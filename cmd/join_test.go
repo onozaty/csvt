@@ -18,10 +18,7 @@ func TestJoinCmd(t *testing.T) {
 5,Ichikawa,1
 2,"Hanako, Sato",3
 `
-	f1, err := createTempFile(s1)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f1 := createTempFile(t, s1)
 	defer os.Remove(f1.Name())
 
 	s2 := `CompanyID,CompanyName
@@ -29,16 +26,10 @@ func TestJoinCmd(t *testing.T) {
 2,CompanyB
 3,会社C
 `
-	f2, err := createTempFile(s2)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f2 := createTempFile(t, s2)
 	defer os.Remove(f2.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -50,17 +41,12 @@ func TestJoinCmd(t *testing.T) {
 		"-c", "CompanyID",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "ID,Name,CompanyID,CompanyName\r\n" +
 		"1,Yamada,1,CompanyA\r\n" +
@@ -75,23 +61,14 @@ func TestJoinCmd(t *testing.T) {
 func TestJoinCmd_format(t *testing.T) {
 
 	s1 := "ID;Name;CompanyID|1;Yamada;1|5;Ichikawa;1|2;'Hanako; Sato';3"
-	f1, err := createTempFile(s1)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f1 := createTempFile(t, s1)
 	defer os.Remove(f1.Name())
 
 	s2 := "CompanyID;CompanyName|1;CompanyA|2;CompanyB|3;会社C|"
-	f2, err := createTempFile(s2)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f2 := createTempFile(t, s2)
 	defer os.Remove(f2.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -107,17 +84,12 @@ func TestJoinCmd_format(t *testing.T) {
 		"--allquote",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "'ID';'Name';'CompanyID';'CompanyName'|" +
 		"'1';'Yamada';'1';'CompanyA'|" +
@@ -136,10 +108,7 @@ func TestJoinCmd_usingfile(t *testing.T) {
 5,Ichikawa,1
 2,"Hanako, Sato",3
 `
-	f1, err := createTempFile(s1)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f1 := createTempFile(t, s1)
 	defer os.Remove(f1.Name())
 
 	s2 := `CompanyID,CompanyName
@@ -147,16 +116,10 @@ func TestJoinCmd_usingfile(t *testing.T) {
 2,CompanyB
 3,会社C
 `
-	f2, err := createTempFile(s2)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f2 := createTempFile(t, s2)
 	defer os.Remove(f2.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -169,17 +132,12 @@ func TestJoinCmd_usingfile(t *testing.T) {
 		"--usingfile",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "ID,Name,CompanyID,CompanyName\r\n" +
 		"1,Yamada,1,CompanyA\r\n" +
@@ -191,6 +149,33 @@ func TestJoinCmd_usingfile(t *testing.T) {
 	}
 }
 
+func TestJoinCmd_invalidFormat(t *testing.T) {
+
+	f1 := createTempFile(t, "")
+	defer os.Remove(f1.Name())
+
+	f2 := createTempFile(t, "")
+	defer os.Remove(f2.Name())
+
+	fo := createTempFile(t, "")
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"join",
+		"-1", f1.Name(),
+		"-2", f2.Name(),
+		"-o", fo.Name(),
+		"-c", "CompanyID",
+		"--delim", ";;",
+	})
+
+	err := rootCmd.Execute()
+	if err == nil || err.Error() != "flag delim should be specified with a single character" {
+		t.Fatal("failed test\n", err)
+	}
+}
+
 func TestRunJoin_norecord(t *testing.T) {
 
 	s1 := `ID,Name,CompanyID
@@ -198,26 +183,17 @@ func TestRunJoin_norecord(t *testing.T) {
 5,Ichikawa,2
 2,"Hanako, Sato",3
 `
-	f1, err := createTempFile(s1)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f1 := createTempFile(t, s1)
 	defer os.Remove(f1.Name())
 
 	s2 := `CompanyID,CompanyName
 1,CompanyA
 3,会社C
 `
-	f2, err := createTempFile(s2)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f2 := createTempFile(t, s2)
 	defer os.Remove(f2.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -230,17 +206,12 @@ func TestRunJoin_norecord(t *testing.T) {
 		"--norecord",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "ID,Name,CompanyID,CompanyName\r\n" +
 		"1,Yamada,1,CompanyA\r\n" +
@@ -259,10 +230,7 @@ func TestRunJoin_column2(t *testing.T) {
 5,Ichikawa,2
 2,"Hanako, Sato",3
 `
-	f1, err := createTempFile(s1)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f1 := createTempFile(t, s1)
 	defer os.Remove(f1.Name())
 
 	s2 := `ID,CompanyName
@@ -271,16 +239,10 @@ func TestRunJoin_column2(t *testing.T) {
 3,会社C
 4,会社D
 `
-	f2, err := createTempFile(s2)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f2 := createTempFile(t, s2)
 	defer os.Remove(f2.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -293,17 +255,12 @@ func TestRunJoin_column2(t *testing.T) {
 		"--column2", "ID",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "ID,Name,CompanyID,CompanyName\r\n" +
 		"1,Yamada,1,CompanyA\r\n" +
@@ -317,26 +274,17 @@ func TestRunJoin_column2(t *testing.T) {
 
 func TestRunJoin_firstFileNotFound(t *testing.T) {
 
-	f1, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f1 := createTempFile(t, "")
 	defer os.Remove(f1.Name())
 
-	f2, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f2 := createTempFile(t, "")
 	defer os.Remove(f2.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	// 存在しないファイルを指定
-	err = runJoin(csv.Format{}, f1.Name()+"___", f2.Name(), "CompanyID", fo.Name(), JoinOptions{})
+	err := runJoin(csv.Format{}, f1.Name()+"___", f2.Name(), "CompanyID", fo.Name(), JoinOptions{})
 	if err == nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -349,26 +297,17 @@ func TestRunJoin_firstFileNotFound(t *testing.T) {
 
 func TestRunJoin_secondFileNotFound(t *testing.T) {
 
-	f1, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f1 := createTempFile(t, "")
 	defer os.Remove(f1.Name())
 
-	f2, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f2 := createTempFile(t, "")
 	defer os.Remove(f2.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	// 存在しないファイルを指定
-	err = runJoin(csv.Format{}, f1.Name(), f2.Name()+"___", "CompanyID", fo.Name(), JoinOptions{})
+	err := runJoin(csv.Format{}, f1.Name(), f2.Name()+"___", "CompanyID", fo.Name(), JoinOptions{})
 	if err == nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -381,26 +320,17 @@ func TestRunJoin_secondFileNotFound(t *testing.T) {
 
 func TestRunJoin_outputFileNotFound(t *testing.T) {
 
-	f1, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f1 := createTempFile(t, "")
 	defer os.Remove(f1.Name())
 
-	f2, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	f2 := createTempFile(t, "")
 	defer os.Remove(f2.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	// 存在しないディレクトリのファイルを指定
-	err = runJoin(csv.Format{}, f1.Name(), f2.Name(), "CompanyID", filepath.Join(fo.Name(), "___"), JoinOptions{})
+	err := runJoin(csv.Format{}, f1.Name(), f2.Name(), "CompanyID", filepath.Join(fo.Name(), "___"), JoinOptions{})
 	if err == nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -608,19 +538,4 @@ func TestJoin_secondFileEmpty(t *testing.T) {
 	if err == nil || err.Error() != "failed to read the second CSV file: EOF" {
 		t.Fatal("failed test\n", err)
 	}
-}
-
-func createTempFile(content string) (*os.File, error) {
-
-	tempFile, err := os.CreateTemp("", "csv")
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = tempFile.Write([]byte(content))
-	if err != nil {
-		return nil, err
-	}
-
-	return tempFile, nil
 }

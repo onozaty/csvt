@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 
@@ -101,7 +102,7 @@ func getFlagEncoding(f *pflag.FlagSet, name string) (encoding.Encoding, error) {
 	return csv.Encoding(str)
 }
 
-func getTargetColumnIndexes(allColumnNames []string, targetColumnNames []string) ([]int, error) {
+func getTargetColumnsIndexes(allColumnNames []string, targetColumnNames []string) ([]int, error) {
 
 	if len(targetColumnNames) == 0 {
 		// 指定カラムが無かった場合、全てのカラムが対象
@@ -119,9 +120,9 @@ func getTargetColumnIndexes(allColumnNames []string, targetColumnNames []string)
 		targetColumnIndexes := []int{}
 		for _, targetColumnName := range targetColumnNames {
 
-			targetColumnIndex := util.IndexOf(allColumnNames, targetColumnName)
-			if targetColumnIndex == -1 {
-				return nil, fmt.Errorf("missing %s in the CSV file", targetColumnName)
+			targetColumnIndex, err := getTargetColumnIndex(allColumnNames, targetColumnName)
+			if err != nil {
+				return nil, err
 			}
 
 			targetColumnIndexes = append(targetColumnIndexes, targetColumnIndex)
@@ -129,4 +130,67 @@ func getTargetColumnIndexes(allColumnNames []string, targetColumnNames []string)
 
 		return targetColumnIndexes, nil
 	}
+}
+
+func getTargetColumnIndex(allColumnNames []string, targetColumnName string) (int, error) {
+
+	targetColumnIndex := util.IndexOf(allColumnNames, targetColumnName)
+	if targetColumnIndex == -1 {
+		return -1, fmt.Errorf("missing %s in the CSV file", targetColumnName)
+	}
+
+	return targetColumnIndex, nil
+}
+
+func setupInput(inputPath string, format csv.Format) (csv.CsvReader, func(), error) {
+
+	inputFile, err := os.Open(inputPath)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	reader := csv.NewCsvReader(inputFile, format)
+
+	close := func() {
+		inputFile.Close()
+	}
+
+	return reader, close, nil
+}
+
+func setupOutput(outputPath string, format csv.Format) (csv.CsvWriter, func(), error) {
+
+	outputFile, err := os.Create(outputPath)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	writer := csv.NewCsvWriter(outputFile, format)
+
+	close := func() {
+		outputFile.Close()
+	}
+
+	return writer, close, nil
+}
+
+func setupInputOutput(inputPath string, outputPath string, format csv.Format) (csv.CsvReader, csv.CsvWriter, func(), error) {
+
+	reader, inputClose, err := setupInput(inputPath, format)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	writer, outputClose, err := setupOutput(outputPath, format)
+	if err != nil {
+		inputClose()
+		return nil, nil, nil, err
+	}
+
+	allClose := func() {
+		inputClose()
+		outputClose()
+	}
+
+	return reader, writer, allClose, nil
 }

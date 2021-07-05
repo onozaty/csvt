@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"io"
-	"os"
 	"regexp"
 
 	"github.com/onozaty/csvt/csv"
@@ -15,7 +14,7 @@ func newFilterCmd() *cobra.Command {
 
 	filterCmd := &cobra.Command{
 		Use:   "filter",
-		Short: "Filter rows of CSV file",
+		Short: "Filter rows",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			format, err := getFlagBaseCsvFormat(cmd.Flags())
@@ -28,9 +27,21 @@ func newFilterCmd() *cobra.Command {
 			outputPath, _ := cmd.Flags().GetString("output")
 			equalValue, _ := cmd.Flags().GetString("equal")
 			regexValue, _ := cmd.Flags().GetString("regex")
+			nonMatch, _ := cmd.Flags().GetBool("not")
+			equalColumnName, _ := cmd.Flags().GetString("equal-column")
 
-			if equalValue != "" && regexValue != "" {
-				return fmt.Errorf("not allowed to specify both --equal and --regex")
+			optionCondCount := 0
+			if equalValue != "" {
+				optionCondCount++
+			}
+			if regexValue != "" {
+				optionCondCount++
+			}
+			if equalColumnName != "" {
+				optionCondCount++
+			}
+			if optionCondCount >= 2 {
+				return fmt.Errorf("not allowed to specify both --equal and --regex and --equal-column")
 			}
 
 			var regex *regexp.Regexp = nil
@@ -50,8 +61,10 @@ func newFilterCmd() *cobra.Command {
 				targetColumnNames,
 				outputPath,
 				FilterOptions{
-					equalValue: equalValue,
-					regex:      regex,
+					equalValue:      equalValue,
+					regex:           regex,
+					equalColumnName: equalColumnName,
+					nonMatch:        nonMatch,
 				})
 		},
 	}
@@ -59,8 +72,10 @@ func newFilterCmd() *cobra.Command {
 	filterCmd.Flags().StringP("input", "i", "", "Input CSV file path.")
 	filterCmd.MarkFlagRequired("input")
 	filterCmd.Flags().StringArrayP("column", "c", []string{}, "(optional) Name of the column to use for filtering. If not specified, all columns are targeted.")
-	filterCmd.Flags().StringP("equal", "", "", "(optional) Filter by matching value. If neither --equal nor --regex is specified, it will filter by those with values.")
-	filterCmd.Flags().StringP("regex", "", "", "(optional) Filter by regular expression. If neither --equal nor --regex is specified, it will filter by those with values.")
+	filterCmd.Flags().StringP("equal", "", "", "(optional) Filter by matching value. If neither --equal nor --regex nor --equal-column is specified, it will filter by those with values.")
+	filterCmd.Flags().StringP("regex", "", "", "(optional) Filter by regular expression.")
+	filterCmd.Flags().StringP("equal-column", "", "", "(optional) Filter by other column value.")
+	filterCmd.Flags().BoolP("not", "", false, "(optional) Filter by non-matches.")
 	filterCmd.Flags().StringP("output", "o", "", "Output CSV file path.")
 	filterCmd.MarkFlagRequired("output")
 
@@ -68,26 +83,19 @@ func newFilterCmd() *cobra.Command {
 }
 
 type FilterOptions struct {
-	equalValue string
-	regex      *regexp.Regexp
+	equalValue      string
+	regex           *regexp.Regexp
+	equalColumnName string
+	nonMatch        bool
 }
 
 func runFilter(format csv.Format, inputPath string, targetColumnNames []string, outputPath string, options FilterOptions) error {
 
-	inputFile, err := os.Open(inputPath)
+	reader, writer, close, err := setupInputOutput(inputPath, outputPath, format)
 	if err != nil {
 		return err
 	}
-	defer inputFile.Close()
-
-	reader := csv.NewCsvReader(inputFile, format)
-
-	outputFile, err := os.Create(outputPath)
-	if err != nil {
-		return err
-	}
-	defer outputFile.Close()
-	writer := csv.NewCsvWriter(outputFile, format)
+	defer close()
 
 	err = filter(reader, targetColumnNames, writer, options)
 
@@ -106,9 +114,17 @@ func filter(reader csv.CsvReader, targetColumnNames []string, writer csv.CsvWrit
 		return errors.Wrap(err, "failed to read the CSV file")
 	}
 
-	targetColumnIndexes, err := getTargetColumnIndexes(columnNames, targetColumnNames)
+	targetColumnIndexes, err := getTargetColumnsIndexes(columnNames, targetColumnNames)
 	if err != nil {
 		return err
+	}
+
+	equalColumnIndex := -1
+	if options.equalColumnName != "" {
+		equalColumnIndex, err = getTargetColumnIndex(columnNames, options.equalColumnName)
+		if err != nil {
+			return err
+		}
 	}
 
 	// 行を絞るフィルタを定義
@@ -124,6 +140,10 @@ func filter(reader csv.CsvReader, targetColumnNames []string, writer csv.CsvWrit
 				}
 			} else if options.regex != nil {
 				if options.regex.MatchString(value) {
+					return true
+				}
+			} else if options.equalColumnName != "" {
+				if value == row[equalColumnIndex] {
 					return true
 				}
 			} else {
@@ -151,7 +171,13 @@ func filter(reader csv.CsvReader, targetColumnNames []string, writer csv.CsvWrit
 			return errors.Wrap(err, "failed to read the CSV file")
 		}
 
-		if !filter(row) {
+		filterd := filter(row)
+		if options.nonMatch {
+			// 一致しなかったもので絞る場合、反転させる
+			filterd = !filterd
+		}
+
+		if !filterd {
 			// 一致しないものは出力しない
 			continue
 		}

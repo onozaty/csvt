@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"io"
-	"os"
 	"regexp"
 
 	"github.com/onozaty/csvt/csv"
@@ -14,7 +13,7 @@ func newReplaceCmd() *cobra.Command {
 
 	replaceCmd := &cobra.Command{
 		Use:   "replace",
-		Short: "Replace values in CSV file",
+		Short: "Replace values",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			format, err := getFlagBaseCsvFormat(cmd.Flags())
@@ -61,20 +60,11 @@ func newReplaceCmd() *cobra.Command {
 
 func runReplace(format csv.Format, inputPath string, targetColumnNames []string, regex *regexp.Regexp, replacement string, outputPath string) error {
 
-	inputFile, err := os.Open(inputPath)
+	reader, writer, close, err := setupInputOutput(inputPath, outputPath, format)
 	if err != nil {
 		return err
 	}
-	defer inputFile.Close()
-
-	reader := csv.NewCsvReader(inputFile, format)
-
-	outputFile, err := os.Create(outputPath)
-	if err != nil {
-		return err
-	}
-	defer outputFile.Close()
-	writer := csv.NewCsvWriter(outputFile, format)
+	defer close()
 
 	err = replace(reader, targetColumnNames, regex, replacement, writer)
 
@@ -93,7 +83,7 @@ func replace(reader csv.CsvReader, targetColumnNames []string, regex *regexp.Reg
 		return errors.Wrap(err, "failed to read the CSV file")
 	}
 
-	targetColumnIndexes, err := getTargetColumnIndexes(columnNames, targetColumnNames)
+	targetColumnIndexes, err := getTargetColumnsIndexes(columnNames, targetColumnNames)
 	if err != nil {
 		return err
 	}

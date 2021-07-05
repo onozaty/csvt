@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"io"
-	"os"
 
 	"github.com/onozaty/csvt/csv"
 	"github.com/onozaty/csvt/util"
@@ -15,7 +14,7 @@ func newRenameCmd() *cobra.Command {
 
 	renameCmd := &cobra.Command{
 		Use:   "rename",
-		Short: "Rename columns from CSV file",
+		Short: "Rename columns",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			format, err := getFlagBaseCsvFormat(cmd.Flags())
@@ -58,20 +57,11 @@ func newRenameCmd() *cobra.Command {
 
 func runRename(format csv.Format, inputPath string, targetColumnNames []string, afterColumnNames []string, outputPath string) error {
 
-	inputFile, err := os.Open(inputPath)
+	reader, writer, close, err := setupInputOutput(inputPath, outputPath, format)
 	if err != nil {
 		return err
 	}
-	defer inputFile.Close()
-
-	reader := csv.NewCsvReader(inputFile, format)
-
-	outputFile, err := os.Create(outputPath)
-	if err != nil {
-		return err
-	}
-	defer outputFile.Close()
-	writer := csv.NewCsvWriter(outputFile, format)
+	defer close()
 
 	err = rename(reader, targetColumnNames, afterColumnNames, writer)
 

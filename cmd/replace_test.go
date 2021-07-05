@@ -12,16 +12,10 @@ func TestReplaceCmd(t *testing.T) {
 2,a,
 3,aa  aa,A
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -34,17 +28,12 @@ func TestReplaceCmd(t *testing.T) {
 		"-t", "x",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "id,col1,col2\r\n" +
 		"1,xbc,abc\r\n" +
@@ -63,16 +52,10 @@ func TestReplaceCmd_multiColumn(t *testing.T) {
 2,a,
 3,aa  aa,A
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -86,17 +69,12 @@ func TestReplaceCmd_multiColumn(t *testing.T) {
 		"-t", "x",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "id,col1,col2\r\n" +
 		"1,xbc,xbc\r\n" +
@@ -115,16 +93,10 @@ z,abc,abc
 a,a,
 x,aa  aa,A
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -136,17 +108,12 @@ x,aa  aa,A
 		"-t", "x",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "col1,col2,col3\r\n" +
 		"z,xbc,xbc\r\n" +
@@ -166,16 +133,10 @@ bc",abc
 2,a,
 3,aa  aa,A
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -188,17 +149,12 @@ bc",abc
 		"-t", "x",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "id,col1,col2\r\n" +
 		"1,\"a\nbc\",abc\r\n" +
@@ -216,16 +172,10 @@ func TestReplaceCmd_regex_empty(t *testing.T) {
 1,abc,abc
 2,,
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -238,17 +188,12 @@ func TestReplaceCmd_regex_empty(t *testing.T) {
 		"-t", "xxx",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "id,col1,col2\r\n" +
 		"1,abc,abc\r\n" +
@@ -265,16 +210,10 @@ func TestReplaceCmd_regex_capture(t *testing.T) {
 1,aa123,xx2xx
 2,9,
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -288,17 +227,12 @@ func TestReplaceCmd_regex_capture(t *testing.T) {
 		"-t", "#$1",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "id,col1,col2\r\n" +
 		"1,#123,#2\r\n" +
@@ -316,16 +250,10 @@ func TestReplaceCmd_regex_meta(t *testing.T) {
  b",a   b
 2,   ,
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -339,17 +267,12 @@ func TestReplaceCmd_regex_meta(t *testing.T) {
 		"-t", "",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "id,col1,col2\r\n" +
 		"1,ab,ab\r\n" +
@@ -366,16 +289,10 @@ func TestReplaceCmd_format(t *testing.T) {
 1	aaa	bbb
 2	abc	za
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -390,17 +307,12 @@ func TestReplaceCmd_format(t *testing.T) {
 		"--delim", "\t",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "id\tcol1\tcol2\r\n" +
 		"1		bbb\r\n" +
@@ -413,18 +325,10 @@ func TestReplaceCmd_format(t *testing.T) {
 
 func TestReplaceCmd_regex_invalid(t *testing.T) {
 
-	s := ""
-
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, "")
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -437,7 +341,7 @@ func TestReplaceCmd_regex_invalid(t *testing.T) {
 		"-t", "",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil || err.Error() != "regular expression specified in --regex is invalid: error parsing regexp: missing closing ]: `[a-`" {
 		t.Fatal("failed test\n", err)
 	}
@@ -445,16 +349,10 @@ func TestReplaceCmd_regex_invalid(t *testing.T) {
 
 func TestReplaceCmd_fileNotFound(t *testing.T) {
 
-	fi, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, "")
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -467,7 +365,7 @@ func TestReplaceCmd_fileNotFound(t *testing.T) {
 		"-t", "",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -485,16 +383,10 @@ func TestReplaceCmd_columnNotFound(t *testing.T) {
 2,c,
 `
 
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -507,7 +399,7 @@ func TestReplaceCmd_columnNotFound(t *testing.T) {
 		"-t", "",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil || err.Error() != "missing colx in the CSV file" {
 		t.Fatal("failed test\n", err)
 	}
@@ -515,18 +407,10 @@ func TestReplaceCmd_columnNotFound(t *testing.T) {
 
 func TestReplaceCmd_empty(t *testing.T) {
 
-	s := ""
-
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, "")
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -539,8 +423,33 @@ func TestReplaceCmd_empty(t *testing.T) {
 		"-t", "",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil || err.Error() != "failed to read the CSV file: EOF" {
+		t.Fatal("failed test\n", err)
+	}
+}
+
+func TestReplaceCmd_invalidFormat(t *testing.T) {
+
+	fi := createTempFile(t, "")
+	defer os.Remove(fi.Name())
+
+	fo := createTempFile(t, "")
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"replace",
+		"-i", fi.Name(),
+		"-o", fo.Name(),
+		"-c", "colx",
+		"-r", "a",
+		"-t", "",
+		"--quote", "__",
+	})
+
+	err := rootCmd.Execute()
+	if err == nil || err.Error() != "flag quote should be specified with a single character" {
 		t.Fatal("failed test\n", err)
 	}
 }

@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"os"
-
 	"github.com/onozaty/csvt/csv"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -12,7 +10,7 @@ func newHeaderCmd() *cobra.Command {
 
 	countCmd := &cobra.Command{
 		Use:   "header",
-		Short: "Show the header of CSV file",
+		Short: "Show header",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			format, err := getFlagBaseCsvFormat(cmd.Flags())
@@ -45,15 +43,13 @@ func newHeaderCmd() *cobra.Command {
 	return countCmd
 }
 
-func runHeader(format csv.Format, inputCsvPath string) ([]string, error) {
+func runHeader(format csv.Format, inputPath string) ([]string, error) {
 
-	file, err := os.Open(inputCsvPath)
+	reader, close, err := setupInput(inputPath, format)
 	if err != nil {
 		return nil, err
 	}
-	defer file.Close()
-
-	reader := csv.NewCsvReader(file, format)
+	defer close()
 
 	return header(reader)
 }

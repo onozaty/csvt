@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"io"
-	"os"
 
 	"github.com/onozaty/csvt/csv"
 	"github.com/onozaty/csvt/util"
@@ -15,7 +14,7 @@ func newCountCmd() *cobra.Command {
 
 	countCmd := &cobra.Command{
 		Use:   "count",
-		Short: "Count the number of records in CSV file",
+		Short: "Count the number of records",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			format, err := getFlagBaseCsvFormat(cmd.Flags())
@@ -61,15 +60,14 @@ type CountOptions struct {
 	includeHeader    bool
 }
 
-func runCount(format csv.Format, csvPath string, options CountOptions) (int, error) {
+func runCount(format csv.Format, inputPath string, options CountOptions) (int, error) {
 
-	file, err := os.Open(csvPath)
+	reader, close, err := setupInput(inputPath, format)
 	if err != nil {
 		return 0, err
 	}
-	defer file.Close()
+	defer close()
 
-	reader := csv.NewCsvReader(file, format)
 	return count(reader, options)
 }
 

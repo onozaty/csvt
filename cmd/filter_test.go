@@ -12,16 +12,10 @@ func TestFilterCmd(t *testing.T) {
 ,"",
 2,,""
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -31,17 +25,12 @@ func TestFilterCmd(t *testing.T) {
 		"-o", fo.Name(),
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "ID,Name,CompanyID\r\n" +
 		",Yamada,\r\n" +
@@ -55,16 +44,10 @@ func TestFilterCmd(t *testing.T) {
 func TestFilterCmd_format(t *testing.T) {
 
 	s := "ID;Name;CompanyID|1;Yamada;1|5;Ichikawa;|2;'Hanako; Sato';"
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -80,17 +63,12 @@ func TestFilterCmd_format(t *testing.T) {
 		"--bom",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "\uFEFF'ID';'Name';'CompanyID'|'1';'Yamada';'1'|"
 
@@ -106,16 +84,10 @@ func TestFilterCmd_column(t *testing.T) {
 5,Ichikawa,
 2,"Hanako, Sato",""
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -126,17 +98,12 @@ func TestFilterCmd_column(t *testing.T) {
 		"-c", "CompanyID",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "ID,Name,CompanyID\r\n" +
 		"1,Yamada,1\r\n"
@@ -153,16 +120,10 @@ a,,
 ,b,
 ,,c
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -174,17 +135,12 @@ a,,
 		"-c", "col3",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "col1,col2,col3\r\n" +
 		"a,,\r\n" +
@@ -202,16 +158,10 @@ func TestFilterCmd_equal(t *testing.T) {
 5,Ichikawa,1
 2,"Hanako, Sato",3
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -223,17 +173,12 @@ func TestFilterCmd_equal(t *testing.T) {
 		"--equal", "1",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "ID,Name,CompanyID\r\n" +
 		"1,Yamada,1\r\n"
@@ -250,16 +195,10 @@ a,b,c
 b,c,a
 c,a,b
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -272,17 +211,12 @@ c,a,b
 		"--equal", "a",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "col1,col2,col3\r\n" +
 		"a,b,c\r\n" +
@@ -301,16 +235,10 @@ b,c,a
 b,b,b
 c,a,b
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -321,17 +249,12 @@ c,a,b
 		"--equal", "a",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "col1,col2,col3\r\n" +
 		"a,b,c\r\n" +
@@ -350,16 +273,10 @@ func TestFilterCmd_regex(t *testing.T) {
 5,Ichikawa,1
 2,"Hanako, yamada",3
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -371,17 +288,12 @@ func TestFilterCmd_regex(t *testing.T) {
 		"--regex", "[yY]amada",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "ID,Name,CompanyID\r\n" +
 		"1,Yamada,1\r\n" +
@@ -392,7 +304,7 @@ func TestFilterCmd_regex(t *testing.T) {
 	}
 }
 
-func TestFilterCmd_equal_regex_multiColumn(t *testing.T) {
+func TestFilterCmd_regex_multiColumn(t *testing.T) {
 
 	s := `col1,col2,col3
 Ab,bc,
@@ -400,16 +312,10 @@ b,c,a
 ba,a,b
 abb,,ab
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -422,17 +328,12 @@ abb,,ab
 		"--regex", "(?i)^ab?$",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "col1,col2,col3\r\n" +
 		"Ab,bc,\r\n" +
@@ -443,7 +344,7 @@ abb,,ab
 	}
 }
 
-func TestFilterCmd_equal_regex_allColumn(t *testing.T) {
+func TestFilterCmd_regex_allColumn(t *testing.T) {
 
 	s := `col1,col2,col3
 ab,a,c
@@ -452,16 +353,10 @@ a,ba,bc
 ,,bb
 a,,
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -472,22 +367,136 @@ a,,
 		"--regex", "b$",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "col1,col2,col3\r\n" +
 		"ab,a,c\r\n" +
 		"a,b,c\r\n" +
 		",,bb\r\n"
+
+	if result != expect {
+		t.Fatal("failed test\n", result)
+	}
+}
+
+func TestFilterCmd_equalColumn(t *testing.T) {
+
+	s := `col1,col2,col3
+a,b,a
+b,c,a
+b,b,b
+a,a,b
+`
+	fi := createTempFile(t, s)
+	defer os.Remove(fi.Name())
+
+	fo := createTempFile(t, "")
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"filter",
+		"-i", fi.Name(),
+		"-o", fo.Name(),
+		"--column", "col1",
+		"--equal-column", "col3",
+	})
+
+	err := rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := readString(t, fo.Name())
+
+	expect := "col1,col2,col3\r\n" +
+		"a,b,a\r\n" +
+		"b,b,b\r\n"
+
+	if result != expect {
+		t.Fatal("failed test\n", result)
+	}
+}
+
+func TestFilterCmd_equalColumn_multiColumn(t *testing.T) {
+
+	s := `col1,col2,col3
+a,b,a
+a,b,b
+b,b,b
+a,a,b
+`
+	fi := createTempFile(t, s)
+	defer os.Remove(fi.Name())
+
+	fo := createTempFile(t, "")
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"filter",
+		"-i", fi.Name(),
+		"-o", fo.Name(),
+		"--column", "col1",
+		"--column", "col2",
+		"--equal-column", "col3",
+	})
+
+	err := rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := readString(t, fo.Name())
+
+	expect := "col1,col2,col3\r\n" +
+		"a,b,a\r\n" +
+		"a,b,b\r\n" +
+		"b,b,b\r\n"
+
+	if result != expect {
+		t.Fatal("failed test\n", result)
+	}
+}
+
+func TestFilterCmd_not(t *testing.T) {
+
+	s := `ID,Name,CompanyID
+1,Yamada,1
+5,Ichikawa,1
+2,"Hanako, Sato",3
+`
+	fi := createTempFile(t, s)
+	defer os.Remove(fi.Name())
+
+	fo := createTempFile(t, "")
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"filter",
+		"-i", fi.Name(),
+		"-o", fo.Name(),
+		"-c", "ID",
+		"--equal", "1",
+		"--not",
+	})
+
+	err := rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := readString(t, fo.Name())
+
+	expect := "ID,Name,CompanyID\r\n" +
+		"5,Ichikawa,1\r\n" +
+		"2,\"Hanako, Sato\",3\r\n"
 
 	if result != expect {
 		t.Fatal("failed test\n", result)
@@ -501,16 +510,10 @@ func TestFilterCmd_regex_invalid(t *testing.T) {
 5,Ichikawa,1
 2,"Hanako, yamada",3
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -522,7 +525,7 @@ func TestFilterCmd_regex_invalid(t *testing.T) {
 		"--regex", "[a-z",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil || err.Error() != "regular expression specified in --regex is invalid: error parsing regexp: missing closing ]: `[a-z`" {
 		t.Fatal("failed test\n", err)
 	}
@@ -530,21 +533,10 @@ func TestFilterCmd_regex_invalid(t *testing.T) {
 
 func TestFilterCmd_equal_regex(t *testing.T) {
 
-	s := `ID,Name,CompanyID
-1,Yamada,1
-5,Ichikawa,1
-2,"Hanako, yamada",3
-`
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, "")
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -557,24 +549,91 @@ func TestFilterCmd_equal_regex(t *testing.T) {
 		"--regex", "[a-z]",
 	})
 
-	err = rootCmd.Execute()
-	if err == nil || err.Error() != "not allowed to specify both --equal and --regex" {
+	err := rootCmd.Execute()
+	if err == nil || err.Error() != "not allowed to specify both --equal and --regex and --equal-column" {
+		t.Fatal("failed test\n", err)
+	}
+}
+
+func TestFilterCmd_equal_equalColumn(t *testing.T) {
+
+	fi := createTempFile(t, "")
+	defer os.Remove(fi.Name())
+
+	fo := createTempFile(t, "")
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"filter",
+		"-i", fi.Name(),
+		"-o", fo.Name(),
+		"-c", "Name",
+		"--equal", "A",
+		"--equal-column", "col1",
+	})
+
+	err := rootCmd.Execute()
+	if err == nil || err.Error() != "not allowed to specify both --equal and --regex and --equal-column" {
+		t.Fatal("failed test\n", err)
+	}
+}
+
+func TestFilterCmd_regex_equalColumn(t *testing.T) {
+
+	fi := createTempFile(t, "")
+	defer os.Remove(fi.Name())
+
+	fo := createTempFile(t, "")
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"filter",
+		"-i", fi.Name(),
+		"-o", fo.Name(),
+		"-c", "Name",
+		"--regex", "A",
+		"--equal-column", "col1",
+	})
+
+	err := rootCmd.Execute()
+	if err == nil || err.Error() != "not allowed to specify both --equal and --regex and --equal-column" {
+		t.Fatal("failed test\n", err)
+	}
+}
+
+func TestFilterCmd_equal_regex_equalColumn(t *testing.T) {
+
+	fi := createTempFile(t, "")
+	defer os.Remove(fi.Name())
+
+	fo := createTempFile(t, "")
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"filter",
+		"-i", fi.Name(),
+		"-o", fo.Name(),
+		"-c", "Name",
+		"--equal", "A",
+		"--regex", "A",
+		"--equal-column", "col1",
+	})
+
+	err := rootCmd.Execute()
+	if err == nil || err.Error() != "not allowed to specify both --equal and --regex and --equal-column" {
 		t.Fatal("failed test\n", err)
 	}
 }
 
 func TestFilterCmd_fileNotFound(t *testing.T) {
 
-	fi, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, "")
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -585,7 +644,7 @@ func TestFilterCmd_fileNotFound(t *testing.T) {
 		"-c", "CompanyID",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -603,16 +662,10 @@ func TestFilterCmd_columnNotFound(t *testing.T) {
 5,Ichikawa,1
 2,"Hanako, Sato",3
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -623,7 +676,35 @@ func TestFilterCmd_columnNotFound(t *testing.T) {
 		"-c", "Company", // 存在しないカラム
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
+	if err == nil || err.Error() != "missing Company in the CSV file" {
+		t.Fatal("failed test\n", err)
+	}
+}
+
+func TestFilterCmd_equalColumn_notFound(t *testing.T) {
+
+	s := `ID,Name,CompanyID
+1,Yamada,1
+5,Ichikawa,1
+2,"Hanako, Sato",3
+`
+	fi := createTempFile(t, s)
+	defer os.Remove(fi.Name())
+
+	fo := createTempFile(t, "")
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"filter",
+		"-i", fi.Name(),
+		"-o", fo.Name(),
+		"-c", "Name",
+		"--equal-column", "Company", // 存在しないカラム
+	})
+
+	err := rootCmd.Execute()
 	if err == nil || err.Error() != "missing Company in the CSV file" {
 		t.Fatal("failed test\n", err)
 	}
@@ -631,18 +712,10 @@ func TestFilterCmd_columnNotFound(t *testing.T) {
 
 func TestFilterCmd_empty(t *testing.T) {
 
-	s := ""
-
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, "")
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -653,8 +726,31 @@ func TestFilterCmd_empty(t *testing.T) {
 		"-c", "CompanyID",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil || err.Error() != "failed to read the CSV file: EOF" {
+		t.Fatal("failed test\n", err)
+	}
+}
+
+func TestFilterCmd_invalidFormat(t *testing.T) {
+
+	fi := createTempFile(t, "")
+	defer os.Remove(fi.Name())
+
+	fo := createTempFile(t, "")
+	defer os.Remove(fo.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"filter",
+		"-i", fi.Name(),
+		"-o", fo.Name(),
+		"-c", "CompanyID",
+		"--encoding", "xxxx",
+	})
+
+	err := rootCmd.Execute()
+	if err == nil || err.Error() != "invalid encoding name: xxxx" {
 		t.Fatal("failed test\n", err)
 	}
 }

@@ -12,16 +12,10 @@ func TestTransformCmd(t *testing.T) {
 1,Taro; Yamada
 2,"Hanako, Sato"
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -35,17 +29,12 @@ func TestTransformCmd(t *testing.T) {
 		"--out-allquote",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "'ID';'Name'|'1';'Taro; Yamada'|'2';'Hanako, Sato'|"
 	if result != expect {
@@ -57,16 +46,10 @@ func TestTransformCmd_format(t *testing.T) {
 
 	s := "ID/Name%1/Taro; Yamada%2/$Hanako, Sato$%"
 
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -84,17 +67,12 @@ func TestTransformCmd_format(t *testing.T) {
 		"--out-bom",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "\uFEFF'ID';'Name'|'1';'Taro; Yamada'|'2';'Hanako, Sato'|"
 	if result != expect {
@@ -104,16 +82,10 @@ func TestTransformCmd_format(t *testing.T) {
 
 func TestTransformCmd_fileNotFound(t *testing.T) {
 
-	fi, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, "")
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -124,7 +96,7 @@ func TestTransformCmd_fileNotFound(t *testing.T) {
 		"--out-allquote",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -137,18 +109,10 @@ func TestTransformCmd_fileNotFound(t *testing.T) {
 
 func TestTransformCmd_empty(t *testing.T) {
 
-	s := ""
-
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, "")
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -159,17 +123,12 @@ func TestTransformCmd_empty(t *testing.T) {
 		"--out-allquote",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	if result != "" {
 		t.Fatal("failed test\n", result)
@@ -182,16 +141,10 @@ func TestTransformCmd_delim(t *testing.T) {
 1	Taro
 2	"Hanako	Sato"
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -202,17 +155,12 @@ func TestTransformCmd_delim(t *testing.T) {
 		"--delim", `\t`,
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "ID,Name\r\n" +
 		"1,Taro\r\n" +
@@ -225,17 +173,10 @@ func TestTransformCmd_delim(t *testing.T) {
 
 func TestTransformCmd_delim_multichar(t *testing.T) {
 
-	s := ""
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, "")
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -246,7 +187,7 @@ func TestTransformCmd_delim_multichar(t *testing.T) {
 		"--delim", `;;`,
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil || err.Error() != "flag delim should be specified with a single character" {
 		t.Fatal("failed test\n", err)
 	}
@@ -258,16 +199,10 @@ func TestTransformCmd_delim_multibyte(t *testing.T) {
 1　Taro
 2　"Hanako　Sato"
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -278,17 +213,12 @@ func TestTransformCmd_delim_multibyte(t *testing.T) {
 		"--delim", `\u3000`, // マルチバイトとなる全角スペース
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "ID,Name\r\n" +
 		"1,Taro\r\n" +
@@ -301,17 +231,10 @@ func TestTransformCmd_delim_multibyte(t *testing.T) {
 
 func TestTransformCmd_delim_parseError(t *testing.T) {
 
-	s := ""
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, "")
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -322,7 +245,7 @@ func TestTransformCmd_delim_parseError(t *testing.T) {
 		"--delim", `\t"`,
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil || err.Error() != `Could not parse value \t" of flag delim: invalid syntax` {
 		t.Fatal("failed test\n", err)
 	}
@@ -334,16 +257,10 @@ func TestTransformCmd_quote(t *testing.T) {
 '1',Taro
 2,'Hanako, Sato'
 `
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -354,17 +271,12 @@ func TestTransformCmd_quote(t *testing.T) {
 		"--quote", "'",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "ID,Name\r\n" +
 		"1,Taro\r\n" +
@@ -377,17 +289,10 @@ func TestTransformCmd_quote(t *testing.T) {
 
 func TestTransformCmd_quote_multichar(t *testing.T) {
 
-	s := ""
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, "")
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -398,7 +303,7 @@ func TestTransformCmd_quote_multichar(t *testing.T) {
 		"--quote", "''",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil || err.Error() != "flag quote should be specified with a single character" {
 		t.Fatal("failed test\n", err)
 	}
@@ -407,17 +312,10 @@ func TestTransformCmd_quote_multichar(t *testing.T) {
 func TestTransformCmd_sep(t *testing.T) {
 
 	s := `ID,Name|1,Taro|2,"Hanako, Sato"`
-
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, s)
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -428,17 +326,12 @@ func TestTransformCmd_sep(t *testing.T) {
 		"--sep", "|",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "ID,Name\r\n" +
 		"1,Taro\r\n" +
@@ -451,17 +344,10 @@ func TestTransformCmd_sep(t *testing.T) {
 
 func TestTransformCmd_sep_parseError(t *testing.T) {
 
-	s := ""
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, "")
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -472,7 +358,7 @@ func TestTransformCmd_sep_parseError(t *testing.T) {
 		"--sep", `\r"`,
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil || err.Error() != `Could not parse value \r" of flag sep: invalid syntax` {
 		t.Fatal("failed test\n", err)
 	}
@@ -480,10 +366,7 @@ func TestTransformCmd_sep_parseError(t *testing.T) {
 
 func TestTransformCmd_encoding(t *testing.T) {
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -494,17 +377,12 @@ func TestTransformCmd_encoding(t *testing.T) {
 		"--encoding", "sjis",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := string(bo)
+	result := readString(t, fo.Name())
 
 	expect := "ID,名前,年齢\r\n" +
 		"1,\"Taro, Yamada\",20\r\n" +
@@ -517,10 +395,7 @@ func TestTransformCmd_encoding(t *testing.T) {
 
 func TestTransformCmd_out_encoding(t *testing.T) {
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -532,7 +407,7 @@ func TestTransformCmd_out_encoding(t *testing.T) {
 		"--out-bom", // UTF-8ではないのでBOM指定しても付かない
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -554,17 +429,10 @@ func TestTransformCmd_out_encoding(t *testing.T) {
 
 func TestTransformCmd_encoding_invalid(t *testing.T) {
 
-	s := ""
-	fi, err := createTempFile(s)
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fi := createTempFile(t, "")
 	defer os.Remove(fi.Name())
 
-	fo, err := createTempFile("")
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
+	fo := createTempFile(t, "")
 	defer os.Remove(fo.Name())
 
 	rootCmd := newRootCmd()
@@ -575,7 +443,7 @@ func TestTransformCmd_encoding_invalid(t *testing.T) {
 		"--out-encoding", "utf",
 	})
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	if err == nil || err.Error() != "invalid encoding name: utf" {
 		t.Fatal("failed test\n", err)
 	}

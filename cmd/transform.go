@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"io"
-	"os"
 
 	"github.com/onozaty/csvt/csv"
 	"github.com/spf13/cobra"
@@ -12,7 +11,7 @@ func newTransformCmd() *cobra.Command {
 
 	transformCmd := &cobra.Command{
 		Use:   "transform",
-		Short: "Transform the format of CSV file",
+		Short: "Transform format",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			inputPath, _ := cmd.Flags().GetString("input")
@@ -54,20 +53,17 @@ func newTransformCmd() *cobra.Command {
 
 func runTransform(inputPath string, inputFormat csv.Format, outputPath string, outputFormat csv.Format) error {
 
-	inputFile, err := os.Open(inputPath)
+	reader, inputClose, err := setupInput(inputPath, inputFormat)
 	if err != nil {
 		return err
 	}
-	defer inputFile.Close()
+	defer inputClose()
 
-	reader := csv.NewCsvReader(inputFile, inputFormat)
-
-	outputFile, err := os.Create(outputPath)
+	writer, outputClose, err := setupOutput(outputPath, outputFormat)
 	if err != nil {
 		return err
 	}
-	defer outputFile.Close()
-	writer := csv.NewCsvWriter(outputFile, outputFormat)
+	defer outputClose()
 
 	// フォーマットは設定済みなので、そのままコピーするだけ
 	if err := copy(reader, writer); err != nil {
