@@ -11,7 +11,7 @@ func newTransformCmd() *cobra.Command {
 
 	transformCmd := &cobra.Command{
 		Use:   "transform",
-		Short: "Transform the format of CSV file",
+		Short: "Transform format",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			inputPath, _ := cmd.Flags().GetString("input")

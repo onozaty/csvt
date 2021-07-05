@@ -7,15 +7,15 @@
 
 `csvt` consists of multiple subcommands.
 
-* [choose](#choose) Choose columns from CSV file.
-* [count](#count) Count the number of records in CSV file.
-* [filter](#filter) Filter rows of CSV file.
-* [header](#header) Show the header of CSV file.
+* [choose](#choose) Choose columns.
+* [count](#count) Count the number of records.
+* [filter](#filter) Filter rows.
+* [header](#header) Show header.
 * [join](#join) Join CSV files.
-* [remove](#remove) Remove columns from CSV file.
-* [rename](#rename) Rename columns from CSV file.
-* [replace](#replace) Replace values in CSV file.
-* [transform](#transform) Transform the format of CSV file.
+* [remove](#remove) Remove columns.
+* [rename](#rename) Rename columns.
+* [replace](#replace) Replace values.
+* [transform](#transform) Transform format.
 * [unique](#unique) Extract unique rows.
 
 ## Common flags
@@ -476,8 +476,7 @@ ID,Name,Age,Company
 
 ## replace
 
-Create a new CSV file by replacing the values in the input CSV file.
-
+Create a new CSV file by replacing the values in the input CSV file.  
 Regular expression are used for replace.
 
 ### Usage
@@ -610,7 +609,7 @@ $ csvt transform -i output.tsv -o output2.csv --delim "\t"
 
 ## unique
 
-Extract unique rows.
+Extracts unique records using the value of a specified columns.
 
 ### Usage
 

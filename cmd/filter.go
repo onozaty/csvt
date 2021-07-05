@@ -14,7 +14,7 @@ func newFilterCmd() *cobra.Command {
 
 	filterCmd := &cobra.Command{
 		Use:   "filter",
-		Short: "Filter rows of CSV file",
+		Short: "Filter rows",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			format, err := getFlagBaseCsvFormat(cmd.Flags())

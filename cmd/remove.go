@@ -14,7 +14,7 @@ func newRemoveCmd() *cobra.Command {
 
 	removeCmd := &cobra.Command{
 		Use:   "remove",
-		Short: "Remove columns from CSV file",
+		Short: "Remove columns",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			format, err := getFlagBaseCsvFormat(cmd.Flags())

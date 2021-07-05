@@ -14,7 +14,7 @@ func newCountCmd() *cobra.Command {
 
 	countCmd := &cobra.Command{
 		Use:   "count",
-		Short: "Count the number of records in CSV file",
+		Short: "Count the number of records",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			format, err := getFlagBaseCsvFormat(cmd.Flags())

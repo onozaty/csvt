@@ -10,7 +10,7 @@ func newHeaderCmd() *cobra.Command {
 
 	countCmd := &cobra.Command{
 		Use:   "header",
-		Short: "Show the header of CSV file",
+		Short: "Show header",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			format, err := getFlagBaseCsvFormat(cmd.Flags())

@@ -13,7 +13,7 @@ func newReplaceCmd() *cobra.Command {
 
 	replaceCmd := &cobra.Command{
 		Use:   "replace",
-		Short: "Replace values in CSV file",
+		Short: "Replace values",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			format, err := getFlagBaseCsvFormat(cmd.Flags())

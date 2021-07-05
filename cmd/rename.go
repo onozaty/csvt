@@ -14,7 +14,7 @@ func newRenameCmd() *cobra.Command {
 
 	renameCmd := &cobra.Command{
 		Use:   "rename",
-		Short: "Rename columns from CSV file",
+		Short: "Rename columns",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			format, err := getFlagBaseCsvFormat(cmd.Flags())

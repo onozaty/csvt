@@ -14,7 +14,7 @@ func newChooseCmd() *cobra.Command {
 
 	chooseCmd := &cobra.Command{
 		Use:   "choose",
-		Short: "Choose columns from CSV file",
+		Short: "Choose columns",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			format, err := getFlagBaseCsvFormat(cmd.Flags())
