@@ -11,6 +11,7 @@
 * [count](#count) Count the number of records.
 * [filter](#filter) Filter rows by condition.
 * [header](#header) Show header.
+* [include](#include) Filter rows by included in another CSV file.
 * [join](#join) Join CSV files.
 * [remove](#remove) Remove columns.
 * [rename](#rename) Rename columns.
@@ -284,6 +285,63 @@ UserID
 Name
 Age
 CompanyID
+```
+
+## include
+
+Create a new CSV file by filtering on the rows included in another CSV file.
+
+### Usage
+
+```
+csvt include -i INPUT -c COLUMN -a ANOTHER [--column-another COLUMN2] -o OUTPUT
+```
+
+```
+Usage:
+  csvt include [flags]
+
+Flags:
+  -i, --input string            Input CSV file path.
+  -c, --column string           Name of the column to use for filtering.
+  -a, --another string          Another CSV file path. Filter by included in this CSV file.
+      --column-another string   (optional) Name of the column to use for filtering in the another CSV file. Specify if different from the input CSV file.
+  -o, --output string           Output CSV file path.
+  -h, --help                    help for include
+```
+
+### Example
+
+The contents of `input.csv`.
+
+```
+col1,col2
+1,A
+2,B
+3,C
+4,D
+```
+
+The contents of `another.csv`.
+
+```
+col1,col3
+2,2
+3,2
+```
+
+Filter by "col1" values in `another.csv`.
+
+```
+$ csvt include -i input.csv -c col1 -a another.csv -o output.csv
+```
+
+The contents of the created `output.csv`.
+
+```
+col1,col2
+2,B
+3,C
 ```
 
 ## join
