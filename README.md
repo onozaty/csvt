@@ -8,6 +8,7 @@
 `csvt` consists of multiple subcommands.
 
 * [choose](#choose) Choose columns.
+* [exclude](#exclude) Exclude rows by included in another CSV file.
 * [count](#count) Count the number of records.
 * [filter](#filter) Filter rows by condition.
 * [header](#header) Show header.
@@ -86,6 +87,63 @@ Name,Age
 Hanako,21
 Smith,30
 Jun,22
+```
+
+## exclude
+
+Create a new CSV file by exclude on the rows included in another CSV file.
+
+### Usage
+
+```
+csvt exclude -i INPUT -c COLUMN -a ANOTHER [--column-another COLUMN2] -o OUTPUT
+```
+
+```
+Usage:
+  csvt exclude [flags]
+
+Flags:
+  -i, --input string            Input CSV file path.
+  -c, --column string           Name of the column to use for exclude.
+  -a, --another string          Another CSV file path. Exclude by included in this CSV file.
+      --column-another string   (optional) Name of the column to use for exclude in the another CSV file. Specify if different from the input CSV file.
+  -o, --output string           Output CSV file path.
+  -h, --help                    help for exclude
+```
+
+### Example
+
+The contents of `input.csv`.
+
+```
+col1,col2
+1,A
+2,B
+3,C
+4,D
+```
+
+The contents of `another.csv`.
+
+```
+col1,col3
+2,2
+3,2
+```
+
+Exclude by "col1" values in `another.csv`.
+
+```
+$ csvt exclude -i input.csv -c col1 -a another.csv -o output.csv
+```
+
+The contents of the created `output.csv`.
+
+```
+col1,col2
+1,A
+4,D
 ```
 
 ## count
