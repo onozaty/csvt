@@ -99,8 +99,8 @@ func unique(reader csv.CsvReader, targetColumnNames []string, writer csv.CsvWrit
 		return err
 	}
 
-	// 重複チェック用のmap(valueは利用しないので一律0を入れる)
-	keyMap := make(map[string]int)
+	// 重複チェック用
+	keySet := csv.NewItemSet()
 
 	// ヘッダ以外
 	for {
@@ -114,15 +114,14 @@ func unique(reader csv.CsvReader, targetColumnNames []string, writer csv.CsvWrit
 
 		key := makeKey(row)
 
-		_, has := keyMap[key]
-		if !has {
+		if !keySet.Contains(key) {
 			// 重複していない行なので書き込み
 			err = writer.Write(row)
 			if err != nil {
 				return err
 			}
 
-			keyMap[key] = 0
+			keySet.Add(key)
 		}
 	}
 
