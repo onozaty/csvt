@@ -8,9 +8,11 @@
 `csvt` consists of multiple subcommands.
 
 * [choose](#choose) Choose columns.
+* [exclude](#exclude) Exclude rows by included in another CSV file.
 * [count](#count) Count the number of records.
-* [filter](#filter) Filter rows.
+* [filter](#filter) Filter rows by condition.
 * [header](#header) Show header.
+* [include](#include) Filter rows by included in another CSV file.
 * [join](#join) Join CSV files.
 * [remove](#remove) Remove columns.
 * [rename](#rename) Rename columns.
@@ -85,6 +87,63 @@ Name,Age
 Hanako,21
 Smith,30
 Jun,22
+```
+
+## exclude
+
+Create a new CSV file by exclude on the rows included in another CSV file.
+
+### Usage
+
+```
+csvt exclude -i INPUT -c COLUMN -a ANOTHER [--column-another COLUMN2] -o OUTPUT
+```
+
+```
+Usage:
+  csvt exclude [flags]
+
+Flags:
+  -i, --input string            Input CSV file path.
+  -c, --column string           Name of the column to use for exclude.
+  -a, --another string          Another CSV file path. Exclude by included in this CSV file.
+      --column-another string   (optional) Name of the column to use for exclude in the another CSV file. Specify if different from the input CSV file.
+  -o, --output string           Output CSV file path.
+  -h, --help                    help for exclude
+```
+
+### Example
+
+The contents of `input.csv`.
+
+```
+col1,col2
+1,A
+2,B
+3,C
+4,D
+```
+
+The contents of `another.csv`.
+
+```
+col1,col3
+2,2
+3,2
+```
+
+Exclude by "col1" values in `another.csv`.
+
+```
+$ csvt exclude -i input.csv -c col1 -a another.csv -o output.csv
+```
+
+The contents of the created `output.csv`.
+
+```
+col1,col2
+1,A
+4,D
 ```
 
 ## count
@@ -286,6 +345,63 @@ Age
 CompanyID
 ```
 
+## include
+
+Create a new CSV file by filtering on the rows included in another CSV file.
+
+### Usage
+
+```
+csvt include -i INPUT -c COLUMN -a ANOTHER [--column-another COLUMN2] -o OUTPUT
+```
+
+```
+Usage:
+  csvt include [flags]
+
+Flags:
+  -i, --input string            Input CSV file path.
+  -c, --column string           Name of the column to use for filtering.
+  -a, --another string          Another CSV file path. Filter by included in this CSV file.
+      --column-another string   (optional) Name of the column to use for filtering in the another CSV file. Specify if different from the input CSV file.
+  -o, --output string           Output CSV file path.
+  -h, --help                    help for include
+```
+
+### Example
+
+The contents of `input.csv`.
+
+```
+col1,col2
+1,A
+2,B
+3,C
+4,D
+```
+
+The contents of `another.csv`.
+
+```
+col1,col3
+2,2
+3,2
+```
+
+Filter by "col1" values in `another.csv`.
+
+```
+$ csvt include -i input.csv -c col1 -a another.csv -o output.csv
+```
+
+The contents of the created `output.csv`.
+
+```
+col1,col2
+2,B
+3,C
+```
+
 ## join
 
 Join CSV files.  
@@ -304,14 +420,14 @@ Usage:
   csvt join [flags]
 
 Flags:
-  -1, --first string     First CSV file path.
-  -2, --second string    Second CSV file path.
-  -c, --column string    Name of the column to use for joining.
-      --column2 string   (optional) Name of the column to use for joining in the second CSV file. Specify if different from the first CSV file.
-  -o, --output string    Output CSV file path.
-      --usingfile        (optional) Use temporary files for joining. Use this when joining large files that will not fit in memory.
-      --norecord         (optional) No error even if there is no record corresponding to sencod CSV.
-  -h, --help             help for join
+  -1, --first string           First CSV file path.
+  -2, --second string          Second CSV file path.
+  -c, --column string          Name of the column to use for joining.
+      --column-second string   (optional) Name of the column to use for joining in the second CSV file. Specify if different from the first CSV file.
+  -o, --output string          Output CSV file path.
+      --usingfile              (optional) Use temporary files for joining. Use this when joining large files that will not fit in memory.
+      --norecord               (optional) No error even if there is no record corresponding to sencod CSV.
+  -h, --help                   help for join
 ```
 
 ### Example
@@ -366,7 +482,7 @@ If you don't want to raise an error even if there is no value, specify `--noreco
 $ csvt join -1 input1.csv -2 input2.csv -c CompanyID -o output.csv --norecord
 ```
 
-If the column name in the second CSV file is different from that in the first CSV file, specify it with `--column2`.
+If the column name in the second CSV file is different from that in the first CSV file, specify it with `--column-second`.
 
 ```
 $ csvt join -1 input1.csv -2 input2.csv -c CompanyID --column2 ID -o output.csv

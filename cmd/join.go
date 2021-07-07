@@ -27,7 +27,7 @@ func newJoinCmd() *cobra.Command {
 			joinColumnName, _ := cmd.Flags().GetString("column")
 			outputPath, _ := cmd.Flags().GetString("output")
 
-			secondJoinColumnName, _ := cmd.Flags().GetString("column2")
+			secondJoinColumnName, _ := cmd.Flags().GetString("column-second")
 			useFileTable, _ := cmd.Flags().GetBool("usingfile")
 			noRecordNoError, _ := cmd.Flags().GetBool("norecord")
 			joinOptions := JoinOptions{
@@ -49,7 +49,7 @@ func newJoinCmd() *cobra.Command {
 	joinCmd.MarkFlagRequired("second")
 	joinCmd.Flags().StringP("column", "c", "", "Name of the column to use for joining.")
 	joinCmd.MarkFlagRequired("column")
-	joinCmd.Flags().StringP("column2", "", "", "(optional) Name of the column to use for joining in the second CSV file. Specify if different from the first CSV file.")
+	joinCmd.Flags().StringP("column-second", "", "", "(optional) Name of the column to use for joining in the second CSV file. Specify if different from the first CSV file.")
 	joinCmd.Flags().StringP("output", "o", "", "Output CSV file path.")
 	joinCmd.MarkFlagRequired("output")
 	joinCmd.Flags().BoolP("usingfile", "", false, "(optional) Use temporary files for joining. Use this when joining large files that will not fit in memory.")
