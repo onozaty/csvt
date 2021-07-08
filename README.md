@@ -8,8 +8,9 @@
 `csvt` consists of multiple subcommands.
 
 * [choose](#choose) Choose columns.
-* [exclude](#exclude) Exclude rows by included in another CSV file.
+* [concat](#concat) Concat CSV files.
 * [count](#count) Count the number of records.
+* [exclude](#exclude) Exclude rows by included in another CSV file.
 * [filter](#filter) Filter rows by condition.
 * [header](#header) Show header.
 * [include](#include) Filter rows by included in another CSV file.
@@ -89,6 +90,116 @@ Smith,30
 Jun,22
 ```
 
+## concat
+
+Create a new CSV file by concat the two CSV files.  
+Check the column names and concat them into the same column.
+
+### Usage
+
+```
+csvt concat -1 INPUT1 -2 INPUT2 -o OUTPUT
+```
+
+```
+Usage:
+  csvt concat [flags]
+
+Flags:
+  -1, --first string    First CSV file path.
+  -2, --second string   Second CSV file path.
+  -o, --output string   Output CSV file path.
+  -h, --help            help for concat
+```
+
+### Example
+
+The contents of `input1.csv`.
+
+```
+ID,Name
+1,name1
+2,name2
+```
+
+The contents of `input2.csv`.
+
+```
+Name,ID
+name3,3
+name4,4
+```
+
+Concat `input1.csv` and `input2.csv`.
+
+```
+$ csvt concat -1 input1.csv -2 input2.csv -o output.csv
+```
+
+The contents of the created `output.csv`.
+
+```
+ID,Name
+1,name1
+2,name2
+3,name3
+4,name4
+```
+
+## count
+
+Count the number of records in CSV file.
+
+### Usage
+
+```
+csvt count -i INPUT [-c COLUMN] [--header]
+```
+
+```
+Usage:
+  csvt count [flags]
+
+Flags:
+  -i, --input string    CSV file path.
+  -c, --column string   (optional) Name of the column to be counted. Only those with values will be counted.
+      --header          (optional) Counting including header. The default is to exclude header.
+  -h, --help            help for count
+```
+
+### Example
+
+The contents of `input.csv`.
+
+```
+UserID,Name,Age,CompanyID
+1,"Taro, Yamada",10,2
+2,Hanako,21,1
+3,Smith,30,
+4,Jun,22,4
+```
+
+Count the number of records.
+
+```
+$ csvt count -i input.csv
+4
+```
+
+Count the number of lines, including headers.
+
+```
+$ csvt count -i input.csv --header
+5
+```
+
+Counts the number of records for which a value exists in "CompanyID".
+
+```
+$ csvt count -i input.csv -c CompanyID
+3
+```
+
 ## exclude
 
 Create a new CSV file by exclude on the rows included in another CSV file.
@@ -144,60 +255,6 @@ The contents of the created `output.csv`.
 col1,col2
 1,A
 4,D
-```
-
-## count
-
-Count the number of records in CSV file.
-
-### Usage
-
-```
-csvt count -i INPUT [-c COLUMN] [--header]
-```
-
-```
-Usage:
-  csvt count [flags]
-
-Flags:
-  -i, --input string    CSV file path.
-  -c, --column string   (optional) Name of the column to be counted. Only those with values will be counted.
-      --header          (optional) Counting including header. The default is to exclude header.
-  -h, --help            help for count
-```
-
-### Example
-
-The contents of `input.csv`.
-
-```
-UserID,Name,Age,CompanyID
-1,"Taro, Yamada",10,2
-2,Hanako,21,1
-3,Smith,30,
-4,Jun,22,4
-```
-
-Count the number of records.
-
-```
-$ csvt count -i input.csv
-4
-```
-
-Count the number of lines, including headers.
-
-```
-$ csvt count -i input.csv --header
-5
-```
-
-Counts the number of records for which a value exists in "CompanyID".
-
-```
-$ csvt count -i input.csv -c CompanyID
-3
 ```
 
 ## filter
