@@ -14,16 +14,16 @@ func TestRenameCmd(t *testing.T) {
 `
 
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"rename",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "B",
 		"-a", "B-before",
 	})
@@ -33,7 +33,7 @@ func TestRenameCmd(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "A,B-before,C,D\r\n" +
 		"1,x,a,_\r\n" +
@@ -52,16 +52,16 @@ func TestRenameCmd_format(t *testing.T) {
 `
 
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"rename",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "B",
 		"-a", "B-before",
 		"--delim", `\t`,
@@ -72,7 +72,7 @@ func TestRenameCmd_format(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "A\tB-before\r\n" +
 		"1\tx\r\n"
@@ -91,16 +91,16 @@ func TestRenameCmd_columns(t *testing.T) {
 `
 
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"rename",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "C",
 		"-a", "A",
 		"-c", "A",
@@ -112,7 +112,7 @@ func TestRenameCmd_columns(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "C,B,A,D\r\n" +
 		"1,x,a,_\r\n" +
@@ -127,16 +127,16 @@ func TestRenameCmd_columns(t *testing.T) {
 func TestRenameCmd_fileNotFound(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"rename",
-		"-i", fi.Name() + "____", // 存在しないファイル名を指定
-		"-o", fo.Name(),
+		"-i", fi + "____", // 存在しないファイル名を指定
+		"-o", fo,
 		"-c", "before",
 		"-a", "after",
 	})
@@ -147,7 +147,7 @@ func TestRenameCmd_fileNotFound(t *testing.T) {
 	}
 
 	pathErr := err.(*os.PathError)
-	if pathErr.Path != fi.Name()+"____" || pathErr.Op != "open" {
+	if pathErr.Path != fi+"____" || pathErr.Op != "open" {
 		t.Fatal("failed test\n", err)
 	}
 }
@@ -160,16 +160,16 @@ func TestRenameCmd_columnNotFound(t *testing.T) {
 3,z,c,_
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"rename",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "a", // 存在しないカラム
 		"-a", "after",
 	})
@@ -183,16 +183,16 @@ func TestRenameCmd_columnNotFound(t *testing.T) {
 func TestRenameCmd_empty(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"rename",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "A",
 		"-a", "a",
 	})
@@ -206,16 +206,16 @@ func TestRenameCmd_empty(t *testing.T) {
 func TestRenameCmd_column_unmatched(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"rename",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "A",
 		"-c", "B",
 		"-a", "a",
@@ -230,16 +230,16 @@ func TestRenameCmd_column_unmatched(t *testing.T) {
 func TestRenameCmd_invalidFormat(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"rename",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "A",
 		"-a", "a",
 		"--delim", "__",

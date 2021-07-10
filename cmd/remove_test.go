@@ -13,16 +13,16 @@ func TestRemoveCmd(t *testing.T) {
 2,"Hanako, Sato",3
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"remove",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "CompanyID",
 	})
 
@@ -31,7 +31,7 @@ func TestRemoveCmd(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "ID,Name\r\n" +
 		"1,Yamada\r\n" +
@@ -50,16 +50,16 @@ func TestRemoveCmd_format(t *testing.T) {
 		"5,Ichikawa,1\tx\t" +
 		"2,\"Hanako, Sato\",3\tx\t"
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"remove",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "CompanyID",
 		"--sep", `\tx\t`,
 	})
@@ -69,7 +69,7 @@ func TestRemoveCmd_format(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "ID,Name\tx\t" +
 		"1,Yamada\tx\t" +
@@ -89,16 +89,16 @@ func TestRemoveCmd_columns(t *testing.T) {
 2,"Hanako, Sato",3
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"remove",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "CompanyID",
 		"-c", "ID",
 	})
@@ -108,7 +108,7 @@ func TestRemoveCmd_columns(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "Name\r\n" +
 		"Yamada\r\n" +
@@ -123,16 +123,16 @@ func TestRemoveCmd_columns(t *testing.T) {
 func TestRemoveCmd_fileNotFound(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"remove",
-		"-i", fi.Name() + "____", // 存在しないファイル名を指定
-		"-o", fo.Name(),
+		"-i", fi + "____", // 存在しないファイル名を指定
+		"-o", fo,
 		"-c", "CompanyID",
 	})
 
@@ -142,7 +142,7 @@ func TestRemoveCmd_fileNotFound(t *testing.T) {
 	}
 
 	pathErr := err.(*os.PathError)
-	if pathErr.Path != fi.Name()+"____" || pathErr.Op != "open" {
+	if pathErr.Path != fi+"____" || pathErr.Op != "open" {
 		t.Fatal("failed test\n", err)
 	}
 }
@@ -155,16 +155,16 @@ func TestRemoveCmd_columnNotFound(t *testing.T) {
 2,"Hanako, Sato",3
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"remove",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "Company", // 存在しないカラム
 	})
 
@@ -177,16 +177,16 @@ func TestRemoveCmd_columnNotFound(t *testing.T) {
 func TestRemoveCmd_empty(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"remove",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "CompanyID",
 	})
 
@@ -199,16 +199,16 @@ func TestRemoveCmd_empty(t *testing.T) {
 func TestRemoveCmd_invalidFormat(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"remove",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "CompanyID",
 		"--encoding", "xxxx",
 	})

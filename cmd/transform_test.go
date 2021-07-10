@@ -13,16 +13,16 @@ func TestTransformCmd(t *testing.T) {
 2,"Hanako, Sato"
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"transform",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"--out-delim", ";",
 		"--out-quote", "'",
 		"--out-sep", "|",
@@ -34,7 +34,7 @@ func TestTransformCmd(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "'ID';'Name'|'1';'Taro; Yamada'|'2';'Hanako, Sato'|"
 	if result != expect {
@@ -47,16 +47,16 @@ func TestTransformCmd_format(t *testing.T) {
 	s := "ID/Name%1/Taro; Yamada%2/$Hanako, Sato$%"
 
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"transform",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"--delim", "/",
 		"--quote", "$",
 		"--sep", "%",
@@ -72,7 +72,7 @@ func TestTransformCmd_format(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "\uFEFF'ID';'Name'|'1';'Taro; Yamada'|'2';'Hanako, Sato'|"
 	if result != expect {
@@ -83,16 +83,16 @@ func TestTransformCmd_format(t *testing.T) {
 func TestTransformCmd_fileNotFound(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"transform",
-		"-i", fi.Name() + "____", // 存在しないファイル名を指定
-		"-o", fo.Name(),
+		"-i", fi + "____", // 存在しないファイル名を指定
+		"-o", fo,
 		"--out-allquote",
 	})
 
@@ -102,7 +102,7 @@ func TestTransformCmd_fileNotFound(t *testing.T) {
 	}
 
 	pathErr := err.(*os.PathError)
-	if pathErr.Path != fi.Name()+"____" || pathErr.Op != "open" {
+	if pathErr.Path != fi+"____" || pathErr.Op != "open" {
 		t.Fatal("failed test\n", err)
 	}
 }
@@ -110,16 +110,16 @@ func TestTransformCmd_fileNotFound(t *testing.T) {
 func TestTransformCmd_empty(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"transform",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"--out-allquote",
 	})
 
@@ -128,7 +128,7 @@ func TestTransformCmd_empty(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	if result != "" {
 		t.Fatal("failed test\n", result)
@@ -142,16 +142,16 @@ func TestTransformCmd_delim(t *testing.T) {
 2	"Hanako	Sato"
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"transform",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"--delim", `\t`,
 	})
 
@@ -160,7 +160,7 @@ func TestTransformCmd_delim(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "ID,Name\r\n" +
 		"1,Taro\r\n" +
@@ -174,16 +174,16 @@ func TestTransformCmd_delim(t *testing.T) {
 func TestTransformCmd_delim_multichar(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"transform",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"--delim", `;;`,
 	})
 
@@ -200,16 +200,16 @@ func TestTransformCmd_delim_multibyte(t *testing.T) {
 2　"Hanako　Sato"
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"transform",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"--delim", `\u3000`, // マルチバイトとなる全角スペース
 	})
 
@@ -218,7 +218,7 @@ func TestTransformCmd_delim_multibyte(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "ID,Name\r\n" +
 		"1,Taro\r\n" +
@@ -232,16 +232,16 @@ func TestTransformCmd_delim_multibyte(t *testing.T) {
 func TestTransformCmd_delim_parseError(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"transform",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"--delim", `\t"`,
 	})
 
@@ -258,16 +258,16 @@ func TestTransformCmd_quote(t *testing.T) {
 2,'Hanako, Sato'
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"transform",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"--quote", "'",
 	})
 
@@ -276,7 +276,7 @@ func TestTransformCmd_quote(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "ID,Name\r\n" +
 		"1,Taro\r\n" +
@@ -290,16 +290,16 @@ func TestTransformCmd_quote(t *testing.T) {
 func TestTransformCmd_quote_multichar(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"transform",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"--quote", "''",
 	})
 
@@ -313,16 +313,16 @@ func TestTransformCmd_sep(t *testing.T) {
 
 	s := `ID,Name|1,Taro|2,"Hanako, Sato"`
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"transform",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"--sep", "|",
 	})
 
@@ -331,7 +331,7 @@ func TestTransformCmd_sep(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "ID,Name\r\n" +
 		"1,Taro\r\n" +
@@ -345,16 +345,16 @@ func TestTransformCmd_sep(t *testing.T) {
 func TestTransformCmd_sep_parseError(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"transform",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"--sep", `\r"`,
 	})
 
@@ -367,13 +367,13 @@ func TestTransformCmd_sep_parseError(t *testing.T) {
 func TestTransformCmd_encoding(t *testing.T) {
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"transform",
 		"-i", "../testdata/users-sjis.csv",
-		"-o", fo.Name(),
+		"-o", fo,
 		"--encoding", "sjis",
 	})
 
@@ -382,7 +382,7 @@ func TestTransformCmd_encoding(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "ID,名前,年齢\r\n" +
 		"1,\"Taro, Yamada\",20\r\n" +
@@ -396,13 +396,13 @@ func TestTransformCmd_encoding(t *testing.T) {
 func TestTransformCmd_out_encoding(t *testing.T) {
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"transform",
 		"-i", "../testdata/users-utf8.csv",
-		"-o", fo.Name(),
+		"-o", fo,
 		"--out-encoding", "sjis",
 		"--out-bom", // UTF-8ではないのでBOM指定しても付かない
 	})
@@ -412,7 +412,7 @@ func TestTransformCmd_out_encoding(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result, err := os.ReadFile(fo.Name())
+	result, err := os.ReadFile(fo)
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -430,16 +430,16 @@ func TestTransformCmd_out_encoding(t *testing.T) {
 func TestTransformCmd_encoding_invalid(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"transform",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"--out-encoding", "utf",
 	})
 

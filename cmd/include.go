@@ -104,7 +104,10 @@ func include(reader csv.CsvReader, targetColumnName string, anotherReader csv.Cs
 		return errors.Wrap(err, "failed to read the another CSV file")
 	}
 
-	writer.Write(inputColumnNames)
+	err = writer.Write(inputColumnNames)
+	if err != nil {
+		return err
+	}
 
 	for {
 		row, err := reader.Read()

@@ -16,16 +16,16 @@ func TestChooseCmd(t *testing.T) {
 2,"Hanako, Sato",3
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"choose",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "CompanyID",
 	})
 
@@ -34,7 +34,7 @@ func TestChooseCmd(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "CompanyID\r\n" +
 		"1\r\n" +
@@ -50,16 +50,16 @@ func TestChooseCmd_format(t *testing.T) {
 
 	s := "ID;Name;CompanyID|1;Yamada;1|5;Ichikawa;1|2;'Hanako; Sato';3"
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"choose",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "CompanyID",
 		"--delim", ";",
 		"--quote", "'",
@@ -72,7 +72,7 @@ func TestChooseCmd_format(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	bo, err := os.ReadFile(fo.Name())
+	bo, err := os.ReadFile(fo)
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -94,16 +94,16 @@ func TestChooseCmd_columns(t *testing.T) {
 2,"Hanako, Sato",3
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"choose",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "CompanyID",
 		"-c", "ID",
 	})
@@ -113,7 +113,7 @@ func TestChooseCmd_columns(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "ID,CompanyID\r\n" +
 		"1,1\r\n" +
@@ -128,16 +128,16 @@ func TestChooseCmd_columns(t *testing.T) {
 func TestChooseCmd_fileNotFound(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"choose",
-		"-i", fi.Name() + "____", // 存在しないファイル名を指定
-		"-o", fo.Name(),
+		"-i", fi + "____", // 存在しないファイル名を指定
+		"-o", fo,
 		"-c", "CompanyID",
 	})
 
@@ -147,7 +147,7 @@ func TestChooseCmd_fileNotFound(t *testing.T) {
 	}
 
 	pathErr := err.(*os.PathError)
-	if pathErr.Path != fi.Name()+"____" || pathErr.Op != "open" {
+	if pathErr.Path != fi+"____" || pathErr.Op != "open" {
 		t.Fatal("failed test\n", err)
 	}
 }
@@ -160,16 +160,16 @@ func TestChooseCmd_columnNotFound(t *testing.T) {
 2,"Hanako, Sato",3
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"choose",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "Company", // 存在しないカラム
 	})
 
@@ -182,16 +182,16 @@ func TestChooseCmd_columnNotFound(t *testing.T) {
 func TestChooseCmd_empty(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"choose",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "CompanyID",
 	})
 
@@ -204,13 +204,13 @@ func TestChooseCmd_empty(t *testing.T) {
 func TestChooseCmd_encoding(t *testing.T) {
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"choose",
 		"-i", "../testdata/users-sjis.csv",
-		"-o", fo.Name(),
+		"-o", fo,
 		"-c", "名前",
 		"--encoding", "shift_jis",
 	})
@@ -220,7 +220,7 @@ func TestChooseCmd_encoding(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	b, err := os.ReadFile(fo.Name())
+	b, err := os.ReadFile(fo)
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}
@@ -241,16 +241,16 @@ func TestChooseCmd_encoding(t *testing.T) {
 func TestChooseCmd_invalidFormat(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"choose",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "CompanyID",
 		"--quote", "xxx",
 	})

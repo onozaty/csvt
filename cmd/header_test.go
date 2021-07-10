@@ -14,12 +14,12 @@ func TestHeaderCmd(t *testing.T) {
 2,"Hanako, Sato",3
 `
 	f := createTempFile(t, s)
-	defer os.Remove(f.Name())
+	defer os.Remove(f)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"header",
-		"-i", f.Name(),
+		"-i", f,
 	})
 
 	buf := new(bytes.Buffer)
@@ -41,12 +41,12 @@ func TestHeaderCmd_format(t *testing.T) {
 
 	s := "ID;Name;CompanyID|1;Yamada;1|5;Ichikawa;1|2;'Hanako; Sato';3"
 	f := createTempFile(t, s)
-	defer os.Remove(f.Name())
+	defer os.Remove(f)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"header",
-		"-i", f.Name(),
+		"-i", f,
 		"--delim", ";",
 		"--quote", "'",
 		"--sep", "|",
@@ -70,12 +70,12 @@ func TestHeaderCmd_format(t *testing.T) {
 func TestHeaderCmd_fileNotFound(t *testing.T) {
 
 	f := createTempFile(t, "")
-	defer os.Remove(f.Name())
+	defer os.Remove(f)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"header",
-		"-i", f.Name() + "____", // 存在しないファイル名を指定
+		"-i", f + "____", // 存在しないファイル名を指定
 	})
 
 	err := rootCmd.Execute()
@@ -84,7 +84,7 @@ func TestHeaderCmd_fileNotFound(t *testing.T) {
 	}
 
 	pathErr := err.(*os.PathError)
-	if pathErr.Path != f.Name()+"____" || pathErr.Op != "open" {
+	if pathErr.Path != f+"____" || pathErr.Op != "open" {
 		t.Fatal("failed test\n", err)
 	}
 }
@@ -92,12 +92,12 @@ func TestHeaderCmd_fileNotFound(t *testing.T) {
 func TestHeaderCmd_empty(t *testing.T) {
 
 	f := createTempFile(t, "")
-	defer os.Remove(f.Name())
+	defer os.Remove(f)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"header",
-		"-i", f.Name(),
+		"-i", f,
 	})
 
 	err := rootCmd.Execute()
@@ -252,12 +252,12 @@ func TestHeaderCmd_encoding_euc_jp(t *testing.T) {
 func TestHeaderCmd_invalidFormat(t *testing.T) {
 
 	f := createTempFile(t, "")
-	defer os.Remove(f.Name())
+	defer os.Remove(f)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"header",
-		"-i", f.Name(),
+		"-i", f,
 		"--quote", "zz",
 	})
 

@@ -5,16 +5,17 @@ import (
 	"testing"
 )
 
-func TestUniqueCmd(t *testing.T) {
+func TestSliceCmd(t *testing.T) {
 
-	s := `col1,col2,col3
-1,2,3
-2,2,2
-1,1,1
-1,2,3
-3,2,1
-3,3,3
-`
+	s := joinRows(
+		"col1,col2",
+		"1,a",
+		"2,b",
+		"3,c",
+		"4,d",
+		"5,e",
+	)
+
 	fi := createTempFile(t, s)
 	defer os.Remove(fi)
 
@@ -23,10 +24,11 @@ func TestUniqueCmd(t *testing.T) {
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
-		"unique",
+		"slice",
 		"-i", fi,
-		"-c", "col1",
 		"-o", fo,
+		"-s", "2",
+		"-e", "4",
 	})
 
 	err := rootCmd.Execute()
@@ -37,10 +39,10 @@ func TestUniqueCmd(t *testing.T) {
 	result := readString(t, fo)
 
 	expect := joinRows(
-		"col1,col2,col3",
-		"1,2,3",
-		"2,2,2",
-		"3,2,1",
+		"col1,col2",
+		"2,b",
+		"3,c",
+		"4,d",
 	)
 
 	if result != expect {
@@ -48,13 +50,17 @@ func TestUniqueCmd(t *testing.T) {
 	}
 }
 
-func TestUniqueCmd_format(t *testing.T) {
+func TestSliceCmd_startOnly(t *testing.T) {
 
-	s := `col1	col2	col3
-1	2	3
-1	2	3
-2	2	3
-`
+	s := joinRows(
+		"col1,col2",
+		"1,a",
+		"2,b",
+		"3,c",
+		"4,d",
+		"5,e",
+	)
+
 	fi := createTempFile(t, s)
 	defer os.Remove(fi)
 
@@ -63,11 +69,10 @@ func TestUniqueCmd_format(t *testing.T) {
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
-		"unique",
+		"slice",
 		"-i", fi,
-		"-c", "col1",
 		"-o", fo,
-		"--delim", `\t`,
+		"-s", "3",
 	})
 
 	err := rootCmd.Execute()
@@ -78,9 +83,10 @@ func TestUniqueCmd_format(t *testing.T) {
 	result := readString(t, fo)
 
 	expect := joinRows(
-		"col1\tcol2\tcol3",
-		"1\t2\t3",
-		"2\t2\t3",
+		"col1,col2",
+		"3,c",
+		"4,d",
+		"5,e",
 	)
 
 	if result != expect {
@@ -88,17 +94,17 @@ func TestUniqueCmd_format(t *testing.T) {
 	}
 }
 
-func TestUniqueCmd_multiColumn(t *testing.T) {
+func TestSliceCmd_endOnly(t *testing.T) {
 
-	s := `col1,col2,col3
-1,11,3
-11,1,2
-1,11,1
-1,2,3
-3,2,1
-2,3,3
-2,3,1
-`
+	s := joinRows(
+		"col1,col2",
+		"1,a",
+		"2,b",
+		"3,c",
+		"4,d",
+		"5,e",
+	)
+
 	fi := createTempFile(t, s)
 	defer os.Remove(fi)
 
@@ -107,11 +113,10 @@ func TestUniqueCmd_multiColumn(t *testing.T) {
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
-		"unique",
+		"slice",
 		"-i", fi,
-		"-c", "col1",
-		"-c", "col2",
 		"-o", fo,
+		"-e", "3",
 	})
 
 	err := rootCmd.Execute()
@@ -122,12 +127,10 @@ func TestUniqueCmd_multiColumn(t *testing.T) {
 	result := readString(t, fo)
 
 	expect := joinRows(
-		"col1,col2,col3",
-		"1,11,3",
-		"11,1,2",
-		"1,2,3",
-		"3,2,1",
-		"2,3,3",
+		"col1,col2",
+		"1,a",
+		"2,b",
+		"3,c",
 	)
 
 	if result != expect {
@@ -135,11 +138,17 @@ func TestUniqueCmd_multiColumn(t *testing.T) {
 	}
 }
 
-func TestUniqueCmd_columnNotFound(t *testing.T) {
+func TestSliceCmd_sameStartEnd(t *testing.T) {
 
-	s := `col1,col2,col3
-1,2,3
-`
+	s := joinRows(
+		"col1,col2",
+		"1,a",
+		"2,b",
+		"3,c",
+		"4,d",
+		"5,e",
+	)
+
 	fi := createTempFile(t, s)
 	defer os.Remove(fi)
 
@@ -148,19 +157,64 @@ func TestUniqueCmd_columnNotFound(t *testing.T) {
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
-		"unique",
+		"slice",
 		"-i", fi,
-		"-c", "col4",
 		"-o", fo,
+		"-s", "1",
+		"-e", "1",
 	})
 
 	err := rootCmd.Execute()
-	if err == nil || err.Error() != "missing col4 in the CSV file" {
+	if err != nil {
 		t.Fatal("failed test\n", err)
+	}
+
+	result := readString(t, fo)
+
+	expect := joinRows(
+		"col1,col2",
+		"1,a",
+	)
+
+	if result != expect {
+		t.Fatal("failed test\n", result)
 	}
 }
 
-func TestUniqueCmd_invalidFormat(t *testing.T) {
+func TestSliceCmd_format(t *testing.T) {
+
+	s := "col1,col2;1,a;2,b;"
+
+	fi := createTempFile(t, s)
+	defer os.Remove(fi)
+
+	fo := createTempFile(t, "")
+	defer os.Remove(fo)
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"slice",
+		"-i", fi,
+		"-o", fo,
+		"-s", "2",
+		"--sep", ";",
+	})
+
+	err := rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := readString(t, fo)
+
+	expect := "col1,col2;2,b;"
+
+	if result != expect {
+		t.Fatal("failed test\n", result)
+	}
+}
+
+func TestSliceCmd_invalidFormat(t *testing.T) {
 
 	fi := createTempFile(t, "")
 	defer os.Remove(fi)
@@ -170,20 +224,20 @@ func TestUniqueCmd_invalidFormat(t *testing.T) {
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
-		"unique",
+		"slice",
 		"-i", fi,
-		"-c", "col1",
 		"-o", fo,
-		"--delim", "zz",
+		"-s", "2",
+		"--quote", ";;",
 	})
 
 	err := rootCmd.Execute()
-	if err == nil || err.Error() != "flag delim should be specified with a single character" {
+	if err == nil || err.Error() != "flag quote should be specified with a single character" {
 		t.Fatal("failed test\n", err)
 	}
 }
 
-func TestUniqueCmd_empty(t *testing.T) {
+func TestSliceCmd_start0(t *testing.T) {
 
 	fi := createTempFile(t, "")
 	defer os.Remove(fi)
@@ -193,19 +247,19 @@ func TestUniqueCmd_empty(t *testing.T) {
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
-		"unique",
+		"slice",
 		"-i", fi,
-		"-c", "col1",
 		"-o", fo,
+		"-s", "0",
 	})
 
 	err := rootCmd.Execute()
-	if err == nil || err.Error() != "failed to read the CSV file: EOF" {
+	if err == nil || err.Error() != "start must be greater than or equal to 1" {
 		t.Fatal("failed test\n", err)
 	}
 }
 
-func TestUniqueCmd_inputFileNotFound(t *testing.T) {
+func TestSliceCmd_endStart(t *testing.T) {
 
 	fi := createTempFile(t, "")
 	defer os.Remove(fi)
@@ -215,10 +269,55 @@ func TestUniqueCmd_inputFileNotFound(t *testing.T) {
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
-		"unique",
+		"slice",
+		"-i", fi,
+		"-o", fo,
+		"-s", "10",
+		"-e", "9",
+	})
+
+	err := rootCmd.Execute()
+	if err == nil || err.Error() != "end must be greater than or equal to start" {
+		t.Fatal("failed test\n", err)
+	}
+}
+
+func TestSliceCmd_empty(t *testing.T) {
+
+	fi := createTempFile(t, "")
+	defer os.Remove(fi)
+
+	fo := createTempFile(t, "")
+	defer os.Remove(fo)
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"slice",
+		"-i", fi,
+		"-o", fo,
+		"-s", "1",
+	})
+
+	err := rootCmd.Execute()
+	if err == nil || err.Error() != "failed to read the input CSV file: EOF" {
+		t.Fatal("failed test\n", err)
+	}
+}
+
+func TestSliceCmd_inputFileNotFound(t *testing.T) {
+
+	fi := createTempFile(t, "")
+	defer os.Remove(fi)
+
+	fo := createTempFile(t, "")
+	defer os.Remove(fo)
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"slice",
 		"-i", fi + "____", // 存在しないファイル
-		"-c", "col1",
 		"-o", fo,
+		"-s", "1",
 	})
 
 	err := rootCmd.Execute()
@@ -228,33 +327,6 @@ func TestUniqueCmd_inputFileNotFound(t *testing.T) {
 
 	pathErr := err.(*os.PathError)
 	if pathErr.Path != fi+"____" || pathErr.Op != "open" {
-		t.Fatal("failed test\n", err)
-	}
-}
-
-func TestUniqueCmd_outputFileNotFound(t *testing.T) {
-
-	fi := createTempFile(t, "")
-	defer os.Remove(fi)
-
-	fo := createTempFile(t, "")
-	defer os.Remove(fo)
-
-	rootCmd := newRootCmd()
-	rootCmd.SetArgs([]string{
-		"unique",
-		"-i", fi,
-		"-c", "col1",
-		"-o", fo + "/___", // 存在しないディレクトリ
-	})
-
-	err := rootCmd.Execute()
-	if err == nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	pathErr := err.(*os.PathError)
-	if pathErr.Path != fo+"/___" || pathErr.Op != "open" {
 		t.Fatal("failed test\n", err)
 	}
 }

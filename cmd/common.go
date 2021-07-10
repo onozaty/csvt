@@ -109,7 +109,7 @@ func getTargetColumnsIndexes(allColumnNames []string, targetColumnNames []string
 
 		targetColumnIndexes := []int{}
 
-		for i, _ := range allColumnNames {
+		for i := range allColumnNames {
 			targetColumnIndexes = append(targetColumnIndexes, i)
 		}
 

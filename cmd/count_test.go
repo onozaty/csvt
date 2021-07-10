@@ -14,12 +14,12 @@ func TestCountCmd(t *testing.T) {
 2,"Hanako, Sato",3
 `
 	f := createTempFile(t, s)
-	defer os.Remove(f.Name())
+	defer os.Remove(f)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"count",
-		"-i", f.Name(),
+		"-i", f,
 	})
 
 	buf := new(bytes.Buffer)
@@ -45,12 +45,12 @@ func TestCountCmd_format(t *testing.T) {
 2	"Hanako	Sato"	3
 `
 	f := createTempFile(t, s)
-	defer os.Remove(f.Name())
+	defer os.Remove(f)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"count",
-		"-i", f.Name(),
+		"-i", f,
 		"--delim", `\t`,
 	})
 
@@ -77,12 +77,12 @@ func TestCountCmd_column(t *testing.T) {
 2,"Hanako, Sato",3
 `
 	f := createTempFile(t, s)
-	defer os.Remove(f.Name())
+	defer os.Remove(f)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"count",
-		"-i", f.Name(),
+		"-i", f,
 		"-c", "CompanyID",
 	})
 
@@ -109,12 +109,12 @@ func TestCountCmd_header(t *testing.T) {
 2,"Hanako, Sato",3
 `
 	f := createTempFile(t, s)
-	defer os.Remove(f.Name())
+	defer os.Remove(f)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"count",
-		"-i", f.Name(),
+		"-i", f,
 		"--header",
 	})
 
@@ -136,12 +136,12 @@ func TestCountCmd_header(t *testing.T) {
 func TestCountCmd_fileNotFound(t *testing.T) {
 
 	f := createTempFile(t, "")
-	defer os.Remove(f.Name())
+	defer os.Remove(f)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"count",
-		"-i", f.Name() + "____", // 存在しないファイル名を指定
+		"-i", f + "____", // 存在しないファイル名を指定
 	})
 
 	err := rootCmd.Execute()
@@ -150,7 +150,7 @@ func TestCountCmd_fileNotFound(t *testing.T) {
 	}
 
 	pathErr := err.(*os.PathError)
-	if pathErr.Path != f.Name()+"____" || pathErr.Op != "open" {
+	if pathErr.Path != f+"____" || pathErr.Op != "open" {
 		t.Fatal("failed test\n", err)
 	}
 }
@@ -163,12 +163,12 @@ func TestCountCmd_columnNotFound(t *testing.T) {
 2,"Hanako, Sato",3
 `
 	f := createTempFile(t, s)
-	defer os.Remove(f.Name())
+	defer os.Remove(f)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"count",
-		"-i", f.Name(),
+		"-i", f,
 		"-c", "Company", // 存在しないカラム
 	})
 
@@ -181,12 +181,12 @@ func TestCountCmd_columnNotFound(t *testing.T) {
 func TestCountCmd_empty(t *testing.T) {
 
 	f := createTempFile(t, "")
-	defer os.Remove(f.Name())
+	defer os.Remove(f)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"count",
-		"-i", f.Name(),
+		"-i", f,
 	})
 
 	err := rootCmd.Execute()
@@ -198,12 +198,12 @@ func TestCountCmd_empty(t *testing.T) {
 func TestCountCmd_args(t *testing.T) {
 
 	f := createTempFile(t, "")
-	defer os.Remove(f.Name())
+	defer os.Remove(f)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"count",
-		"-i", f.Name(),
+		"-i", f,
 		"aaaa", // フラグ以外を指定
 	})
 
@@ -216,12 +216,12 @@ func TestCountCmd_args(t *testing.T) {
 func TestCountCmd_invalidFormat(t *testing.T) {
 
 	f := createTempFile(t, "")
-	defer os.Remove(f.Name())
+	defer os.Remove(f)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"count",
-		"-i", f.Name(),
+		"-i", f,
 		"--delim", "aa",
 	})
 

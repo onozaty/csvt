@@ -125,7 +125,10 @@ func join(first csv.CsvReader, second csv.CsvReader, joinColumnName string, writ
 	// 追加するものは、結合用のカラムを除く
 	appendsecondColumnNames := util.Remove(secondTable.ColumnNames(), secondJoinColumnName)
 	outColumnNames := append(firstColumnNames, appendsecondColumnNames...)
-	writer.Write(outColumnNames)
+	err = writer.Write(outColumnNames)
+	if err != nil {
+		return err
+	}
 
 	// 基準となるCSVを読み込みながら、結合用のカラムの値をキーとしてもう片方のCSVから値を取得
 	for {
