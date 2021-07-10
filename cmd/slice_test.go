@@ -17,16 +17,16 @@ func TestSliceCmd(t *testing.T) {
 	)
 
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"slice",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-s", "2",
 		"-e", "4",
 	})
@@ -36,7 +36,7 @@ func TestSliceCmd(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := joinRows(
 		"col1,col2",
@@ -62,16 +62,16 @@ func TestSliceCmd_startOnly(t *testing.T) {
 	)
 
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"slice",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-s", "3",
 	})
 
@@ -80,7 +80,7 @@ func TestSliceCmd_startOnly(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := joinRows(
 		"col1,col2",
@@ -106,16 +106,16 @@ func TestSliceCmd_endOnly(t *testing.T) {
 	)
 
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"slice",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-e", "3",
 	})
 
@@ -124,7 +124,7 @@ func TestSliceCmd_endOnly(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := joinRows(
 		"col1,col2",
@@ -150,16 +150,16 @@ func TestSliceCmd_sameStartEnd(t *testing.T) {
 	)
 
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"slice",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-s", "1",
 		"-e", "1",
 	})
@@ -169,7 +169,7 @@ func TestSliceCmd_sameStartEnd(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := joinRows(
 		"col1,col2",
@@ -186,16 +186,16 @@ func TestSliceCmd_format(t *testing.T) {
 	s := "col1,col2;1,a;2,b;"
 
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"slice",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-s", "2",
 		"--sep", ";",
 	})
@@ -205,7 +205,7 @@ func TestSliceCmd_format(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "col1,col2;2,b;"
 
@@ -217,16 +217,16 @@ func TestSliceCmd_format(t *testing.T) {
 func TestSliceCmd_invalidFormat(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"slice",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-s", "2",
 		"--quote", ";;",
 	})
@@ -240,16 +240,16 @@ func TestSliceCmd_invalidFormat(t *testing.T) {
 func TestSliceCmd_start0(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"slice",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-s", "0",
 	})
 
@@ -262,16 +262,16 @@ func TestSliceCmd_start0(t *testing.T) {
 func TestSliceCmd_endStart(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"slice",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-s", "10",
 		"-e", "9",
 	})
@@ -285,16 +285,16 @@ func TestSliceCmd_endStart(t *testing.T) {
 func TestSliceCmd_empty(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"slice",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-s", "1",
 	})
 
@@ -307,16 +307,16 @@ func TestSliceCmd_empty(t *testing.T) {
 func TestSliceCmd_inputFileNotFound(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"slice",
-		"-i", fi.Name() + "____", // 存在しないファイル
-		"-o", fo.Name(),
+		"-i", fi + "____", // 存在しないファイル
+		"-o", fo,
 		"-s", "1",
 	})
 
@@ -326,7 +326,7 @@ func TestSliceCmd_inputFileNotFound(t *testing.T) {
 	}
 
 	pathErr := err.(*os.PathError)
-	if pathErr.Path != fi.Name()+"____" || pathErr.Op != "open" {
+	if pathErr.Path != fi+"____" || pathErr.Op != "open" {
 		t.Fatal("failed test\n", err)
 	}
 }

@@ -13,24 +13,24 @@ func TestConcatCmd(t *testing.T) {
 3,4
 `
 	fi1 := createTempFile(t, s1)
-	defer os.Remove(fi1.Name())
+	defer os.Remove(fi1)
 
 	s2 := `col1,col2
 2,x
 3,y
 `
 	fi2 := createTempFile(t, s2)
-	defer os.Remove(fi2.Name())
+	defer os.Remove(fi2)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"concat",
-		"-1", fi1.Name(),
-		"-2", fi2.Name(),
-		"-o", fo.Name(),
+		"-1", fi1,
+		"-2", fi2,
+		"-o", fo,
 	})
 
 	err := rootCmd.Execute()
@@ -38,7 +38,7 @@ func TestConcatCmd(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := joinRows(
 		"col1,col2",
@@ -61,24 +61,24 @@ func TestConcatCmd_swap(t *testing.T) {
 2,y2,y3
 `
 	fi1 := createTempFile(t, s1)
-	defer os.Remove(fi1.Name())
+	defer os.Remove(fi1)
 
 	s2 := `col2,col3,col1
 a2,a3,3
 b2,b3,4
 `
 	fi2 := createTempFile(t, s2)
-	defer os.Remove(fi2.Name())
+	defer os.Remove(fi2)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"concat",
-		"-1", fi1.Name(),
-		"-2", fi2.Name(),
-		"-o", fo.Name(),
+		"-1", fi1,
+		"-2", fi2,
+		"-o", fo,
 	})
 
 	err := rootCmd.Execute()
@@ -86,7 +86,7 @@ b2,b3,4
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := joinRows(
 		"col1,col2,col3",
@@ -107,23 +107,23 @@ func TestConcatCmd_format(t *testing.T) {
 1	2
 `
 	fi1 := createTempFile(t, s1)
-	defer os.Remove(fi1.Name())
+	defer os.Remove(fi1)
 
 	s2 := `col1	col2
 a	b
 `
 	fi2 := createTempFile(t, s2)
-	defer os.Remove(fi2.Name())
+	defer os.Remove(fi2)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"concat",
-		"-1", fi1.Name(),
-		"-2", fi2.Name(),
-		"-o", fo.Name(),
+		"-1", fi1,
+		"-2", fi2,
+		"-o", fo,
 		"--delim", `\t`,
 	})
 
@@ -132,7 +132,7 @@ a	b
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := joinRows(
 		"col1\tcol2",
@@ -148,20 +148,20 @@ a	b
 func TestConcatCmd_invalidFormat(t *testing.T) {
 
 	fi1 := createTempFile(t, "")
-	defer os.Remove(fi1.Name())
+	defer os.Remove(fi1)
 
 	fi2 := createTempFile(t, "")
-	defer os.Remove(fi2.Name())
+	defer os.Remove(fi2)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"concat",
-		"-1", fi1.Name(),
-		"-2", fi2.Name(),
-		"-o", fo.Name(),
+		"-1", fi1,
+		"-2", fi2,
+		"-o", fo,
 		"--delim", `\t\t`,
 	})
 
@@ -177,23 +177,23 @@ func TestConcatCmd_columnCountUnmatch(t *testing.T) {
 1,2
 `
 	fi1 := createTempFile(t, s1)
-	defer os.Remove(fi1.Name())
+	defer os.Remove(fi1)
 
 	s2 := `col1,col2,col3
 2,x,y
 `
 	fi2 := createTempFile(t, s2)
-	defer os.Remove(fi2.Name())
+	defer os.Remove(fi2)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"concat",
-		"-1", fi1.Name(),
-		"-2", fi2.Name(),
-		"-o", fo.Name(),
+		"-1", fi1,
+		"-2", fi2,
+		"-o", fo,
 	})
 
 	err := rootCmd.Execute()
@@ -208,23 +208,23 @@ func TestConcatCmd_columnNotFound(t *testing.T) {
 1,2
 `
 	fi1 := createTempFile(t, s1)
-	defer os.Remove(fi1.Name())
+	defer os.Remove(fi1)
 
 	s2 := `col1,col3
 2,x
 `
 	fi2 := createTempFile(t, s2)
-	defer os.Remove(fi2.Name())
+	defer os.Remove(fi2)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"concat",
-		"-1", fi1.Name(),
-		"-2", fi2.Name(),
-		"-o", fo.Name(),
+		"-1", fi1,
+		"-2", fi2,
+		"-o", fo,
 	})
 
 	err := rootCmd.Execute()
@@ -236,23 +236,23 @@ func TestConcatCmd_columnNotFound(t *testing.T) {
 func TestConcatCmd_firstEmpty(t *testing.T) {
 
 	fi1 := createTempFile(t, "")
-	defer os.Remove(fi1.Name())
+	defer os.Remove(fi1)
 
 	s2 := `col1,col2
 2,x
 `
 	fi2 := createTempFile(t, s2)
-	defer os.Remove(fi2.Name())
+	defer os.Remove(fi2)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"concat",
-		"-1", fi1.Name(),
-		"-2", fi2.Name(),
-		"-o", fo.Name(),
+		"-1", fi1,
+		"-2", fi2,
+		"-o", fo,
 	})
 
 	err := rootCmd.Execute()
@@ -268,20 +268,20 @@ func TestConcatCmd_secondEmpty(t *testing.T) {
 `
 
 	fi1 := createTempFile(t, s1)
-	defer os.Remove(fi1.Name())
+	defer os.Remove(fi1)
 
 	fi2 := createTempFile(t, "")
-	defer os.Remove(fi2.Name())
+	defer os.Remove(fi2)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"concat",
-		"-1", fi1.Name(),
-		"-2", fi2.Name(),
-		"-o", fo.Name(),
+		"-1", fi1,
+		"-2", fi2,
+		"-o", fo,
 	})
 
 	err := rootCmd.Execute()
@@ -293,20 +293,20 @@ func TestConcatCmd_secondEmpty(t *testing.T) {
 func TestConcatCmd_firstFileNotFound(t *testing.T) {
 
 	fi1 := createTempFile(t, "")
-	defer os.Remove(fi1.Name())
+	defer os.Remove(fi1)
 
 	fi2 := createTempFile(t, "")
-	defer os.Remove(fi2.Name())
+	defer os.Remove(fi2)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"concat",
-		"-1", fi1.Name() + "____", // 存在しないファイル
-		"-2", fi2.Name(),
-		"-o", fo.Name(),
+		"-1", fi1 + "____", // 存在しないファイル
+		"-2", fi2,
+		"-o", fo,
 	})
 
 	err := rootCmd.Execute()
@@ -315,7 +315,7 @@ func TestConcatCmd_firstFileNotFound(t *testing.T) {
 	}
 
 	pathErr := err.(*os.PathError)
-	if pathErr.Path != fi1.Name()+"____" || pathErr.Op != "open" {
+	if pathErr.Path != fi1+"____" || pathErr.Op != "open" {
 		t.Fatal("failed test\n", err)
 	}
 }
@@ -323,20 +323,20 @@ func TestConcatCmd_firstFileNotFound(t *testing.T) {
 func TestConcatCmd_secondFileNotFound(t *testing.T) {
 
 	fi1 := createTempFile(t, "")
-	defer os.Remove(fi1.Name())
+	defer os.Remove(fi1)
 
 	fi2 := createTempFile(t, "")
-	defer os.Remove(fi2.Name())
+	defer os.Remove(fi2)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"concat",
-		"-1", fi1.Name(),
-		"-2", fi2.Name() + "____", // 存在しないファイル
-		"-o", fo.Name(),
+		"-1", fi1,
+		"-2", fi2 + "____", // 存在しないファイル
+		"-o", fo,
 	})
 
 	err := rootCmd.Execute()
@@ -345,7 +345,7 @@ func TestConcatCmd_secondFileNotFound(t *testing.T) {
 	}
 
 	pathErr := err.(*os.PathError)
-	if pathErr.Path != fi2.Name()+"____" || pathErr.Op != "open" {
+	if pathErr.Path != fi2+"____" || pathErr.Op != "open" {
 		t.Fatal("failed test\n", err)
 	}
 }
@@ -353,20 +353,20 @@ func TestConcatCmd_secondFileNotFound(t *testing.T) {
 func TestConcatCmd_outputFileNotFound(t *testing.T) {
 
 	fi1 := createTempFile(t, "")
-	defer os.Remove(fi1.Name())
+	defer os.Remove(fi1)
 
 	fi2 := createTempFile(t, "")
-	defer os.Remove(fi2.Name())
+	defer os.Remove(fi2)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"concat",
-		"-1", fi1.Name(),
-		"-2", fi2.Name(),
-		"-o", fo.Name() + "/aa", // 存在しないフォルダ
+		"-1", fi1,
+		"-2", fi2,
+		"-o", fo + "/aa", // 存在しないフォルダ
 	})
 
 	err := rootCmd.Execute()
@@ -375,7 +375,7 @@ func TestConcatCmd_outputFileNotFound(t *testing.T) {
 	}
 
 	pathErr := err.(*os.PathError)
-	if pathErr.Path != fo.Name()+"/aa" || pathErr.Op != "open" {
+	if pathErr.Path != fo+"/aa" || pathErr.Op != "open" {
 		t.Fatal("failed test\n", err)
 	}
 }

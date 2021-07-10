@@ -13,16 +13,16 @@ func TestReplaceCmd(t *testing.T) {
 3,aa  aa,A
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"replace",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "col1",
 		"-r", "a",
 		"-t", "x",
@@ -33,7 +33,7 @@ func TestReplaceCmd(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "id,col1,col2\r\n" +
 		"1,xbc,abc\r\n" +
@@ -53,16 +53,16 @@ func TestReplaceCmd_multiColumn(t *testing.T) {
 3,aa  aa,A
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"replace",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "col1",
 		"-c", "col2",
 		"-r", "a",
@@ -74,7 +74,7 @@ func TestReplaceCmd_multiColumn(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "id,col1,col2\r\n" +
 		"1,xbc,xbc\r\n" +
@@ -94,16 +94,16 @@ a,a,
 x,aa  aa,A
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"replace",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-r", "a",
 		"-t", "x",
 	})
@@ -113,7 +113,7 @@ x,aa  aa,A
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "col1,col2,col3\r\n" +
 		"z,xbc,xbc\r\n" +
@@ -134,16 +134,16 @@ bc",abc
 3,aa  aa,A
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"replace",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "col1",
 		"-r", "^a$",
 		"-t", "x",
@@ -154,7 +154,7 @@ bc",abc
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "id,col1,col2\r\n" +
 		"1,\"a\nbc\",abc\r\n" +
@@ -173,16 +173,16 @@ func TestReplaceCmd_regex_empty(t *testing.T) {
 2,,
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"replace",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "col1",
 		"-r", "^$",
 		"-t", "xxx",
@@ -193,7 +193,7 @@ func TestReplaceCmd_regex_empty(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "id,col1,col2\r\n" +
 		"1,abc,abc\r\n" +
@@ -211,16 +211,16 @@ func TestReplaceCmd_regex_capture(t *testing.T) {
 2,9,
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"replace",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "col1",
 		"-c", "col2",
 		"-r", ".*?([0-9]+).*",
@@ -232,7 +232,7 @@ func TestReplaceCmd_regex_capture(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "id,col1,col2\r\n" +
 		"1,#123,#2\r\n" +
@@ -251,16 +251,16 @@ func TestReplaceCmd_regex_meta(t *testing.T) {
 2,   ,
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"replace",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "col1",
 		"-c", "col2",
 		"-r", `\s`,
@@ -272,7 +272,7 @@ func TestReplaceCmd_regex_meta(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "id,col1,col2\r\n" +
 		"1,ab,ab\r\n" +
@@ -290,16 +290,16 @@ func TestReplaceCmd_format(t *testing.T) {
 2	abc	za
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"replace",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "col1",
 		"-c", "col2",
 		"-r", "a",
@@ -312,7 +312,7 @@ func TestReplaceCmd_format(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "id\tcol1\tcol2\r\n" +
 		"1		bbb\r\n" +
@@ -326,16 +326,16 @@ func TestReplaceCmd_format(t *testing.T) {
 func TestReplaceCmd_regex_invalid(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"replace",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "col1",
 		"-r", `[a-`,
 		"-t", "",
@@ -350,16 +350,16 @@ func TestReplaceCmd_regex_invalid(t *testing.T) {
 func TestReplaceCmd_fileNotFound(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"replace",
-		"-i", fi.Name() + "____", // 存在しないファイル名を指定
-		"-o", fo.Name(),
+		"-i", fi + "____", // 存在しないファイル名を指定
+		"-o", fo,
 		"-c", "col1",
 		"-r", "a",
 		"-t", "",
@@ -371,7 +371,7 @@ func TestReplaceCmd_fileNotFound(t *testing.T) {
 	}
 
 	pathErr := err.(*os.PathError)
-	if pathErr.Path != fi.Name()+"____" || pathErr.Op != "open" {
+	if pathErr.Path != fi+"____" || pathErr.Op != "open" {
 		t.Fatal("failed test\n", err)
 	}
 }
@@ -384,16 +384,16 @@ func TestReplaceCmd_columnNotFound(t *testing.T) {
 `
 
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"replace",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "colx", // 存在しないカラム
 		"-r", "a",
 		"-t", "",
@@ -408,16 +408,16 @@ func TestReplaceCmd_columnNotFound(t *testing.T) {
 func TestReplaceCmd_empty(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"replace",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "colx",
 		"-r", "a",
 		"-t", "",
@@ -432,16 +432,16 @@ func TestReplaceCmd_empty(t *testing.T) {
 func TestReplaceCmd_invalidFormat(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"replace",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "colx",
 		"-r", "a",
 		"-t", "",

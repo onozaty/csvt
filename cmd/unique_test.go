@@ -16,17 +16,17 @@ func TestUniqueCmd(t *testing.T) {
 3,3,3
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"unique",
-		"-i", fi.Name(),
+		"-i", fi,
 		"-c", "col1",
-		"-o", fo.Name(),
+		"-o", fo,
 	})
 
 	err := rootCmd.Execute()
@@ -34,7 +34,7 @@ func TestUniqueCmd(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := joinRows(
 		"col1,col2,col3",
@@ -56,17 +56,17 @@ func TestUniqueCmd_format(t *testing.T) {
 2	2	3
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"unique",
-		"-i", fi.Name(),
+		"-i", fi,
 		"-c", "col1",
-		"-o", fo.Name(),
+		"-o", fo,
 		"--delim", `\t`,
 	})
 
@@ -75,7 +75,7 @@ func TestUniqueCmd_format(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := joinRows(
 		"col1\tcol2\tcol3",
@@ -100,18 +100,18 @@ func TestUniqueCmd_multiColumn(t *testing.T) {
 2,3,1
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"unique",
-		"-i", fi.Name(),
+		"-i", fi,
 		"-c", "col1",
 		"-c", "col2",
-		"-o", fo.Name(),
+		"-o", fo,
 	})
 
 	err := rootCmd.Execute()
@@ -119,7 +119,7 @@ func TestUniqueCmd_multiColumn(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := joinRows(
 		"col1,col2,col3",
@@ -141,17 +141,17 @@ func TestUniqueCmd_columnNotFound(t *testing.T) {
 1,2,3
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"unique",
-		"-i", fi.Name(),
+		"-i", fi,
 		"-c", "col4",
-		"-o", fo.Name(),
+		"-o", fo,
 	})
 
 	err := rootCmd.Execute()
@@ -163,17 +163,17 @@ func TestUniqueCmd_columnNotFound(t *testing.T) {
 func TestUniqueCmd_invalidFormat(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"unique",
-		"-i", fi.Name(),
+		"-i", fi,
 		"-c", "col1",
-		"-o", fo.Name(),
+		"-o", fo,
 		"--delim", "zz",
 	})
 
@@ -186,17 +186,17 @@ func TestUniqueCmd_invalidFormat(t *testing.T) {
 func TestUniqueCmd_empty(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"unique",
-		"-i", fi.Name(),
+		"-i", fi,
 		"-c", "col1",
-		"-o", fo.Name(),
+		"-o", fo,
 	})
 
 	err := rootCmd.Execute()
@@ -208,17 +208,17 @@ func TestUniqueCmd_empty(t *testing.T) {
 func TestUniqueCmd_inputFileNotFound(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"unique",
-		"-i", fi.Name() + "____", // 存在しないファイル
+		"-i", fi + "____", // 存在しないファイル
 		"-c", "col1",
-		"-o", fo.Name(),
+		"-o", fo,
 	})
 
 	err := rootCmd.Execute()
@@ -227,7 +227,7 @@ func TestUniqueCmd_inputFileNotFound(t *testing.T) {
 	}
 
 	pathErr := err.(*os.PathError)
-	if pathErr.Path != fi.Name()+"____" || pathErr.Op != "open" {
+	if pathErr.Path != fi+"____" || pathErr.Op != "open" {
 		t.Fatal("failed test\n", err)
 	}
 }
@@ -235,17 +235,17 @@ func TestUniqueCmd_inputFileNotFound(t *testing.T) {
 func TestUniqueCmd_outputFileNotFound(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"unique",
-		"-i", fi.Name(),
+		"-i", fi,
 		"-c", "col1",
-		"-o", fo.Name() + "/___", // 存在しないディレクトリ
+		"-o", fo + "/___", // 存在しないディレクトリ
 	})
 
 	err := rootCmd.Execute()
@@ -254,7 +254,7 @@ func TestUniqueCmd_outputFileNotFound(t *testing.T) {
 	}
 
 	pathErr := err.(*os.PathError)
-	if pathErr.Path != fo.Name()+"/___" || pathErr.Op != "open" {
+	if pathErr.Path != fo+"/___" || pathErr.Op != "open" {
 		t.Fatal("failed test\n", err)
 	}
 }

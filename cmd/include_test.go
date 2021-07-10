@@ -14,25 +14,25 @@ func TestIncludeCmd(t *testing.T) {
 4,5
 `
 	fi := createTempFile(t, si)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	sa := `col1,col2
 2,x
 3,y
 `
 	fa := createTempFile(t, sa)
-	defer os.Remove(fa.Name())
+	defer os.Remove(fa)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"include",
-		"-i", fi.Name(),
-		"-a", fa.Name(),
+		"-i", fi,
+		"-a", fa,
 		"-c", "col1",
-		"-o", fo.Name(),
+		"-o", fo,
 	})
 
 	err := rootCmd.Execute()
@@ -40,7 +40,7 @@ func TestIncludeCmd(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := joinRows(
 		"col1,col2",
@@ -62,26 +62,26 @@ func TestIncludeCmd_columnAnother(t *testing.T) {
 4,5
 `
 	fi := createTempFile(t, si)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	sa := `col1,col2
 2,3
 3,4
 `
 	fa := createTempFile(t, sa)
-	defer os.Remove(fa.Name())
+	defer os.Remove(fa)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"include",
-		"-i", fi.Name(),
-		"-a", fa.Name(),
+		"-i", fi,
+		"-a", fa,
 		"-c", "col1",
 		"--column-another", "col2",
-		"-o", fo.Name(),
+		"-o", fo,
 	})
 
 	err := rootCmd.Execute()
@@ -89,7 +89,7 @@ func TestIncludeCmd_columnAnother(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := joinRows(
 		"col1,col2",
@@ -111,25 +111,25 @@ func TestIncludeCmd_duplicate(t *testing.T) {
 3,4
 `
 	fi := createTempFile(t, si)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	sa := `col1,col2
 1,x
 1,y
 `
 	fa := createTempFile(t, sa)
-	defer os.Remove(fa.Name())
+	defer os.Remove(fa)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"include",
-		"-i", fi.Name(),
-		"-a", fa.Name(),
+		"-i", fi,
+		"-a", fa,
 		"-c", "col1",
-		"-o", fo.Name(),
+		"-o", fo,
 	})
 
 	err := rootCmd.Execute()
@@ -137,7 +137,7 @@ func TestIncludeCmd_duplicate(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := joinRows(
 		"col1,col2",
@@ -158,25 +158,25 @@ func TestIncludeCmd_match_none(t *testing.T) {
 3,4
 `
 	fi := createTempFile(t, si)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	sa := `col1
 4
 11
 `
 	fa := createTempFile(t, sa)
-	defer os.Remove(fa.Name())
+	defer os.Remove(fa)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"include",
-		"-i", fi.Name(),
-		"-a", fa.Name(),
+		"-i", fi,
+		"-a", fa,
 		"-c", "col1",
-		"-o", fo.Name(),
+		"-o", fo,
 	})
 
 	err := rootCmd.Execute()
@@ -184,7 +184,7 @@ func TestIncludeCmd_match_none(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := joinRows(
 		"col1,col2",
@@ -203,7 +203,7 @@ func TestIncludeCmd_match_all(t *testing.T) {
 3,4
 `
 	fi := createTempFile(t, si)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	sa := `col1
 4
@@ -212,18 +212,18 @@ func TestIncludeCmd_match_all(t *testing.T) {
 1
 `
 	fa := createTempFile(t, sa)
-	defer os.Remove(fa.Name())
+	defer os.Remove(fa)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"include",
-		"-i", fi.Name(),
-		"-a", fa.Name(),
+		"-i", fi,
+		"-a", fa,
 		"-c", "col1",
-		"-o", fo.Name(),
+		"-o", fo,
 	})
 
 	err := rootCmd.Execute()
@@ -231,7 +231,7 @@ func TestIncludeCmd_match_all(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := joinRows(
 		"col1,col2",
@@ -253,25 +253,25 @@ func TestIncludeCmd_format(t *testing.T) {
 3	4
 `
 	fi := createTempFile(t, si)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	sa := `col1	col2
 2	
 3	
 `
 	fa := createTempFile(t, sa)
-	defer os.Remove(fa.Name())
+	defer os.Remove(fa)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"include",
-		"-i", fi.Name(),
-		"-a", fa.Name(),
+		"-i", fi,
+		"-a", fa,
 		"-c", "col1",
-		"-o", fo.Name(),
+		"-o", fo,
 		"--delim", `\t`,
 	})
 
@@ -280,7 +280,7 @@ func TestIncludeCmd_format(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := joinRows(
 		"col1	col2",
@@ -296,21 +296,21 @@ func TestIncludeCmd_format(t *testing.T) {
 func TestIncludeCmd_invalidFormat(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fa := createTempFile(t, "")
-	defer os.Remove(fa.Name())
+	defer os.Remove(fa)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"include",
-		"-i", fi.Name(),
-		"-a", fa.Name(),
+		"-i", fi,
+		"-a", fa,
 		"-c", "col1",
-		"-o", fo.Name(),
+		"-o", fo,
 		"--delim", "\t\t",
 	})
 
@@ -327,25 +327,25 @@ func TestIncludeCmd_inputColumnNotFound(t *testing.T) {
 2,3
 `
 	fi := createTempFile(t, si)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	sa := `col1,col2
 1,x
 1,y
 `
 	fa := createTempFile(t, sa)
-	defer os.Remove(fa.Name())
+	defer os.Remove(fa)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"include",
-		"-i", fi.Name(),
-		"-a", fa.Name(),
+		"-i", fi,
+		"-a", fa,
 		"-c", "col3",
-		"-o", fo.Name(),
+		"-o", fo,
 	})
 
 	err := rootCmd.Execute()
@@ -361,26 +361,26 @@ func TestIncludeCmd_anthorColumnNotFound(t *testing.T) {
 2,3
 `
 	fi := createTempFile(t, si)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	sa := `col1,col2
 1,x
 1,y
 `
 	fa := createTempFile(t, sa)
-	defer os.Remove(fa.Name())
+	defer os.Remove(fa)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"include",
-		"-i", fi.Name(),
-		"-a", fa.Name(),
+		"-i", fi,
+		"-a", fa,
 		"-c", "col1",
 		"--column-another", "col3",
-		"-o", fo.Name(),
+		"-o", fo,
 	})
 
 	err := rootCmd.Execute()
@@ -392,25 +392,25 @@ func TestIncludeCmd_anthorColumnNotFound(t *testing.T) {
 func TestIncludeCmd_inputEmpty(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	sa := `col1,col2
 1,x
 1,y
 `
 	fa := createTempFile(t, sa)
-	defer os.Remove(fa.Name())
+	defer os.Remove(fa)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"include",
-		"-i", fi.Name(),
-		"-a", fa.Name(),
+		"-i", fi,
+		"-a", fa,
 		"-c", "col1",
-		"-o", fo.Name(),
+		"-o", fo,
 	})
 
 	err := rootCmd.Execute()
@@ -422,21 +422,21 @@ func TestIncludeCmd_inputEmpty(t *testing.T) {
 func TestIncludeCmd_inputFileNotFound(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fa := createTempFile(t, "")
-	defer os.Remove(fa.Name())
+	defer os.Remove(fa)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"include",
-		"-i", fi.Name() + "____", // 存在しないファイル
-		"-a", fa.Name(),
+		"-i", fi + "____", // 存在しないファイル
+		"-a", fa,
 		"-c", "col1",
-		"-o", fo.Name(),
+		"-o", fo,
 	})
 
 	err := rootCmd.Execute()
@@ -445,7 +445,7 @@ func TestIncludeCmd_inputFileNotFound(t *testing.T) {
 	}
 
 	pathErr := err.(*os.PathError)
-	if pathErr.Path != fi.Name()+"____" || pathErr.Op != "open" {
+	if pathErr.Path != fi+"____" || pathErr.Op != "open" {
 		t.Fatal("failed test\n", err)
 	}
 }
@@ -453,21 +453,21 @@ func TestIncludeCmd_inputFileNotFound(t *testing.T) {
 func TestIncludeCmd_anotherFileNotFound(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fa := createTempFile(t, "")
-	defer os.Remove(fa.Name())
+	defer os.Remove(fa)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"include",
-		"-i", fi.Name(),
-		"-a", fa.Name() + "____", // 存在しないファイル
+		"-i", fi,
+		"-a", fa + "____", // 存在しないファイル
 		"-c", "col1",
-		"-o", fo.Name(),
+		"-o", fo,
 	})
 
 	err := rootCmd.Execute()
@@ -476,7 +476,7 @@ func TestIncludeCmd_anotherFileNotFound(t *testing.T) {
 	}
 
 	pathErr := err.(*os.PathError)
-	if pathErr.Path != fa.Name()+"____" || pathErr.Op != "open" {
+	if pathErr.Path != fa+"____" || pathErr.Op != "open" {
 		t.Fatal("failed test\n", err)
 	}
 }

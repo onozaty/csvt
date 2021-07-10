@@ -13,16 +13,16 @@ func TestFilterCmd(t *testing.T) {
 2,,""
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"filter",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 	})
 
 	err := rootCmd.Execute()
@@ -30,7 +30,7 @@ func TestFilterCmd(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "ID,Name,CompanyID\r\n" +
 		",Yamada,\r\n" +
@@ -45,16 +45,16 @@ func TestFilterCmd_format(t *testing.T) {
 
 	s := "ID;Name;CompanyID|1;Yamada;1|5;Ichikawa;|2;'Hanako; Sato';"
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"filter",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "CompanyID",
 		"--delim", ";",
 		"--quote", "'",
@@ -68,7 +68,7 @@ func TestFilterCmd_format(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "\uFEFF'ID';'Name';'CompanyID'|'1';'Yamada';'1'|"
 
@@ -85,16 +85,16 @@ func TestFilterCmd_column(t *testing.T) {
 2,"Hanako, Sato",""
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"filter",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "CompanyID",
 	})
 
@@ -103,7 +103,7 @@ func TestFilterCmd_column(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "ID,Name,CompanyID\r\n" +
 		"1,Yamada,1\r\n"
@@ -121,16 +121,16 @@ a,,
 ,,c
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"filter",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "col1",
 		"-c", "col3",
 	})
@@ -140,7 +140,7 @@ a,,
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "col1,col2,col3\r\n" +
 		"a,,\r\n" +
@@ -159,16 +159,16 @@ func TestFilterCmd_equal(t *testing.T) {
 2,"Hanako, Sato",3
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"filter",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "ID",
 		"--equal", "1",
 	})
@@ -178,7 +178,7 @@ func TestFilterCmd_equal(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "ID,Name,CompanyID\r\n" +
 		"1,Yamada,1\r\n"
@@ -196,16 +196,16 @@ b,c,a
 c,a,b
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"filter",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "col1",
 		"-c", "col3",
 		"--equal", "a",
@@ -216,7 +216,7 @@ c,a,b
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "col1,col2,col3\r\n" +
 		"a,b,c\r\n" +
@@ -236,16 +236,16 @@ b,b,b
 c,a,b
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"filter",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"--equal", "a",
 	})
 
@@ -254,7 +254,7 @@ c,a,b
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "col1,col2,col3\r\n" +
 		"a,b,c\r\n" +
@@ -274,16 +274,16 @@ func TestFilterCmd_regex(t *testing.T) {
 2,"Hanako, yamada",3
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"filter",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "Name",
 		"--regex", "[yY]amada",
 	})
@@ -293,7 +293,7 @@ func TestFilterCmd_regex(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "ID,Name,CompanyID\r\n" +
 		"1,Yamada,1\r\n" +
@@ -313,16 +313,16 @@ ba,a,b
 abb,,ab
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"filter",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "col1",
 		"-c", "col2",
 		"--regex", "(?i)^ab?$",
@@ -333,7 +333,7 @@ abb,,ab
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "col1,col2,col3\r\n" +
 		"Ab,bc,\r\n" +
@@ -354,16 +354,16 @@ a,ba,bc
 a,,
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"filter",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"--regex", "b$",
 	})
 
@@ -372,7 +372,7 @@ a,,
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "col1,col2,col3\r\n" +
 		"ab,a,c\r\n" +
@@ -393,16 +393,16 @@ b,b,b
 a,a,b
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"filter",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"--column", "col1",
 		"--equal-column", "col3",
 	})
@@ -412,7 +412,7 @@ a,a,b
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "col1,col2,col3\r\n" +
 		"a,b,a\r\n" +
@@ -432,16 +432,16 @@ b,b,b
 a,a,b
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"filter",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"--column", "col1",
 		"--column", "col2",
 		"--equal-column", "col3",
@@ -452,7 +452,7 @@ a,a,b
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "col1,col2,col3\r\n" +
 		"a,b,a\r\n" +
@@ -472,16 +472,16 @@ func TestFilterCmd_not(t *testing.T) {
 2,"Hanako, Sato",3
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"filter",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "ID",
 		"--equal", "1",
 		"--not",
@@ -492,7 +492,7 @@ func TestFilterCmd_not(t *testing.T) {
 		t.Fatal("failed test\n", err)
 	}
 
-	result := readString(t, fo.Name())
+	result := readString(t, fo)
 
 	expect := "ID,Name,CompanyID\r\n" +
 		"5,Ichikawa,1\r\n" +
@@ -511,16 +511,16 @@ func TestFilterCmd_regex_invalid(t *testing.T) {
 2,"Hanako, yamada",3
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"filter",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "Name",
 		"--regex", "[a-z",
 	})
@@ -534,16 +534,16 @@ func TestFilterCmd_regex_invalid(t *testing.T) {
 func TestFilterCmd_equal_regex(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"filter",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "Name",
 		"--equal", "Yamada",
 		"--regex", "[a-z]",
@@ -558,16 +558,16 @@ func TestFilterCmd_equal_regex(t *testing.T) {
 func TestFilterCmd_equal_equalColumn(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"filter",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "Name",
 		"--equal", "A",
 		"--equal-column", "col1",
@@ -582,16 +582,16 @@ func TestFilterCmd_equal_equalColumn(t *testing.T) {
 func TestFilterCmd_regex_equalColumn(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"filter",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "Name",
 		"--regex", "A",
 		"--equal-column", "col1",
@@ -606,16 +606,16 @@ func TestFilterCmd_regex_equalColumn(t *testing.T) {
 func TestFilterCmd_equal_regex_equalColumn(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"filter",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "Name",
 		"--equal", "A",
 		"--regex", "A",
@@ -631,16 +631,16 @@ func TestFilterCmd_equal_regex_equalColumn(t *testing.T) {
 func TestFilterCmd_fileNotFound(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"filter",
-		"-i", fi.Name() + "____", // 存在しないファイル名を指定
-		"-o", fo.Name(),
+		"-i", fi + "____", // 存在しないファイル名を指定
+		"-o", fo,
 		"-c", "CompanyID",
 	})
 
@@ -650,7 +650,7 @@ func TestFilterCmd_fileNotFound(t *testing.T) {
 	}
 
 	pathErr := err.(*os.PathError)
-	if pathErr.Path != fi.Name()+"____" || pathErr.Op != "open" {
+	if pathErr.Path != fi+"____" || pathErr.Op != "open" {
 		t.Fatal("failed test\n", err)
 	}
 }
@@ -663,16 +663,16 @@ func TestFilterCmd_columnNotFound(t *testing.T) {
 2,"Hanako, Sato",3
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"filter",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "Company", // 存在しないカラム
 	})
 
@@ -690,16 +690,16 @@ func TestFilterCmd_equalColumn_notFound(t *testing.T) {
 2,"Hanako, Sato",3
 `
 	fi := createTempFile(t, s)
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"filter",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "Name",
 		"--equal-column", "Company", // 存在しないカラム
 	})
@@ -713,16 +713,16 @@ func TestFilterCmd_equalColumn_notFound(t *testing.T) {
 func TestFilterCmd_empty(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"filter",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "CompanyID",
 	})
 
@@ -735,16 +735,16 @@ func TestFilterCmd_empty(t *testing.T) {
 func TestFilterCmd_invalidFormat(t *testing.T) {
 
 	fi := createTempFile(t, "")
-	defer os.Remove(fi.Name())
+	defer os.Remove(fi)
 
 	fo := createTempFile(t, "")
-	defer os.Remove(fo.Name())
+	defer os.Remove(fo)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"filter",
-		"-i", fi.Name(),
-		"-o", fo.Name(),
+		"-i", fi,
+		"-o", fo,
 		"-c", "CompanyID",
 		"--encoding", "xxxx",
 	})

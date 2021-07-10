@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func createTempFile(t *testing.T, content string) *os.File {
+func createTempFile(t *testing.T, content string) string {
 
 	tempFile, err := os.CreateTemp("", "csv")
 	if err != nil {
@@ -18,7 +18,12 @@ func createTempFile(t *testing.T, content string) *os.File {
 		t.Fatal("write file failed\n", err)
 	}
 
-	return tempFile
+	err = tempFile.Close()
+	if err != nil {
+		t.Fatal("write file failed\n", err)
+	}
+
+	return tempFile.Name()
 }
 
 func readString(t *testing.T, name string) string {
