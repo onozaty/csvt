@@ -18,6 +18,7 @@
 * [remove](#remove) Remove columns.
 * [rename](#rename) Rename columns.
 * [replace](#replace) Replace values.
+* [slice](#slice) Slice specified range of rows.
 * [transform](#transform) Transform format.
 * [unique](#unique) Extract unique rows.
 
@@ -723,6 +724,68 @@ bb,aabb,#99
 Please refer to the following for the syntax of regular expressions.
 
 * https://golang.org/pkg/regexp/syntax/
+
+## slice
+
+Create a new CSV file by slicing the specified range of rows from the input CSV file.
+
+### Usage
+
+```
+csvt slice -i INPUT [-s START] [-e END] -o OUTPUT
+```
+
+```
+Usage:
+  csvt slice [flags]
+
+Flags:
+  -i, --input string    Input CSV file path.
+  -s, --start int       The number of the starting row. If not specified, it will be the first row. (default 1)
+  -e, --end int         The number of the end row. If not specified, it will be the last row. (default 9223372036854775807)
+  -o, --output string   Output CSV file path.
+  -h, --help            help for slice
+```
+
+### Example
+
+The contents of `input.csv`.
+
+```
+ID,Name
+1,name1
+2,name2
+3,name3
+4,name4
+5,name5
+```
+
+Slice the second through fourth records.
+
+```
+$ csvt slice -i input.csv -s 2 -e 4 -o output.csv
+```
+
+The contents of the created `output.tsv`.
+
+```
+ID,Name
+2,name2
+3,name3
+4,name4
+```
+
+The `-s` and `-e` can be omitted.
+If you want to extract the first row, it is sufficient to specify only `-e`, as shown below.
+
+```
+$ csvt slice -i input.csv -e 1 -o output.csv
+```
+
+```
+ID,Name
+1,name1
+```
 
 ## transform
 
