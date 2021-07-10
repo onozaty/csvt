@@ -742,7 +742,7 @@ Usage:
 Flags:
   -i, --input string    Input CSV file path.
   -s, --start int       The number of the starting row. If not specified, it will be the first row. (default 1)
-  -e, --end int         The number of the end row. If not specified, it will be the last row. (default 9223372036854775807)
+  -e, --end int         The number of the end row. If not specified, it will be the last row. (default 2147483647)
   -o, --output string   Output CSV file path.
   -h, --help            help for slice
 ```

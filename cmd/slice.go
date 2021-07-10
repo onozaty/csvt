@@ -23,8 +23,8 @@ func newSliceCmd() *cobra.Command {
 			}
 
 			inputPath, _ := cmd.Flags().GetString("input")
-			start, _ := cmd.Flags().GetInt64("start")
-			end, _ := cmd.Flags().GetInt64("end")
+			start, _ := cmd.Flags().GetInt("start")
+			end, _ := cmd.Flags().GetInt("end")
 			outputPath, _ := cmd.Flags().GetString("output")
 
 			// 開始は1以上
@@ -51,15 +51,15 @@ func newSliceCmd() *cobra.Command {
 
 	sliceCmd.Flags().StringP("input", "i", "", "Input CSV file path.")
 	sliceCmd.MarkFlagRequired("input")
-	sliceCmd.Flags().Int64P("start", "s", 1, "The number of the starting row.	If not specified, it will be the first row.")
-	sliceCmd.Flags().Int64P("end", "e", math.MaxInt64, "The number of the end row. If not specified, it will be the last row.")
+	sliceCmd.Flags().IntP("start", "s", 1, "The number of the starting row.	If not specified, it will be the first row.")
+	sliceCmd.Flags().IntP("end", "e", math.MaxInt32, "The number of the end row. If not specified, it will be the last row.")
 	sliceCmd.Flags().StringP("output", "o", "", "Output CSV file path.")
 	sliceCmd.MarkFlagRequired("output")
 
 	return sliceCmd
 }
 
-func runSlice(format csv.Format, inputPath string, start int64, end int64, outputPath string) error {
+func runSlice(format csv.Format, inputPath string, start int, end int, outputPath string) error {
 
 	reader, writer, close, err := setupInputOutput(inputPath, outputPath, format)
 	if err != nil {
@@ -75,7 +75,7 @@ func runSlice(format csv.Format, inputPath string, start int64, end int64, outpu
 	return writer.Flush()
 }
 
-func slice(reader csv.CsvReader, start int64, end int64, writer csv.CsvWriter) error {
+func slice(reader csv.CsvReader, start int, end int, writer csv.CsvWriter) error {
 
 	columnNames, err := reader.Read()
 	if err != nil {
@@ -87,7 +87,7 @@ func slice(reader csv.CsvReader, start int64, end int64, writer csv.CsvWriter) e
 		return err
 	}
 
-	var currentRowNum int64 = 0
+	currentRowNum := 0
 
 	for currentRowNum <= end {
 		row, err := reader.Read()
