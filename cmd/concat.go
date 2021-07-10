@@ -99,7 +99,11 @@ func concat(first csv.CsvReader, second csv.CsvReader, writer csv.CsvWriter) err
 	}
 
 	// 1つ目の書き込み
-	writer.Write(firstColumnNames)
+	err = writer.Write(firstColumnNames)
+	if err != nil {
+		return err
+	}
+
 	for {
 		row, err := first.Read()
 		if err == io.EOF {
