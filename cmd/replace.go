@@ -24,7 +24,10 @@ func newReplaceCmd() *cobra.Command {
 			inputPath, _ := cmd.Flags().GetString("input")
 			targetColumnNames, _ := cmd.Flags().GetStringArray("column")
 			regexValue, _ := cmd.Flags().GetString("regex")
-			replacement, _ := cmd.Flags().GetString("replacement")
+			replacement, err := getFlagEscapedString(cmd.Flags(), "replacement") // バックスラッシュ記法を使いたい項目
+			if err != nil {
+				return err
+			}
 			outputPath, _ := cmd.Flags().GetString("output")
 
 			regex, err := regexp.Compile(regexValue)

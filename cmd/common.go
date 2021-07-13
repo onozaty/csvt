@@ -31,7 +31,7 @@ func getFlagCsvFormat(f *pflag.FlagSet, delimName string, quoteName string, sepN
 	} else {
 		format.Quote = v
 	}
-	if v, err := getFlagString(f, sepName); err != nil {
+	if v, err := getFlagEscapedString(f, sepName); err != nil {
 		return format, err
 	} else {
 		format.RecordSeparator = v
@@ -54,7 +54,7 @@ func getFlagCsvFormat(f *pflag.FlagSet, delimName string, quoteName string, sepN
 	return format, nil
 }
 
-func getFlagString(f *pflag.FlagSet, name string) (string, error) {
+func getFlagEscapedString(f *pflag.FlagSet, name string) (string, error) {
 
 	str, _ := f.GetString(name)
 
@@ -73,7 +73,7 @@ func getFlagString(f *pflag.FlagSet, name string) (string, error) {
 
 func getFlagRune(f *pflag.FlagSet, name string) (rune, error) {
 
-	str, err := getFlagString(f, name)
+	str, err := getFlagEscapedString(f, name)
 	if err != nil {
 		return 0, err
 	}
