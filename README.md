@@ -8,6 +8,7 @@
 
 `csvt` consists of multiple subcommands.
 
+* [add](#add) Add column.
 * [choose](#choose) Choose columns.
 * [concat](#concat) Concat CSV files.
 * [count](#count) Count the number of records.
@@ -42,6 +43,92 @@ For example, when dealing with TSV files, change the delimiter to a tab as shown
 ```
 $ csvt count -i INPUT --delim "\t"
 ```
+
+## add
+
+Create a new CSV file by adding column to the input CSV file.
+
+The following values can be set for the new column.
+
+* Fixed value.
+* Same value as another column.
+* Value by template. As a template engine, [text/template](https://pkg.go.dev/text/template) will be used.
+
+### Usage
+
+```
+csvt add -i INPUT -c ADD_COLUMN [--value VALUE | --template TEMPLATE | --copy-column FROM_COLUMN] -o OUTPUT
+```
+
+```
+Usage:
+  csvt add [flags]
+
+Flags:
+  -i, --input string         Input CSV file path.
+  -c, --column string        Name of the column to add.
+      --value string         (optional) Fixed value to set for the added column.
+      --template string      (optional) Template for the value to be set for the added column.
+      --copy-column string   (optional) Name of the column from which the value is copied.
+  -o, --output string        Output CSV file path.
+  -h, --help                 help for add
+```
+
+### Example
+
+The contents of `input.csv`.
+
+```
+col1,col2
+1,a
+2,b
+3,c
+```
+
+Add "col3" as a new column. Set "x" as a fixed value.
+
+```
+$ csvt add -i input.csv -c col3 --value x -o output.csv
+```
+
+The contents of the created `output.csv`.
+
+```
+col1,col2,col3
+1,a,x
+2,b,x
+3,c,x
+```
+
+Add "col1x" by copying "col1".
+
+```
+$ csvt add -i input.csv -c col1x --copy-column col1 -o output.csv
+```
+
+```
+col1,col2,col1x
+1,a,1
+2,b,2
+3,c,3
+```
+
+Use the template to add a column that combines the values of "col1" and "col2".
+
+```
+$ csvt add -i input.csv -c col3 --template "{{.col1}}-{{.col2}}" -o output.csv
+```
+
+```
+col1,col2,col3
+1,a,1-a
+2,b,2-b
+3,c,3-c
+```
+
+Please refer to the following for template syntax.
+
+* https://pkg.go.dev/text/template
 
 ## choose
 
@@ -363,7 +450,7 @@ UserID,Name,Age,CompanyID
 
 Please refer to the following for the syntax of regular expressions.
 
-* https://golang.org/pkg/regexp/syntax/
+* https://pkg.go.dev/regexp/syntax
 
 ## header
 
