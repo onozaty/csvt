@@ -90,6 +90,49 @@ func TestAddCmd_value(t *testing.T) {
 	}
 }
 
+func TestAddCmd_value_useBackslash(t *testing.T) {
+
+	s := joinRows(
+		"col1,col2",
+		"1,a",
+		"2,b",
+		"3,c",
+	)
+
+	fi := createTempFile(t, s)
+	defer os.Remove(fi)
+
+	fo := createTempFile(t, "")
+	defer os.Remove(fo)
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"add",
+		"-i", fi,
+		"-o", fo,
+		"-c", "col3",
+		"--value", `\u0040`, // バックスラッシュを含む値
+	})
+
+	err := rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := readString(t, fo)
+
+	expect := joinRows(
+		"col1,col2,col3",
+		"1,a,@",
+		"2,b,@",
+		"3,c,@",
+	)
+
+	if result != expect {
+		t.Fatal("failed test\n", result)
+	}
+}
+
 func TestAddCmd_copyColumn(t *testing.T) {
 
 	s := joinRows(
@@ -169,6 +212,49 @@ func TestAddCmd_template(t *testing.T) {
 		"1,a,1-a",
 		"2,b,2-b",
 		"3,c,3-c",
+	)
+
+	if result != expect {
+		t.Fatal("failed test\n", result)
+	}
+}
+
+func TestAddCmd_template_useBackslash(t *testing.T) {
+
+	s := joinRows(
+		"col1,col2",
+		"1,a",
+		"2,b",
+		"3,c",
+	)
+
+	fi := createTempFile(t, s)
+	defer os.Remove(fi)
+
+	fo := createTempFile(t, "")
+	defer os.Remove(fo)
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"add",
+		"-i", fi,
+		"-o", fo,
+		"-c", "col3",
+		"--template", `{{.col1}}\n{{.col2}}`,
+	})
+
+	err := rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := readString(t, fo)
+
+	expect := joinRows(
+		"col1,col2,col3",
+		"1,a,\"1\na\"",
+		"2,b,\"2\nb\"",
+		"3,c,\"3\nc\"",
 	)
 
 	if result != expect {
@@ -262,6 +348,29 @@ func TestAddCmd_templateParseError(t *testing.T) {
 
 	err := rootCmd.Execute()
 	if err == nil || err.Error() != `--template is invalid: template: template:1: unexpected "}" in operand` {
+		t.Fatal("failed test\n", err)
+	}
+}
+
+func TestAddCmd_valueUnquoteError(t *testing.T) {
+
+	fi := createTempFile(t, "")
+	defer os.Remove(fi)
+
+	fo := createTempFile(t, "")
+	defer os.Remove(fo)
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"add",
+		"-i", fi,
+		"-o", fo,
+		"-c", "col3",
+		"--value", `\n"`, // \が含まれる状態で、エスケープされていないバックスラッシュ
+	})
+
+	err := rootCmd.Execute()
+	if err == nil || err.Error() != `Could not parse value \n" of flag value: invalid syntax` {
 		t.Fatal("failed test\n", err)
 	}
 }

@@ -283,6 +283,50 @@ func TestReplaceCmd_regex_meta(t *testing.T) {
 	}
 }
 
+func TestReplaceCmd_replacement_useBackslash(t *testing.T) {
+
+	s := joinRows(
+		"col1,col2",
+		"1,abc",
+		"2,aa",
+		"3,b",
+	)
+
+	fi := createTempFile(t, s)
+	defer os.Remove(fi)
+
+	fo := createTempFile(t, "")
+	defer os.Remove(fo)
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"replace",
+		"-i", fi,
+		"-o", fo,
+		"-c", "col2",
+		"-r", "a",
+		"-t", `\n`,
+	})
+
+	err := rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := readString(t, fo)
+
+	expect := joinRows(
+		"col1,col2",
+		"1,\"\nbc\"",
+		"2,\"\n\n\"",
+		"3,b",
+	)
+
+	if result != expect {
+		t.Fatal("failed test\n", result)
+	}
+}
+
 func TestReplaceCmd_format(t *testing.T) {
 
 	s := `id	col1	col2
@@ -343,6 +387,30 @@ func TestReplaceCmd_regex_invalid(t *testing.T) {
 
 	err := rootCmd.Execute()
 	if err == nil || err.Error() != "regular expression specified in --regex is invalid: error parsing regexp: missing closing ]: `[a-`" {
+		t.Fatal("failed test\n", err)
+	}
+}
+
+func TestReplaceCmd_replacement_unquoteError(t *testing.T) {
+
+	fi := createTempFile(t, "")
+	defer os.Remove(fi)
+
+	fo := createTempFile(t, "")
+	defer os.Remove(fo)
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"replace",
+		"-i", fi,
+		"-o", fo,
+		"-c", "col1",
+		"-r", `a`,
+		"-t", `"\u00a0`,
+	})
+
+	err := rootCmd.Execute()
+	if err == nil || err.Error() != `Could not parse value "\u00a0 of flag replacement: invalid syntax` {
 		t.Fatal("failed test\n", err)
 	}
 }

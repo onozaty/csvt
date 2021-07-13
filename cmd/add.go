@@ -25,10 +25,12 @@ func newAddCmd() *cobra.Command {
 
 			inputPath, _ := cmd.Flags().GetString("input")
 			addColumnName, _ := cmd.Flags().GetString("column")
-			staticValue, _ := cmd.Flags().GetString("value")
-			templString, err := getFlagEscapedString(cmd.Flags(), "template")
+			staticValue, err := getFlagEscapedString(cmd.Flags(), "value") // バックスラッシュ記法を使いたい項目
 			if err != nil {
-				// エスケープを戻す際にエラーになる場合があるのでハンドリング
+				return err
+			}
+			templString, err := getFlagEscapedString(cmd.Flags(), "template") // バックスラッシュ記法を使いたい項目
+			if err != nil {
 				return err
 			}
 			copyColumnName, _ := cmd.Flags().GetString("copy-column")
