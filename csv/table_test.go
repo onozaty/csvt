@@ -28,8 +28,8 @@ func TestLoadCsvMemoryTable(t *testing.T) {
 		t.Fatal("failed test\n", table.ColumnNames())
 	}
 
-	if table.JoinColumnName() != "ID" {
-		t.Fatal("failed test\n", table.JoinColumnName())
+	if table.KeyColumnName() != "ID" {
+		t.Fatal("failed test\n", table.KeyColumnName())
 	}
 
 	result, err := table.Find("5")
@@ -73,7 +73,7 @@ func TestLoadCsvMemoryTable_duplicateKey(t *testing.T) {
 	}
 }
 
-func TestLoadCsvMemoryTable_joinColumnNotFound(t *testing.T) {
+func TestLoadCsvMemoryTable_keyColumnNotFound(t *testing.T) {
 
 	s := `ID,Name,Height,Weight
 1,Yamada,171,50
@@ -131,8 +131,8 @@ func TestLoadCsvMemoryTable_big(t *testing.T) {
 		t.Fatal("failed test\n", table.ColumnNames())
 	}
 
-	if table.JoinColumnName() != "ID" {
-		t.Fatal("failed test\n", table.JoinColumnName())
+	if table.KeyColumnName() != "ID" {
+		t.Fatal("failed test\n", table.KeyColumnName())
 	}
 
 	for i := 1; i < maxId; i++ {
@@ -177,8 +177,8 @@ func TestLoadCsvFileTable(t *testing.T) {
 		t.Fatal("failed test\n", table.ColumnNames())
 	}
 
-	if table.JoinColumnName() != "ID" {
-		t.Fatal("failed test\n", table.JoinColumnName())
+	if table.KeyColumnName() != "ID" {
+		t.Fatal("failed test\n", table.KeyColumnName())
 	}
 
 	result, err := table.Find("5")
@@ -222,7 +222,7 @@ func TestLoadCsvFileTable_duplicateKey(t *testing.T) {
 	}
 }
 
-func TestLoadCsvFileTable_joinColumnNotFound(t *testing.T) {
+func TestLoadCsvFileTable_keyColumnNotFound(t *testing.T) {
 
 	s := `ID,Name,Height,Weight
 1,Yamada,171,50
@@ -280,8 +280,8 @@ func TestLoadCsvFileTable_big(t *testing.T) {
 		t.Fatal("failed test\n", table.ColumnNames())
 	}
 
-	if table.JoinColumnName() != "ID" {
-		t.Fatal("failed test\n", table.JoinColumnName())
+	if table.KeyColumnName() != "ID" {
+		t.Fatal("failed test\n", table.KeyColumnName())
 	}
 
 	for i := 1; i < maxId; i++ {
