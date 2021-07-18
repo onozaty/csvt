@@ -111,7 +111,7 @@ func TestLoadCsvMemoryTable_changeLineOnly(t *testing.T) {
 
 func TestLoadCsvMemoryTable_big(t *testing.T) {
 
-	const maxId = 1000000
+	const maxId = 100000
 
 	s := [maxId]string{}
 	s[0] = "ID,Name,Age"
@@ -260,7 +260,7 @@ func TestLoadCsvFileTable_changeLineOnly(t *testing.T) {
 
 func TestLoadCsvFileTable_big(t *testing.T) {
 
-	const maxId = 1000000
+	const maxId = 100000
 
 	s := [maxId]string{}
 	s[0] = "ID,Name,Age"

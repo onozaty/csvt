@@ -17,13 +17,13 @@ type CsvTable interface {
 	Close() error
 }
 
-type MemoryTable struct {
+type memoryTable struct {
 	keyColumnName string
 	columnNames   []string
 	rows          map[string][]string
 }
 
-func (t *MemoryTable) Find(key string) (map[string]string, error) {
+func (t *memoryTable) Find(key string) (map[string]string, error) {
 
 	row := t.rows[key]
 
@@ -39,17 +39,17 @@ func (t *MemoryTable) Find(key string) (map[string]string, error) {
 	return rowMap, nil
 }
 
-func (t *MemoryTable) KeyColumnName() string {
+func (t *memoryTable) KeyColumnName() string {
 
 	return t.keyColumnName
 }
 
-func (t *MemoryTable) ColumnNames() []string {
+func (t *memoryTable) ColumnNames() []string {
 
 	return t.columnNames
 }
 
-func (t *MemoryTable) Close() error {
+func (t *memoryTable) Close() error {
 
 	// リソースは保持しないので何もしない
 	return nil
@@ -87,21 +87,21 @@ func LoadCsvMemoryTable(reader CsvReader, keyColumnName string) (CsvTable, error
 		rows[row[primaryColumnIndex]] = row
 	}
 
-	return &MemoryTable{
+	return &memoryTable{
 		keyColumnName: keyColumnName,
 		columnNames:   headers,
 		rows:          rows,
 	}, nil
 }
 
-type FileTable struct {
+type fileTable struct {
 	keyColumnName string
 	columnNames   []string
 	dbPath        string
 	db            *bolt.DB
 }
 
-func (t *FileTable) Find(key string) (map[string]string, error) {
+func (t *fileTable) Find(key string) (map[string]string, error) {
 
 	// 既にDBを開いている場合は、使いまわす
 	// (CsvTableのClose時に閉じている)
@@ -142,17 +142,17 @@ func (t *FileTable) Find(key string) (map[string]string, error) {
 	return rowMap, nil
 }
 
-func (t *FileTable) KeyColumnName() string {
+func (t *fileTable) KeyColumnName() string {
 
 	return t.keyColumnName
 }
 
-func (t *FileTable) ColumnNames() []string {
+func (t *fileTable) ColumnNames() []string {
 
 	return t.columnNames
 }
 
-func (t *FileTable) Close() error {
+func (t *fileTable) Close() error {
 
 	if t.db != nil {
 		err := t.db.Close()
@@ -238,7 +238,7 @@ func LoadCsvFileTable(reader CsvReader, keyColumnName string) (CsvTable, error) 
 		}
 	}
 
-	return &FileTable{
+	return &fileTable{
 		keyColumnName: keyColumnName,
 		columnNames:   headers,
 		dbPath:        dbFile.Name(),

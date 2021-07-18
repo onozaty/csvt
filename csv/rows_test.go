@@ -187,7 +187,7 @@ func TestLoadMemorySortedRows_invalidNumber(t *testing.T) {
 
 func TestLoadMemorySortedRows_big(t *testing.T) {
 
-	const maxId = 1000000
+	const maxId = 100000
 
 	s := [maxId + 1]string{}
 	s[0] = "col1,col2"
@@ -410,7 +410,7 @@ func TestLoadFileSortedRows_invalidNumber(t *testing.T) {
 
 func TestLoadFileSortedRows_big(t *testing.T) {
 
-	const maxId = 1000000
+	const maxId = 100000
 
 	s := [maxId + 1]string{}
 	s[0] = "col1,col2"
