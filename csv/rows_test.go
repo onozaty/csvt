@@ -9,7 +9,7 @@ import (
 )
 
 // Memory
-func TestLoadMemorySortedRows(t *testing.T) {
+func TestLoadCsvMemorySortedRows(t *testing.T) {
 
 	s := joinRows(
 		[]string{"col1", "col2"},
@@ -22,7 +22,7 @@ func TestLoadMemorySortedRows(t *testing.T) {
 
 	r := NewCsvReader(strings.NewReader(s), Format{})
 
-	rows, err := LoadMemorySortedRows(r, []string{"col1"}, CompareString)
+	rows, err := LoadCsvMemorySortedRows(r, []string{"col1"}, CompareString)
 
 	if err != nil {
 		t.Fatal("failed test\n", err)
@@ -46,7 +46,7 @@ func TestLoadMemorySortedRows(t *testing.T) {
 	)
 }
 
-func TestLoadMemorySortedRows_multiColumn(t *testing.T) {
+func TestLoadCsvMemorySortedRows_multiColumn(t *testing.T) {
 
 	s := joinRows(
 		[]string{"col1", "col2"},
@@ -59,7 +59,7 @@ func TestLoadMemorySortedRows_multiColumn(t *testing.T) {
 
 	r := NewCsvReader(strings.NewReader(s), Format{})
 
-	rows, err := LoadMemorySortedRows(r, []string{"col1", "col2"}, CompareString)
+	rows, err := LoadCsvMemorySortedRows(r, []string{"col1", "col2"}, CompareString)
 
 	if err != nil {
 		t.Fatal("failed test\n", err)
@@ -83,7 +83,7 @@ func TestLoadMemorySortedRows_multiColumn(t *testing.T) {
 	)
 }
 
-func TestLoadMemorySortedRows_num(t *testing.T) {
+func TestLoadCsvMemorySortedRows_num(t *testing.T) {
 
 	s := joinRows(
 		[]string{"col1"},
@@ -95,7 +95,7 @@ func TestLoadMemorySortedRows_num(t *testing.T) {
 
 	r := NewCsvReader(strings.NewReader(s), Format{})
 
-	rows, err := LoadMemorySortedRows(r, []string{"col1"}, CompareNumber)
+	rows, err := LoadCsvMemorySortedRows(r, []string{"col1"}, CompareNumber)
 
 	if err != nil {
 		t.Fatal("failed test\n", err)
@@ -118,7 +118,7 @@ func TestLoadMemorySortedRows_num(t *testing.T) {
 	)
 }
 
-func TestLoadMemorySortedRows_same(t *testing.T) {
+func TestLoadCsvMemorySortedRows_same(t *testing.T) {
 
 	s := joinRows(
 		[]string{"col1", "col2"},
@@ -132,7 +132,7 @@ func TestLoadMemorySortedRows_same(t *testing.T) {
 	r := NewCsvReader(strings.NewReader(s), Format{})
 
 	// col1だけ指定して同じ値がどうなるか確認
-	rows, err := LoadMemorySortedRows(r, []string{"col1"}, CompareString)
+	rows, err := LoadCsvMemorySortedRows(r, []string{"col1"}, CompareString)
 
 	if err != nil {
 		t.Fatal("failed test\n", err)
@@ -156,18 +156,18 @@ func TestLoadMemorySortedRows_same(t *testing.T) {
 	)
 }
 
-func TestLoadMemorySortedRows_empty(t *testing.T) {
+func TestLoadCsvMemorySortedRows_empty(t *testing.T) {
 
 	r := NewCsvReader(strings.NewReader(""), Format{})
 
-	_, err := LoadMemorySortedRows(r, []string{"col1"}, CompareString)
+	_, err := LoadCsvMemorySortedRows(r, []string{"col1"}, CompareString)
 
 	if err != io.EOF {
 		t.Fatal("failed test\n", err)
 	}
 }
 
-func TestLoadMemorySortedRows_columnNotFound(t *testing.T) {
+func TestLoadCsvMemorySortedRows_columnNotFound(t *testing.T) {
 
 	s := joinRows(
 		[]string{"col1", "col2"},
@@ -176,14 +176,14 @@ func TestLoadMemorySortedRows_columnNotFound(t *testing.T) {
 
 	r := NewCsvReader(strings.NewReader(s), Format{})
 
-	_, err := LoadMemorySortedRows(r, []string{"col1", "col3"}, CompareString)
+	_, err := LoadCsvMemorySortedRows(r, []string{"col1", "col3"}, CompareString)
 
 	if err == nil || err.Error() != "col3 is not found" {
 		t.Fatal("failed test\n", err)
 	}
 }
 
-func TestLoadMemorySortedRows_invalidNumber(t *testing.T) {
+func TestLoadCsvMemorySortedRows_invalidNumber(t *testing.T) {
 
 	s := joinRows(
 		[]string{"col1", "col2"},
@@ -194,14 +194,14 @@ func TestLoadMemorySortedRows_invalidNumber(t *testing.T) {
 
 	r := NewCsvReader(strings.NewReader(s), Format{})
 
-	_, err := LoadMemorySortedRows(r, []string{"col1"}, CompareNumber)
+	_, err := LoadCsvMemorySortedRows(r, []string{"col1"}, CompareNumber)
 
 	if err == nil || err.Error() != `strconv.Atoi: parsing "a": invalid syntax` {
 		t.Fatal("failed test\n", err)
 	}
 }
 
-func TestLoadMemorySortedRows_big(t *testing.T) {
+func TestLoadCsvMemorySortedRows_big(t *testing.T) {
 
 	const maxId = 100000
 
@@ -213,7 +213,7 @@ func TestLoadMemorySortedRows_big(t *testing.T) {
 
 	r := NewCsvReader(strings.NewReader(strings.Join(s[:], "\n")), Format{})
 
-	rows, err := LoadMemorySortedRows(r, []string{"col2"}, CompareString)
+	rows, err := LoadCsvMemorySortedRows(r, []string{"col2"}, CompareString)
 
 	if err != nil {
 		t.Fatal("failed test\n", err)
@@ -252,7 +252,7 @@ func TestLoadMemorySortedRows_big(t *testing.T) {
 }
 
 // File
-func TestLoadFileSortedRows(t *testing.T) {
+func TestLoadCsvFileSortedRows(t *testing.T) {
 
 	s := joinRows(
 		[]string{"col1", "col2"},
@@ -265,7 +265,7 @@ func TestLoadFileSortedRows(t *testing.T) {
 
 	r := NewCsvReader(strings.NewReader(s), Format{})
 
-	rows, err := LoadFileSortedRows(r, []string{"col1"}, CompareString)
+	rows, err := LoadCsvFileSortedRows(r, []string{"col1"}, CompareString)
 
 	if err != nil {
 		t.Fatal("failed test\n", err)
@@ -289,7 +289,7 @@ func TestLoadFileSortedRows(t *testing.T) {
 	)
 }
 
-func TestLoadFileSortedRows_multiColumn(t *testing.T) {
+func TestLoadCsvFileSortedRows_multiColumn(t *testing.T) {
 
 	s := joinRows(
 		[]string{"col1", "col2"},
@@ -302,7 +302,7 @@ func TestLoadFileSortedRows_multiColumn(t *testing.T) {
 
 	r := NewCsvReader(strings.NewReader(s), Format{})
 
-	rows, err := LoadFileSortedRows(r, []string{"col1", "col2"}, CompareString)
+	rows, err := LoadCsvFileSortedRows(r, []string{"col1", "col2"}, CompareString)
 
 	if err != nil {
 		t.Fatal("failed test\n", err)
@@ -326,7 +326,7 @@ func TestLoadFileSortedRows_multiColumn(t *testing.T) {
 	)
 }
 
-func TestLoadFileSortedRows_num(t *testing.T) {
+func TestLoadCsvFileSortedRows_num(t *testing.T) {
 
 	s := joinRows(
 		[]string{"col1"},
@@ -338,7 +338,7 @@ func TestLoadFileSortedRows_num(t *testing.T) {
 
 	r := NewCsvReader(strings.NewReader(s), Format{})
 
-	rows, err := LoadFileSortedRows(r, []string{"col1"}, CompareNumber)
+	rows, err := LoadCsvFileSortedRows(r, []string{"col1"}, CompareNumber)
 
 	if err != nil {
 		t.Fatal("failed test\n", err)
@@ -361,7 +361,7 @@ func TestLoadFileSortedRows_num(t *testing.T) {
 	)
 }
 
-func TestLoadFileSortedRows_same(t *testing.T) {
+func TestLoadCsvFileSortedRows_same(t *testing.T) {
 
 	s := joinRows(
 		[]string{"col1", "col2"},
@@ -375,7 +375,7 @@ func TestLoadFileSortedRows_same(t *testing.T) {
 	r := NewCsvReader(strings.NewReader(s), Format{})
 
 	// col1だけ指定して同じ値がどうなるか確認
-	rows, err := LoadFileSortedRows(r, []string{"col1"}, CompareString)
+	rows, err := LoadCsvFileSortedRows(r, []string{"col1"}, CompareString)
 
 	if err != nil {
 		t.Fatal("failed test\n", err)
@@ -399,18 +399,18 @@ func TestLoadFileSortedRows_same(t *testing.T) {
 	)
 }
 
-func TestLoadFileSortedRows_empty(t *testing.T) {
+func TestLoadCsvFileSortedRows_empty(t *testing.T) {
 
 	r := NewCsvReader(strings.NewReader(""), Format{})
 
-	_, err := LoadFileSortedRows(r, []string{"col1"}, CompareString)
+	_, err := LoadCsvFileSortedRows(r, []string{"col1"}, CompareString)
 
 	if err != io.EOF {
 		t.Fatal("failed test\n", err)
 	}
 }
 
-func TestLoadFileSortedRows_columnNotFound(t *testing.T) {
+func TestLoadCsvFileSortedRows_columnNotFound(t *testing.T) {
 
 	s := joinRows(
 		[]string{"col1", "col2"},
@@ -419,14 +419,14 @@ func TestLoadFileSortedRows_columnNotFound(t *testing.T) {
 
 	r := NewCsvReader(strings.NewReader(s), Format{})
 
-	_, err := LoadFileSortedRows(r, []string{"col1", "col3"}, CompareString)
+	_, err := LoadCsvFileSortedRows(r, []string{"col1", "col3"}, CompareString)
 
 	if err == nil || err.Error() != "col3 is not found" {
 		t.Fatal("failed test\n", err)
 	}
 }
 
-func TestLoadFileSortedRows_invalidNumber(t *testing.T) {
+func TestLoadCsvFileSortedRows_invalidNumber(t *testing.T) {
 
 	s := joinRows(
 		[]string{"col1", "col2"},
@@ -437,14 +437,14 @@ func TestLoadFileSortedRows_invalidNumber(t *testing.T) {
 
 	r := NewCsvReader(strings.NewReader(s), Format{})
 
-	_, err := LoadFileSortedRows(r, []string{"col1"}, CompareNumber)
+	_, err := LoadCsvFileSortedRows(r, []string{"col1"}, CompareNumber)
 
 	if err == nil || err.Error() != `strconv.Atoi: parsing "a": invalid syntax` {
 		t.Fatal("failed test\n", err)
 	}
 }
 
-func TestLoadFileSortedRows_big(t *testing.T) {
+func TestLoadCsvFileSortedRows_big(t *testing.T) {
 
 	const maxId = 100000
 
@@ -456,7 +456,7 @@ func TestLoadFileSortedRows_big(t *testing.T) {
 
 	r := NewCsvReader(strings.NewReader(strings.Join(s[:], "\n")), Format{})
 
-	rows, err := LoadFileSortedRows(r, []string{"col2"}, CompareString)
+	rows, err := LoadCsvFileSortedRows(r, []string{"col2"}, CompareString)
 
 	if err != nil {
 		t.Fatal("failed test\n", err)

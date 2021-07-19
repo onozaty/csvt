@@ -45,7 +45,7 @@ func (t *memorySortedRows) Close() error {
 	return nil
 }
 
-func LoadMemorySortedRows(reader CsvReader, useColumnNames []string, compare func(item1 string, item2 string) (int, error)) (CsvSortedRows, error) {
+func LoadCsvMemorySortedRows(reader CsvReader, useColumnNames []string, compare func(item1 string, item2 string) (int, error)) (CsvSortedRows, error) {
 
 	allColumnNames, err := reader.Read()
 	if err != nil {
@@ -181,7 +181,7 @@ type SortSource struct {
 	items []string
 }
 
-func LoadFileSortedRows(reader CsvReader, useColumnNames []string, compare func(item1 string, item2 string) (int, error)) (CsvSortedRows, error) {
+func LoadCsvFileSortedRows(reader CsvReader, useColumnNames []string, compare func(item1 string, item2 string) (int, error)) (CsvSortedRows, error) {
 
 	allColumnNames, err := reader.Read()
 	if err != nil {

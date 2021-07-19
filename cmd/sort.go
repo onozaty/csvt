@@ -93,9 +93,9 @@ func sort(reader csv.CsvReader, targetColumnNames []string, writer csv.CsvWriter
 	var sortedRows csv.CsvSortedRows
 	var err error
 	if options.useFileRows {
-		sortedRows, err = csv.LoadFileSortedRows(reader, targetColumnNames, compare)
+		sortedRows, err = csv.LoadCsvFileSortedRows(reader, targetColumnNames, compare)
 	} else {
-		sortedRows, err = csv.LoadMemorySortedRows(reader, targetColumnNames, compare)
+		sortedRows, err = csv.LoadCsvMemorySortedRows(reader, targetColumnNames, compare)
 	}
 	if err != nil {
 		return err
