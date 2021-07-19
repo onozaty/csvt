@@ -20,6 +20,7 @@
 * [remove](#remove) Remove columns.
 * [rename](#rename) Rename columns.
 * [replace](#replace) Replace values.
+* [sort](#sort) Sort rows.
 * [slice](#slice) Slice specified range of rows.
 * [transform](#transform) Transform format.
 * [unique](#unique) Extract unique rows.
@@ -812,6 +813,89 @@ bb,aabb,#99
 Please refer to the following for the syntax of regular expressions.
 
 * https://golang.org/pkg/regexp/syntax/
+
+## sort
+
+Creates a new CSV file from the input CSV file by sorting by the values in the specified columns.
+
+### Usage
+
+```
+csvt sort -i INPUT -c COLUMN1 ... [--desc] [--number] -o OUTPUT [--usingfile]
+```
+
+```
+Usage:
+  csvt sort [flags]
+
+Flags:
+  -i, --input string         Input CSV file path.
+  -c, --column stringArray   Name of the column to use for sorting.
+      --desc                 (optional) Sort in descending order. The default is ascending order.
+      --number               (optional) Sorts as a number. The default is to sort as a string.
+  -o, --output string        Output CSV file path.
+      --usingfile            (optional) Use temporary files for sorting. Use this when sorting large files that will not fit in memory.
+  -h, --help                 help for sort
+```
+
+### Example
+
+The contents of `input.csv`.
+
+```
+col1,col2
+02,a
+10,b
+01,a
+11,c
+20,b
+```
+
+Sort by "col1".
+
+```
+$ csvt sort -i input.csv -c col1 -o output.csv
+```
+
+The contents of the created `output.tsv`.
+
+```
+col1,col2
+01,a
+02,a
+10,b
+11,c
+20,b
+```
+
+By default, it is sorted as a string.
+For example, it could look like this
+
+```
+col1
+1
+12
+123
+2
+21
+3
+```
+
+If you want to sort as a number, specify `--number`.
+
+```
+$ csvt sort -i input.csv -c col1 --number -o output.csv
+```
+
+```
+col1
+1
+2
+3
+12
+21
+123
+```
 
 ## slice
 
