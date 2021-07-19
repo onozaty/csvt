@@ -33,6 +33,10 @@ func TestLoadMemorySortedRows(t *testing.T) {
 		t.Fatal("failed test\n", rows.Count())
 	}
 
+	if reflect.DeepEqual(rows.ColumnNames(), []string{"col1", "col2"}) {
+		t.Fatal("failed test\n", rows.ColumnNames())
+	}
+
 	assertRows(t, rows,
 		[]string{"1", "c"},
 		[]string{"2", "b"},
@@ -64,6 +68,10 @@ func TestLoadMemorySortedRows_multiColumn(t *testing.T) {
 
 	if rows.Count() != 5 {
 		t.Fatal("failed test\n", rows.Count())
+	}
+
+	if reflect.DeepEqual(rows.ColumnNames(), []string{"col1", "col2"}) {
+		t.Fatal("failed test\n", rows.ColumnNames())
 	}
 
 	assertRows(t, rows,
@@ -98,6 +106,10 @@ func TestLoadMemorySortedRows_num(t *testing.T) {
 		t.Fatal("failed test\n", rows.Count())
 	}
 
+	if reflect.DeepEqual(rows.ColumnNames(), []string{"col1"}) {
+		t.Fatal("failed test\n", rows.ColumnNames())
+	}
+
 	assertRows(t, rows,
 		[]string{"2"},
 		[]string{"9"},
@@ -129,6 +141,10 @@ func TestLoadMemorySortedRows_same(t *testing.T) {
 
 	if rows.Count() != 5 {
 		t.Fatal("failed test\n", rows.Count())
+	}
+
+	if reflect.DeepEqual(rows.ColumnNames(), []string{"col1", "col2"}) {
+		t.Fatal("failed test\n", rows.ColumnNames())
 	}
 
 	assertRows(t, rows,
@@ -208,6 +224,10 @@ func TestLoadMemorySortedRows_big(t *testing.T) {
 		t.Fatal("failed test\n", rows.Count())
 	}
 
+	if reflect.DeepEqual(rows.ColumnNames(), []string{"col1", "col2"}) {
+		t.Fatal("failed test\n", rows.ColumnNames())
+	}
+
 	// 先頭と末尾を確認
 	{
 		row, err := rows.Row(0) // 先頭
@@ -256,6 +276,10 @@ func TestLoadFileSortedRows(t *testing.T) {
 		t.Fatal("failed test\n", rows.Count())
 	}
 
+	if reflect.DeepEqual(rows.ColumnNames(), []string{"col1", "col2"}) {
+		t.Fatal("failed test\n", rows.ColumnNames())
+	}
+
 	assertRows(t, rows,
 		[]string{"1", "c"},
 		[]string{"2", "b"},
@@ -287,6 +311,10 @@ func TestLoadFileSortedRows_multiColumn(t *testing.T) {
 
 	if rows.Count() != 5 {
 		t.Fatal("failed test\n", rows.Count())
+	}
+
+	if reflect.DeepEqual(rows.ColumnNames(), []string{"col1", "col2"}) {
+		t.Fatal("failed test\n", rows.ColumnNames())
 	}
 
 	assertRows(t, rows,
@@ -321,6 +349,10 @@ func TestLoadFileSortedRows_num(t *testing.T) {
 		t.Fatal("failed test\n", rows.Count())
 	}
 
+	if reflect.DeepEqual(rows.ColumnNames(), []string{"col1"}) {
+		t.Fatal("failed test\n", rows.ColumnNames())
+	}
+
 	assertRows(t, rows,
 		[]string{"2"},
 		[]string{"9"},
@@ -352,6 +384,10 @@ func TestLoadFileSortedRows_same(t *testing.T) {
 
 	if rows.Count() != 5 {
 		t.Fatal("failed test\n", rows.Count())
+	}
+
+	if reflect.DeepEqual(rows.ColumnNames(), []string{"col1", "col2"}) {
+		t.Fatal("failed test\n", rows.ColumnNames())
 	}
 
 	assertRows(t, rows,
@@ -429,6 +465,10 @@ func TestLoadFileSortedRows_big(t *testing.T) {
 
 	if rows.Count() != maxId {
 		t.Fatal("failed test\n", rows.Count())
+	}
+
+	if reflect.DeepEqual(rows.ColumnNames(), []string{"col1", "col2"}) {
+		t.Fatal("failed test\n", rows.ColumnNames())
 	}
 
 	// 先頭と末尾を確認

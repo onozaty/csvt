@@ -41,6 +41,7 @@ func newRootCmd() *cobra.Command {
 	rootCmd.AddCommand(newConcatCmd())
 	rootCmd.AddCommand(newSliceCmd())
 	rootCmd.AddCommand(newAddCmd())
+	rootCmd.AddCommand(newSortCmd())
 
 	for _, c := range rootCmd.Commands() {
 		// フラグ以外は受け付けないように

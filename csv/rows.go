@@ -14,12 +14,14 @@ import (
 
 type CsvSortedRows interface {
 	Count() int
+	ColumnNames() []string
 	Row(index int) ([]string, error)
 	Close() error
 }
 
 type memorySortedRows struct {
-	rows [][]string
+	rows        [][]string
+	columnNames []string
 }
 
 func (t *memorySortedRows) Count() int {
@@ -32,6 +34,11 @@ func (t *memorySortedRows) Row(index int) ([]string, error) {
 	return t.rows[index], nil
 }
 
+func (t *memorySortedRows) ColumnNames() []string {
+
+	return t.columnNames
+}
+
 func (t *memorySortedRows) Close() error {
 
 	// リソースは保持しないので何もしない
@@ -40,7 +47,7 @@ func (t *memorySortedRows) Close() error {
 
 func LoadMemorySortedRows(reader CsvReader, useColumnNames []string, compare func(item1 string, item2 string) (int, error)) (CsvSortedRows, error) {
 
-	headers, err := reader.Read()
+	allColumnNames, err := reader.Read()
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +55,7 @@ func LoadMemorySortedRows(reader CsvReader, useColumnNames []string, compare fun
 	useColumnIndexes := []int{}
 	for _, useColumnName := range useColumnNames {
 
-		useColumnIndex := util.IndexOf(headers, useColumnName)
+		useColumnIndex := util.IndexOf(allColumnNames, useColumnName)
 		if useColumnIndex == -1 {
 			return nil, fmt.Errorf("%s is not found", useColumnName)
 		}
@@ -100,12 +107,14 @@ func LoadMemorySortedRows(reader CsvReader, useColumnNames []string, compare fun
 	}
 
 	return &memorySortedRows{
-		rows: rows,
+		rows:        rows,
+		columnNames: allColumnNames,
 	}, nil
 }
 
 type fileSortedRows struct {
 	sortedIndexies []int
+	columnNames    []string
 	dbPath         string
 	db             *bolt.DB
 }
@@ -150,6 +159,11 @@ func (t *fileSortedRows) Row(index int) ([]string, error) {
 	return row, nil
 }
 
+func (t *fileSortedRows) ColumnNames() []string {
+
+	return t.columnNames
+}
+
 func (t *fileSortedRows) Close() error {
 
 	if t.db != nil {
@@ -169,7 +183,7 @@ type SortSource struct {
 
 func LoadFileSortedRows(reader CsvReader, useColumnNames []string, compare func(item1 string, item2 string) (int, error)) (CsvSortedRows, error) {
 
-	headers, err := reader.Read()
+	allColumnNames, err := reader.Read()
 	if err != nil {
 		return nil, err
 	}
@@ -177,7 +191,7 @@ func LoadFileSortedRows(reader CsvReader, useColumnNames []string, compare func(
 	useColumnIndexes := []int{}
 	for _, useColumnName := range useColumnNames {
 
-		useColumnIndex := util.IndexOf(headers, useColumnName)
+		useColumnIndex := util.IndexOf(allColumnNames, useColumnName)
 		if useColumnIndex == -1 {
 			return nil, fmt.Errorf("%s is not found", useColumnName)
 		}
@@ -289,6 +303,7 @@ func LoadFileSortedRows(reader CsvReader, useColumnNames []string, compare func(
 
 	return &fileSortedRows{
 		sortedIndexies: sortedIndexies,
+		columnNames:    allColumnNames,
 		dbPath:         dbFile.Name(),
 	}, nil
 }
@@ -316,4 +331,14 @@ func CompareNumber(item1 string, item2 string) (int, error) {
 	}
 
 	return num1 - num2, nil
+}
+
+func Descending(compare func(item1 string, item2 string) (int, error)) func(item1 string, item2 string) (int, error) {
+
+	return func(item1 string, item2 string) (int, error) {
+		n, err := compare(item1, item2)
+
+		// 結果を反転させる
+		return n * -1, err
+	}
 }
