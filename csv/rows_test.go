@@ -33,7 +33,7 @@ func TestLoadCsvMemorySortedRows(t *testing.T) {
 		t.Fatal("failed test\n", rows.Count())
 	}
 
-	if reflect.DeepEqual(rows.ColumnNames(), []string{"col1", "col2"}) {
+	if !reflect.DeepEqual(rows.ColumnNames(), []string{"col1", "col2"}) {
 		t.Fatal("failed test\n", rows.ColumnNames())
 	}
 
@@ -70,7 +70,7 @@ func TestLoadCsvMemorySortedRows_multiColumn(t *testing.T) {
 		t.Fatal("failed test\n", rows.Count())
 	}
 
-	if reflect.DeepEqual(rows.ColumnNames(), []string{"col1", "col2"}) {
+	if !reflect.DeepEqual(rows.ColumnNames(), []string{"col1", "col2"}) {
 		t.Fatal("failed test\n", rows.ColumnNames())
 	}
 
@@ -106,7 +106,7 @@ func TestLoadCsvMemorySortedRows_num(t *testing.T) {
 		t.Fatal("failed test\n", rows.Count())
 	}
 
-	if reflect.DeepEqual(rows.ColumnNames(), []string{"col1"}) {
+	if !reflect.DeepEqual(rows.ColumnNames(), []string{"col1"}) {
 		t.Fatal("failed test\n", rows.ColumnNames())
 	}
 
@@ -143,7 +143,7 @@ func TestLoadCsvMemorySortedRows_same(t *testing.T) {
 		t.Fatal("failed test\n", rows.Count())
 	}
 
-	if reflect.DeepEqual(rows.ColumnNames(), []string{"col1", "col2"}) {
+	if !reflect.DeepEqual(rows.ColumnNames(), []string{"col1", "col2"}) {
 		t.Fatal("failed test\n", rows.ColumnNames())
 	}
 
@@ -224,7 +224,7 @@ func TestLoadCsvMemorySortedRows_big(t *testing.T) {
 		t.Fatal("failed test\n", rows.Count())
 	}
 
-	if reflect.DeepEqual(rows.ColumnNames(), []string{"col1", "col2"}) {
+	if !reflect.DeepEqual(rows.ColumnNames(), []string{"col1", "col2"}) {
 		t.Fatal("failed test\n", rows.ColumnNames())
 	}
 
@@ -276,7 +276,7 @@ func TestLoadCsvFileSortedRows(t *testing.T) {
 		t.Fatal("failed test\n", rows.Count())
 	}
 
-	if reflect.DeepEqual(rows.ColumnNames(), []string{"col1", "col2"}) {
+	if !reflect.DeepEqual(rows.ColumnNames(), []string{"col1", "col2"}) {
 		t.Fatal("failed test\n", rows.ColumnNames())
 	}
 
@@ -313,7 +313,7 @@ func TestLoadCsvFileSortedRows_multiColumn(t *testing.T) {
 		t.Fatal("failed test\n", rows.Count())
 	}
 
-	if reflect.DeepEqual(rows.ColumnNames(), []string{"col1", "col2"}) {
+	if !reflect.DeepEqual(rows.ColumnNames(), []string{"col1", "col2"}) {
 		t.Fatal("failed test\n", rows.ColumnNames())
 	}
 
@@ -349,7 +349,7 @@ func TestLoadCsvFileSortedRows_num(t *testing.T) {
 		t.Fatal("failed test\n", rows.Count())
 	}
 
-	if reflect.DeepEqual(rows.ColumnNames(), []string{"col1"}) {
+	if !reflect.DeepEqual(rows.ColumnNames(), []string{"col1"}) {
 		t.Fatal("failed test\n", rows.ColumnNames())
 	}
 
@@ -386,7 +386,7 @@ func TestLoadCsvFileSortedRows_same(t *testing.T) {
 		t.Fatal("failed test\n", rows.Count())
 	}
 
-	if reflect.DeepEqual(rows.ColumnNames(), []string{"col1", "col2"}) {
+	if !reflect.DeepEqual(rows.ColumnNames(), []string{"col1", "col2"}) {
 		t.Fatal("failed test\n", rows.ColumnNames())
 	}
 
@@ -467,7 +467,7 @@ func TestLoadCsvFileSortedRows_big(t *testing.T) {
 		t.Fatal("failed test\n", rows.Count())
 	}
 
-	if reflect.DeepEqual(rows.ColumnNames(), []string{"col1", "col2"}) {
+	if !reflect.DeepEqual(rows.ColumnNames(), []string{"col1", "col2"}) {
 		t.Fatal("failed test\n", rows.ColumnNames())
 	}
 
