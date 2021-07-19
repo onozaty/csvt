@@ -12,18 +12,18 @@ import (
 
 type CsvTable interface {
 	Find(key string) (map[string]string, error)
-	JoinColumnName() string
+	KeyColumnName() string
 	ColumnNames() []string
 	Close() error
 }
 
-type MemoryTable struct {
-	joinColumnName string
-	columnNames    []string
-	rows           map[string][]string
+type memoryTable struct {
+	keyColumnName string
+	columnNames   []string
+	rows          map[string][]string
 }
 
-func (t *MemoryTable) Find(key string) (map[string]string, error) {
+func (t *memoryTable) Find(key string) (map[string]string, error) {
 
 	row := t.rows[key]
 
@@ -39,32 +39,32 @@ func (t *MemoryTable) Find(key string) (map[string]string, error) {
 	return rowMap, nil
 }
 
-func (t *MemoryTable) JoinColumnName() string {
+func (t *memoryTable) KeyColumnName() string {
 
-	return t.joinColumnName
+	return t.keyColumnName
 }
 
-func (t *MemoryTable) ColumnNames() []string {
+func (t *memoryTable) ColumnNames() []string {
 
 	return t.columnNames
 }
 
-func (t *MemoryTable) Close() error {
+func (t *memoryTable) Close() error {
 
 	// リソースは保持しないので何もしない
 	return nil
 }
 
-func LoadCsvMemoryTable(reader CsvReader, joinColumnName string) (CsvTable, error) {
+func LoadCsvMemoryTable(reader CsvReader, keyColumnName string) (CsvTable, error) {
 
 	headers, err := reader.Read()
 	if err != nil {
 		return nil, err
 	}
 
-	primaryColumnIndex := util.IndexOf(headers, joinColumnName)
+	primaryColumnIndex := util.IndexOf(headers, keyColumnName)
 	if primaryColumnIndex == -1 {
-		return nil, fmt.Errorf("%s is not found", joinColumnName)
+		return nil, fmt.Errorf("%s is not found", keyColumnName)
 	}
 
 	rows := make(map[string][]string)
@@ -81,27 +81,27 @@ func LoadCsvMemoryTable(reader CsvReader, joinColumnName string) (CsvTable, erro
 		// -> 重複して存在した場合はエラーに
 		_, has := rows[row[primaryColumnIndex]]
 		if has {
-			return nil, fmt.Errorf("%s:%s is duplicated", joinColumnName, row[primaryColumnIndex])
+			return nil, fmt.Errorf("%s:%s is duplicated", keyColumnName, row[primaryColumnIndex])
 		}
 
 		rows[row[primaryColumnIndex]] = row
 	}
 
-	return &MemoryTable{
-		joinColumnName: joinColumnName,
-		columnNames:    headers,
-		rows:           rows,
+	return &memoryTable{
+		keyColumnName: keyColumnName,
+		columnNames:   headers,
+		rows:          rows,
 	}, nil
 }
 
-type FileTable struct {
-	joinColumnName string
-	columnNames    []string
-	dbPath         string
-	db             *bolt.DB
+type fileTable struct {
+	keyColumnName string
+	columnNames   []string
+	dbPath        string
+	db            *bolt.DB
 }
 
-func (t *FileTable) Find(key string) (map[string]string, error) {
+func (t *fileTable) Find(key string) (map[string]string, error) {
 
 	// 既にDBを開いている場合は、使いまわす
 	// (CsvTableのClose時に閉じている)
@@ -142,17 +142,17 @@ func (t *FileTable) Find(key string) (map[string]string, error) {
 	return rowMap, nil
 }
 
-func (t *FileTable) JoinColumnName() string {
+func (t *fileTable) KeyColumnName() string {
 
-	return t.joinColumnName
+	return t.keyColumnName
 }
 
-func (t *FileTable) ColumnNames() []string {
+func (t *fileTable) ColumnNames() []string {
 
 	return t.columnNames
 }
 
-func (t *FileTable) Close() error {
+func (t *fileTable) Close() error {
 
 	if t.db != nil {
 		err := t.db.Close()
@@ -164,16 +164,16 @@ func (t *FileTable) Close() error {
 	return os.Remove(t.dbPath)
 }
 
-func LoadCsvFileTable(reader CsvReader, joinColumnName string) (CsvTable, error) {
+func LoadCsvFileTable(reader CsvReader, keyColumnName string) (CsvTable, error) {
 
 	headers, err := reader.Read()
 	if err != nil {
 		return nil, err
 	}
 
-	primaryColumnIndex := util.IndexOf(headers, joinColumnName)
+	primaryColumnIndex := util.IndexOf(headers, keyColumnName)
 	if primaryColumnIndex == -1 {
-		return nil, fmt.Errorf("%s is not found", joinColumnName)
+		return nil, fmt.Errorf("%s is not found", keyColumnName)
 	}
 
 	dbFile, err := os.CreateTemp("", "csvdb")
@@ -216,7 +216,7 @@ func LoadCsvFileTable(reader CsvReader, joinColumnName string) (CsvTable, error)
 				// -> 重複して存在した場合はエラーに
 				v := b.Get([]byte(key))
 				if v != nil {
-					return fmt.Errorf("%s:%s is duplicated", joinColumnName, key)
+					return fmt.Errorf("%s:%s is duplicated", keyColumnName, key)
 				}
 
 				rowJson, err := json.Marshal(row)
@@ -238,9 +238,9 @@ func LoadCsvFileTable(reader CsvReader, joinColumnName string) (CsvTable, error)
 		}
 	}
 
-	return &FileTable{
-		joinColumnName: joinColumnName,
-		columnNames:    headers,
-		dbPath:         dbFile.Name(),
+	return &fileTable{
+		keyColumnName: keyColumnName,
+		columnNames:   headers,
+		dbPath:        dbFile.Name(),
 	}, nil
 }
