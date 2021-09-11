@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"io"
+	"os"
 	"path/filepath"
 	"strconv"
 
@@ -72,7 +73,10 @@ func runSplit(format csv.Format, inputPath string, maxRows int, outputBasePath s
 	num := 1
 
 	for {
-		outputPath := makeOutputPath(outputBasePath, num)
+		outputPath, err := makeOutputPath(outputBasePath, num)
+		if err != nil {
+			return err
+		}
 
 		err = splitOne(format, splitReader, maxRows, columnNames, outputPath)
 		if err != nil {
@@ -89,7 +93,7 @@ func runSplit(format csv.Format, inputPath string, maxRows int, outputBasePath s
 	return nil
 }
 
-func makeOutputPath(outputBasePath string, num int) string {
+func makeOutputPath(outputBasePath string, num int) (string, error) {
 
 	// outputBathPath: dir/output.csv, num: 1
 	//   -> dir/output-1.csv
@@ -97,7 +101,19 @@ func makeOutputPath(outputBasePath string, num int) string {
 	//   -> dir/output-1
 
 	ext := filepath.Ext(outputBasePath)
-	return outputBasePath[:len(outputBasePath)-len(ext)] + "-" + strconv.Itoa(num) + ext
+	outputPath := outputBasePath[:len(outputBasePath)-len(ext)] + "-" + strconv.Itoa(num) + ext
+
+	dir := filepath.Dir(outputPath)
+	_, err := os.Stat(dir)
+	if os.IsNotExist(err) {
+
+		err = os.Mkdir(dir, 0755)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	return outputPath, nil
 }
 
 func splitOne(format csv.Format, reader csv.CsvReader, maxRows int, columnNames []string, outputPath string) error {
