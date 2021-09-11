@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 
 	"github.com/onozaty/csvt/csv"
@@ -93,15 +94,28 @@ func runSplit(format csv.Format, inputPath string, maxRows int, outputBasePath s
 	return nil
 }
 
+var outputBasePathParamPattern = regexp.MustCompile("%[0-9]*d")
+
 func makeOutputPath(outputBasePath string, num int) (string, error) {
 
-	// outputBathPath: dir/output.csv, num: 1
-	//   -> dir/output-1.csv
-	// outputBathPath: dir/output, num: 1
-	//   -> dir/output-1
+	var outputPath string
+	if outputBasePathParamPattern.MatchString(outputBasePath) {
+		// outputBathPath: dir/output%d.csv, num: 1
+		//   -> dir/output1.csv
+		// outputBathPath: dir/%04d.csv, num: 1
+		//   -> dir/0001.csv
 
-	ext := filepath.Ext(outputBasePath)
-	outputPath := outputBasePath[:len(outputBasePath)-len(ext)] + "-" + strconv.Itoa(num) + ext
+		outputPath = fmt.Sprintf(outputBasePath, num)
+
+	} else {
+		// outputBathPath: dir/output.csv, num: 1
+		//   -> dir/output-1.csv
+		// outputBathPath: dir/output, num: 1
+		//   -> dir/output-1
+
+		ext := filepath.Ext(outputBasePath)
+		outputPath = outputBasePath[:len(outputBasePath)-len(ext)] + "-" + strconv.Itoa(num) + ext
+	}
 
 	dir := filepath.Dir(outputPath)
 	_, err := os.Stat(dir)

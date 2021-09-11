@@ -439,3 +439,134 @@ func TestSplitCmd_headerOnly(t *testing.T) {
 		t.Fatal("failed test\n", result)
 	}
 }
+
+func TestSplitCmd_outputBase_paramZeroPadding(t *testing.T) {
+
+	s := joinRows(
+		"col1,col2",
+		"\"1\",a",
+		"2,\"b\"",
+		"3,c",
+	)
+
+	fi := createTempFile(t, s)
+	defer os.Remove(fi)
+
+	d := createTempDir(t)
+	defer os.RemoveAll(d)
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"split",
+		"-i", fi,
+		"-o", d + "/%04d.csv",
+		"-r", "2",
+	})
+
+	err := rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := readDir(t, d)
+
+	expect := map[string][]byte{
+		"0001.csv": []byte(joinRows(
+			"col1,col2",
+			"1,a",
+			"2,b")),
+		"0002.csv": []byte(joinRows(
+			"col1,col2",
+			"3,c")),
+	}
+
+	if !reflect.DeepEqual(result, expect) {
+		t.Fatal("failed test\n", result)
+	}
+}
+
+func TestSplitCmd_outputBase_param(t *testing.T) {
+
+	s := joinRows(
+		"col1,col2",
+		"\"1\",a",
+		"2,\"b\"",
+		"3,c",
+	)
+
+	fi := createTempFile(t, s)
+	defer os.Remove(fi)
+
+	d := createTempDir(t)
+	defer os.RemoveAll(d)
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"split",
+		"-i", fi,
+		"-o", d + "/out%d.csv",
+		"-r", "2",
+	})
+
+	err := rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := readDir(t, d)
+
+	expect := map[string][]byte{
+		"out1.csv": []byte(joinRows(
+			"col1,col2",
+			"1,a",
+			"2,b")),
+		"out2.csv": []byte(joinRows(
+			"col1,col2",
+			"3,c")),
+	}
+
+	if !reflect.DeepEqual(result, expect) {
+		t.Fatal("failed test\n", result)
+	}
+}
+
+func TestSplitCmd_outputBase_nonExtension(t *testing.T) {
+
+	s := joinRows(
+		"col1,col2",
+		"\"1\",a",
+		"2,\"b\"",
+	)
+
+	fi := createTempFile(t, s)
+	defer os.Remove(fi)
+
+	d := createTempDir(t)
+	defer os.RemoveAll(d)
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"split",
+		"-i", fi,
+		"-o", d + "/a",
+		"-r", "2",
+	})
+
+	err := rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := readDir(t, d)
+
+	expect := map[string][]byte{
+		"a-1": []byte(joinRows(
+			"col1,col2",
+			"1,a",
+			"2,b")),
+	}
+
+	if !reflect.DeepEqual(result, expect) {
+		t.Fatal("failed test\n", result)
+	}
+}
