@@ -100,6 +100,7 @@ func sort(reader csv.CsvReader, targetColumnNames []string, writer csv.CsvWriter
 	if err != nil {
 		return err
 	}
+	defer sortedRows.Close()
 
 	err = writer.Write(sortedRows.ColumnNames())
 	if err != nil {
