@@ -20,8 +20,9 @@
 * [remove](#remove) Remove columns.
 * [rename](#rename) Rename columns.
 * [replace](#replace) Replace values.
-* [sort](#sort) Sort rows.
 * [slice](#slice) Slice specified range of rows.
+* [sort](#sort) Sort rows.
+* [split](#split) Split into multiple CSV files.
 * [transform](#transform) Transform format.
 * [unique](#unique) Extract unique rows.
 
@@ -814,6 +815,68 @@ Please refer to the following for the syntax of regular expressions.
 
 * https://golang.org/pkg/regexp/syntax/
 
+## slice
+
+Create a new CSV file by slicing the specified range of rows from the input CSV file.
+
+### Usage
+
+```
+csvt slice -i INPUT [-s START] [-e END] -o OUTPUT
+```
+
+```
+Usage:
+  csvt slice [flags]
+
+Flags:
+  -i, --input string    Input CSV file path.
+  -s, --start int       The number of the starting row. If not specified, it will be the first row. (default 1)
+  -e, --end int         The number of the end row. If not specified, it will be the last row. (default 2147483647)
+  -o, --output string   Output CSV file path.
+  -h, --help            help for slice
+```
+
+### Example
+
+The contents of `input.csv`.
+
+```
+ID,Name
+1,name1
+2,name2
+3,name3
+4,name4
+5,name5
+```
+
+Slice the second through fourth records.
+
+```
+$ csvt slice -i input.csv -s 2 -e 4 -o output.csv
+```
+
+The contents of the created `output.tsv`.
+
+```
+ID,Name
+2,name2
+3,name3
+4,name4
+```
+
+The `-s` and `-e` can be omitted.
+If you want to extract the first row, it is sufficient to specify only `-e`, as shown below.
+
+```
+$ csvt slice -i input.csv -e 1 -o output.csv
+```
+
+```
+ID,Name
+1,name1
+```
+
 ## sort
 
 Creates a new CSV file from the input CSV file by sorting by the values in the specified columns.
@@ -897,26 +960,26 @@ col1
 123
 ```
 
-## slice
+## split
 
-Create a new CSV file by slicing the specified range of rows from the input CSV file.
+Split the CSV file by the specified number of rows.
 
 ### Usage
 
 ```
-csvt slice -i INPUT [-s START] [-e END] -o OUTPUT
+csvt split -i INPUT -r ROWS -o OUTPUT
 ```
 
 ```
 Usage:
-  csvt slice [flags]
+  csvt split [flags]
 
 Flags:
   -i, --input string    Input CSV file path.
-  -s, --start int       The number of the starting row. If not specified, it will be the first row. (default 1)
-  -e, --end int         The number of the end row. If not specified, it will be the last row. (default 2147483647)
-  -o, --output string   Output CSV file path.
-  -h, --help            help for slice
+  -r, --rows int        Maximum number of rows.
+  -o, --output string   Output CSV file base path. If you specify "output.csv", the file will be output as "output-1.csv" "output-2.csv" ...
+                        It is also possible to specify the position of the embedded serial number in "%d".
+  -h, --help            help for split
 ```
 
 ### Example
@@ -932,31 +995,32 @@ ID,Name
 5,name5
 ```
 
-Slice the second through fourth records.
+Split into multiple CSV files every two rows.
 
 ```
-$ csvt slice -i input.csv -s 2 -e 4 -o output.csv
+$ csvt split -i input.csv -r 2 -o output.csv
 ```
 
-The contents of the created `output.tsv`.
+It will be split into the following three files.
 
+`output-1.csv`
 ```
 ID,Name
+1,name1
 2,name2
+```
+
+`output-2.csv`
+```
+ID,Name
 3,name3
 4,name4
 ```
 
-The `-s` and `-e` can be omitted.
-If you want to extract the first row, it is sufficient to specify only `-e`, as shown below.
-
-```
-$ csvt slice -i input.csv -e 1 -o output.csv
-```
-
+`output-3.csv`
 ```
 ID,Name
-1,name1
+5,name5
 ```
 
 ## transform
