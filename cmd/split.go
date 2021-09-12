@@ -49,7 +49,9 @@ func newSplitCmd() *cobra.Command {
 	splitCmd.MarkFlagRequired("input")
 	splitCmd.Flags().IntP("rows", "r", 0, "Maximum number of rows.")
 	splitCmd.MarkFlagRequired("rows")
-	splitCmd.Flags().StringP("output", "o", "", "Output CSV file base path. If you specify \"output.csv\", the file will be output as \"output-1.csv\" \"output-2.csv\" ...")
+	splitCmd.Flags().StringP("output", "o", "",
+		"Output CSV file base path. If you specify \"output.csv\", the file will be output as \"output-1.csv\" \"output-2.csv\" ...\n"+
+			"It is also possible to specify the position of the embedded serial number in \"%d\".")
 	splitCmd.MarkFlagRequired("output")
 
 	return splitCmd
