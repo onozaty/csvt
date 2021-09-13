@@ -1142,7 +1142,8 @@ col1,col2
 
 ## Install
 
-You can download the binary from the following.
+csvt is implemented in golang and runs on all major platforms such as Windows, Mac OS, and Linux.  
+You can download the binaries for each OS from the links below.
 
 * https://github.com/onozaty/csvt/releases/latest
 
