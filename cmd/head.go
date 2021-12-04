@@ -68,6 +68,7 @@ func head(reader csv.CsvReader, number int, writer io.Writer) error {
 
 	table := tablewriter.NewWriter(writer)
 	table.SetAutoFormatHeaders(false)
+	table.SetAlignment(tablewriter.ALIGN_LEFT)
 	table.SetHeader(columnNames)
 
 	for i := 0; i < number; i++ {
