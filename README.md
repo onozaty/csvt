@@ -14,6 +14,7 @@
 * [count](#count) Count the number of records.
 * [exclude](#exclude) Exclude rows by included in another CSV file.
 * [filter](#filter) Filter rows by condition.
+* [head](#head) Show head few rows.
 * [header](#header) Show header.
 * [include](#include) Filter rows by included in another CSV file.
 * [join](#join) Join CSV files.
@@ -453,6 +454,76 @@ UserID,Name,Age,CompanyID
 Please refer to the following for the syntax of regular expressions.
 
 * https://pkg.go.dev/regexp/syntax
+
+## head
+
+Show the first few rows.  
+It will be shown in table format.
+
+### Usage
+
+```
+csvt head -i INPUT  [-n NUMBER]
+```
+
+```
+Usage:
+  csvt head [flags]
+
+Flags:
+  -i, --input string   Input CSV file path.
+  -n, --number int     The number of records to show. If not specified, it will be the first 10 rows. (default 10)
+  -h, --help           help for head
+```
+
+### Example
+
+The contents of `input.csv`.
+
+```
+UserID,Name,Age
+1,"Taro, Yamada",10
+2,Hanako,21
+3,Smith,30
+4,Jun,22
+5,Kevin,10
+6,Bob,
+7,Jackson,51
+8,Harry,22
+9,Olivia,32
+10,Aiko,35
+11,Kaede,9
+12,Sakura,12
+13,Momoka,16
+```
+
+```
+$ csvt head -i input.csv
++--------+--------------+-----+
+| UserID | Name         | Age |
++--------+--------------+-----+
+| 1      | Taro, Yamada | 10  |
+| 2      | Hanako       | 21  |
+| 3      | Smith        | 30  |
+| 4      | Jun          | 22  |
+| 5      | Kevin        | 10  |
+| 6      | Bob          |     |
+| 7      | Jackson      | 51  |
+| 8      | Harry        | 22  |
+| 9      | Olivia       | 32  |
+| 10     | Aiko         | 35  |
++--------+--------------+-----+
+```
+
+```
+$ csvt head -i input.csv -n 2
++--------+--------------+-----+
+| UserID | Name         | Age |
++--------+--------------+-----+
+| 1      | Taro, Yamada | 10  |
+| 2      | Hanako       | 21  |
++--------+--------------+-----+
+```
 
 ## header
 
