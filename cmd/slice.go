@@ -51,7 +51,7 @@ func newSliceCmd() *cobra.Command {
 
 	sliceCmd.Flags().StringP("input", "i", "", "Input CSV file path.")
 	sliceCmd.MarkFlagRequired("input")
-	sliceCmd.Flags().IntP("start", "s", 1, "The number of the starting row.	If not specified, it will be the first row.")
+	sliceCmd.Flags().IntP("start", "s", 1, "The number of the starting row. If not specified, it will be the first row.")
 	sliceCmd.Flags().IntP("end", "e", math.MaxInt32, "The number of the end row. If not specified, it will be the last row.")
 	sliceCmd.Flags().StringP("output", "o", "", "Output CSV file path.")
 	sliceCmd.MarkFlagRequired("output")
