@@ -42,7 +42,7 @@ func TestHeadCmd(t *testing.T) {
 	result := buf.String()
 
 	except := `+----+--------------+------------+
-| ID |     Name     | Company ID |
+| ID | Name         | Company ID |
 +----+--------------+------------+
 | 1  | Yamada       | 1          |
 | 2  | Ichikawa     |            |
@@ -91,7 +91,7 @@ func TestHeadCmd_number(t *testing.T) {
 	result := buf.String()
 
 	except := `+----+--------------+------------+
-| ID |     Name     | Company ID |
+| ID | Name         | Company ID |
 +----+--------------+------------+
 | 1  | Yamada       | 1          |
 | 2  | Ichikawa     |            |
@@ -129,7 +129,7 @@ func TestHeadCmd_less(t *testing.T) {
 	result := buf.String()
 
 	except := `+----+----------+------------+
-| ID |   Name   | Company ID |
+| ID | Name     | Company ID |
 +----+----------+------------+
 | 1  | Yamada   | 1          |
 | 2  | Ichikawa |            |

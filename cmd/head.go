@@ -43,7 +43,7 @@ func newHeadCmd() *cobra.Command {
 
 	headCmd.Flags().StringP("input", "i", "", "Input CSV file path.")
 	headCmd.MarkFlagRequired("input")
-	headCmd.Flags().IntP("number", "n", 10, "The number of records to show.	If not specified, it will be the first 10 rows.")
+	headCmd.Flags().IntP("number", "n", 10, "The number of records to show. If not specified, it will be the first 10 rows.")
 
 	return headCmd
 }
@@ -68,6 +68,7 @@ func head(reader csv.CsvReader, number int, writer io.Writer) error {
 
 	table := tablewriter.NewWriter(writer)
 	table.SetAutoFormatHeaders(false)
+	table.SetHeaderAlignment(tablewriter.ALIGN_LEFT)
 	table.SetAlignment(tablewriter.ALIGN_LEFT)
 	table.SetHeader(columnNames)
 
