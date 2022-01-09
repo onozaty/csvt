@@ -30,26 +30,19 @@ func newGcountCmd() *cobra.Command {
 			// 引数の解析に成功した時点で、エラーが起きてもUsageは表示しない
 			cmd.SilenceUsage = true
 
-			err = runGroupCount(
+			return runGroupCount(
 				format,
 				inputPath,
 				targetColumnName,
 				countColumnName,
 				outputPath)
-
-			if err != nil {
-				return err
-			}
-
-			cmd.Printf("%d\n", count)
-
-			return nil
 		},
 	}
 
 	gcountCmd.Flags().StringP("input", "i", "", "Input CSV file path.")
 	gcountCmd.MarkFlagRequired("input")
 	gcountCmd.Flags().StringP("column", "c", "", "Name of the column to use for grouping.")
+	gcountCmd.MarkFlagRequired("column")
 	gcountCmd.Flags().StringP("count-column", "", "COUNT", "(optional) Column name for the number of records.")
 	gcountCmd.Flags().StringP("output", "o", "", "Output CSV file path.")
 	gcountCmd.MarkFlagRequired("output")
