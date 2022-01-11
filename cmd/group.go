@@ -10,11 +10,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newGcountCmd() *cobra.Command {
+func newGroupCmd() *cobra.Command {
 
 	gcountCmd := &cobra.Command{
-		Use:   "gcount",
-		Short: "Count the number of records in each group",
+		Use:   "group",
+		Short: "Aggregate by group",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			format, err := getFlagBaseCsvFormat(cmd.Flags())

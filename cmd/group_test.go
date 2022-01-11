@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestGcountCmd(t *testing.T) {
+func TestGroupCmd(t *testing.T) {
 
 	s := joinRows(
 		"col1,col2",
@@ -29,7 +29,7 @@ func TestGcountCmd(t *testing.T) {
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
-		"gcount",
+		"group",
 		"-i", fi,
 		"-o", fo,
 		"-c", "col2",
@@ -57,7 +57,7 @@ func TestGcountCmd(t *testing.T) {
 	}
 }
 
-func TestGcountCmd_countColumn(t *testing.T) {
+func TestGroupCmd_countColumn(t *testing.T) {
 
 	s := joinRows(
 		"col1,col2",
@@ -74,7 +74,7 @@ func TestGcountCmd_countColumn(t *testing.T) {
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
-		"gcount",
+		"group",
 		"-i", fi,
 		"-o", fo,
 		"-c", "col2",
@@ -98,7 +98,7 @@ func TestGcountCmd_countColumn(t *testing.T) {
 	}
 }
 
-func TestGcountCmd_format(t *testing.T) {
+func TestGroupCmd_format(t *testing.T) {
 
 	s := joinRows(
 		"col1\tcol2",
@@ -116,7 +116,7 @@ func TestGcountCmd_format(t *testing.T) {
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
-		"gcount",
+		"group",
 		"-i", fi,
 		"-o", fo,
 		"-c", "col2",
@@ -141,7 +141,7 @@ func TestGcountCmd_format(t *testing.T) {
 	}
 }
 
-func TestGcountCmd_invalidFormat(t *testing.T) {
+func TestGroupCmd_invalidFormat(t *testing.T) {
 
 	s := joinRows(
 		"col1,col2",
@@ -156,7 +156,7 @@ func TestGcountCmd_invalidFormat(t *testing.T) {
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
-		"gcount",
+		"group",
 		"-i", fi,
 		"-o", fo,
 		"-c", "col1",
@@ -169,7 +169,7 @@ func TestGcountCmd_invalidFormat(t *testing.T) {
 	}
 }
 
-func TestGcountCmd_columnNotFound(t *testing.T) {
+func TestGroupCmd_columnNotFound(t *testing.T) {
 
 	s := joinRows(
 		"col1,col2",
@@ -186,7 +186,7 @@ func TestGcountCmd_columnNotFound(t *testing.T) {
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
-		"gcount",
+		"group",
 		"-i", fi,
 		"-o", fo,
 		"-c", "col3",
@@ -198,7 +198,7 @@ func TestGcountCmd_columnNotFound(t *testing.T) {
 	}
 }
 
-func TestGcountCmd_inputFileNotFound(t *testing.T) {
+func TestGroupCmd_inputFileNotFound(t *testing.T) {
 
 	fi := createTempFile(t, "")
 	defer os.Remove(fi)
@@ -208,7 +208,7 @@ func TestGcountCmd_inputFileNotFound(t *testing.T) {
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
-		"gcount",
+		"group",
 		"-i", fi + "____", // 存在しないファイル
 		"-o", fo,
 		"-c", "col1",
@@ -225,7 +225,7 @@ func TestGcountCmd_inputFileNotFound(t *testing.T) {
 	}
 }
 
-func TestGcountCmd_inputFileEmpty(t *testing.T) {
+func TestGroupCmd_inputFileEmpty(t *testing.T) {
 
 	fi := createTempFile(t, "")
 	defer os.Remove(fi)
@@ -235,7 +235,7 @@ func TestGcountCmd_inputFileEmpty(t *testing.T) {
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
-		"gcount",
+		"group",
 		"-i", fi,
 		"-o", fo,
 		"-c", "col1",
