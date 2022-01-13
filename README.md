@@ -13,6 +13,7 @@
 * [concat](#concat) Concat CSV files.
 * [count](#count) Count the number of records.
 * [exclude](#exclude) Exclude rows by included in another CSV file.
+* [group](#group) Aggregate by group.
 * [filter](#filter) Filter rows by condition.
 * [head](#head) Show head few rows.
 * [header](#header) Show header.
@@ -347,6 +348,66 @@ The contents of the created `output.csv`.
 col1,col2
 1,A
 4,D
+```
+
+## group
+
+Group by the value of the specified column and perform aggregation.  
+
+Currently, only counting is supported.  
+It's like `GROUP BY` + `COUNT` in SQL.
+
+### Usage
+
+```
+csvt group -i INPUT -c COLUMN [--count-column COUNT_COLUMN] -o OUTPUT
+```
+
+```
+Usage:
+  csvt group [flags]
+
+Flags:
+  -i, --input string          Input CSV file path.
+  -c, --column string         Name of the column to use for grouping.
+      --count-column string   (optional) Column name for the number of records. (default "COUNT")
+  -o, --output string         Output CSV file path.
+  -h, --help                  help for group
+```
+
+### Example
+
+The contents of `input.csv`.
+
+```
+col1,col2
+1,B
+2,B
+3,A
+4,D
+5,C
+6,D
+7,D
+8,E
+9,A
+10,D
+```
+
+Group the rows by the value of `col2` and aggregate the number of rows.
+
+```
+$ csvt group -i input.csv -c col2 -o output.csv
+```
+
+The contents of the created `output.csv`.
+
+```
+col2,COUNT
+A,2
+B,2
+C,1
+D,4
+E,1
 ```
 
 ## filter
