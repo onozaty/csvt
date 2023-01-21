@@ -347,7 +347,7 @@ func TestAddCmd_templateParseError(t *testing.T) {
 	})
 
 	err := rootCmd.Execute()
-	if err == nil || err.Error() != `--template is invalid: template: template:1: unexpected "}" in operand` {
+	if err == nil || err.Error() != `--template is invalid: template: template:1: bad character U+007D '}'` {
 		t.Fatal("failed test\n", err)
 	}
 }
