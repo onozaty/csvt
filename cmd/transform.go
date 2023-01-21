@@ -45,7 +45,7 @@ func newTransformCmd() *cobra.Command {
 	transformCmd.Flags().StringP("out-quote", "", "", "(optional) Output CSV quote. The default is '\"'")
 	transformCmd.Flags().StringP("out-sep", "", "", "(optional) Output CSV record separator. The default is CRLF.")
 	transformCmd.Flags().BoolP("out-allquote", "", false, "(optional) Always quote output CSV fields. The default is to quote only the necessary fields.")
-	transformCmd.Flags().StringP("out-encoding", "", "", "(optional) Output CSV encoding. The default is utf-8. Supported encodings: utf-8, shift_jis, euc-jp")
+	transformCmd.Flags().StringP("out-encoding", "", "", "(optional) Output CSV encoding. The default is utf-8.")
 	transformCmd.Flags().BoolP("out-bom", "", false, "(optional) Output CSV with BOM.")
 
 	return transformCmd

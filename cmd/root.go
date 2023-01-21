@@ -20,7 +20,7 @@ func newRootCmd() *cobra.Command {
 	rootCmd.PersistentFlags().StringP("quote", "", "", "(optional) CSV quote. The default is '\"'")
 	rootCmd.PersistentFlags().StringP("sep", "", "", "(optional) CSV record separator. The default is CRLF.")
 	rootCmd.PersistentFlags().BoolP("allquote", "", false, "(optional) Always quote CSV fields. The default is to quote only the necessary fields.")
-	rootCmd.PersistentFlags().StringP("encoding", "", "", "(optional) CSV encoding. The default is utf-8. Supported encodings: utf-8, shift_jis, euc-jp")
+	rootCmd.PersistentFlags().StringP("encoding", "", "", "(optional) CSV encoding. The default is utf-8.")
 	rootCmd.PersistentFlags().BoolP("bom", "", false, "(optional) CSV with BOM. When reading, the BOM will be automatically removed without this flag.")
 	rootCmd.PersistentFlags().SortFlags = false
 	rootCmd.Flags().SortFlags = false

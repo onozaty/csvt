@@ -299,7 +299,7 @@ func TestEncoding_sjis(t *testing.T) {
 
 func TestEncoding_eucjp(t *testing.T) {
 
-	encoding1, err := Encoding("eucjp")
+	encoding1, err := Encoding("euc-jp")
 	if err != nil {
 		t.Fatal("failed test\n", err)
 	}

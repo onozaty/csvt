@@ -6,8 +6,9 @@ import (
 	"strings"
 
 	"github.com/onozaty/go-customcsv"
+	"golang.org/x/exp/slices"
 	"golang.org/x/text/encoding"
-	"golang.org/x/text/encoding/japanese"
+	"golang.org/x/text/encoding/htmlindex"
 	"golang.org/x/text/transform"
 )
 
@@ -78,18 +79,15 @@ func NewCsvWriter(w io.Writer, f Format) CsvWriter {
 
 func Encoding(name string) (encoding.Encoding, error) {
 
-	normalizeName := strings.ReplaceAll(strings.ReplaceAll(strings.ToLower(name), "_", ""), "-", "")
-
-	switch normalizeName {
-	case "utf8":
+	if slices.Contains([]string{"utf8", "utf-8"}, strings.ToLower(name)) {
 		// UTF-8の場合は変換不要
 		return nil, nil
-	case "shiftjis", "sjis":
-		return japanese.ShiftJIS, nil
-	case "eucjp":
-		return japanese.EUCJP, nil
-	default:
+	}
+
+	encoding, err := htmlindex.Get(name)
+	if err != nil {
 		return nil, fmt.Errorf("invalid encoding name: %s", name)
 	}
 
+	return encoding, nil
 }

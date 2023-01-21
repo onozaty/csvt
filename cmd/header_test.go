@@ -201,30 +201,6 @@ func TestHeaderCmd_encoding_shift_jis(t *testing.T) {
 	}
 }
 
-func TestHeaderCmd_encoding_eucjp(t *testing.T) {
-
-	rootCmd := newRootCmd()
-	rootCmd.SetArgs([]string{
-		"header",
-		"-i", "../testdata/users-eucjp.csv",
-		"--encoding", "eucjp",
-	})
-
-	buf := new(bytes.Buffer)
-	rootCmd.SetOutput(buf)
-
-	err := rootCmd.Execute()
-	if err != nil {
-		t.Fatal("failed test\n", err)
-	}
-
-	result := buf.String()
-
-	if result != "ID\n名前\n年齢\n" {
-		t.Fatal("failed test\n", result)
-	}
-}
-
 func TestHeaderCmd_encoding_euc_jp(t *testing.T) {
 
 	rootCmd := newRootCmd()
@@ -245,6 +221,78 @@ func TestHeaderCmd_encoding_euc_jp(t *testing.T) {
 	result := buf.String()
 
 	if result != "ID\n名前\n年齢\n" {
+		t.Fatal("failed test\n", result)
+	}
+}
+
+func TestHeaderCmd_encoding_koi8_r(t *testing.T) {
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"header",
+		"-i", "../testdata/users-koi8r.csv",
+		"--encoding", "koi8-r",
+	})
+
+	buf := new(bytes.Buffer)
+	rootCmd.SetOutput(buf)
+
+	err := rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := buf.String()
+
+	if result != "ID\nНазовите\nвозраст\n" {
+		t.Fatal("failed test\n", result)
+	}
+}
+
+func TestHeaderCmd_encoding_euc_kr(t *testing.T) {
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"header",
+		"-i", "../testdata/users-euckr.csv",
+		"--encoding", "euc-kr",
+	})
+
+	buf := new(bytes.Buffer)
+	rootCmd.SetOutput(buf)
+
+	err := rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := buf.String()
+
+	if result != "ID\n이름\n나이\n" {
+		t.Fatal("failed test\n", result)
+	}
+}
+
+func TestHeaderCmd_encoding_big5(t *testing.T) {
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"header",
+		"-i", "../testdata/users-big5.csv",
+		"--encoding", "big5",
+	})
+
+	buf := new(bytes.Buffer)
+	rootCmd.SetOutput(buf)
+
+	err := rootCmd.Execute()
+	if err != nil {
+		t.Fatal("failed test\n", err)
+	}
+
+	result := buf.String()
+
+	if result != "ID\n名稱\n年齡\n" {
 		t.Fatal("failed test\n", result)
 	}
 }
