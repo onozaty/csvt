@@ -38,7 +38,7 @@ Global Flags:
       --quote string      (optional) CSV quote. The default is '"'
       --sep string        (optional) CSV record separator. The default is CRLF.
       --allquote          (optional) Always quote CSV fields. The default is to quote only the necessary fields.
-      --encoding string   (optional) CSV encoding. The default is utf-8. Supported encodings: utf-8, shift_jis, euc-jp
+      --encoding string   (optional) CSV encoding. The default is utf-8.
       --bom               (optional) CSV with BOM. When reading, the BOM will be automatically removed without this flag.
 ```
 
@@ -47,6 +47,53 @@ For example, when dealing with TSV files, change the delimiter to a tab as shown
 ```
 $ csvt count -i INPUT --delim "\t"
 ```
+
+### Supported encodings
+
+The encodings that can be specified with `--encoding` are as follows.
+
+* utf-8
+* ibm866
+* iso-8859-2
+* iso-8859-3
+* iso-8859-4
+* iso-8859-5
+* iso-8859-6
+* iso-8859-7
+* iso-8859-8
+* iso-8859-8-i
+* iso-8859-10
+* iso-8859-13
+* iso-8859-14
+* iso-8859-15
+* iso-8859-16
+* koi8-r
+* koi8-u
+* macintosh
+* windows-874
+* windows-1250
+* windows-1251
+* windows-1252
+* windows-1253
+* windows-1254
+* windows-1255
+* windows-1256
+* windows-1257
+* windows-1258
+* x-mac-cyrillic
+* gbk
+* gb18030
+* big5
+* euc-jp
+* iso-2022-jp
+* shift_jis
+* euc-kr
+* utf-16be
+* utf-16le
+
+It is defined by W3C.
+
+* http://www.w3.org/TR/encoding
 
 ## add
 
@@ -1176,7 +1223,7 @@ Flags:
       --out-quote string      (optional) Output CSV quote. The default is '"'
       --out-sep string        (optional) Output CSV record separator. The default is CRLF.
       --out-allquote          (optional) Always quote output CSV fields. The default is to quote only the necessary fields.
-      --out-encoding string   (optional) Output CSV encoding. The default is utf-8. Supported encodings: utf-8, shift_jis, euc-jp
+      --out-encoding string   (optional) Output CSV encoding. The default is utf-8.
       --out-bom               (optional) Output CSV with BOM.
   -h, --help                  help for transform
 ```
