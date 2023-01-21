@@ -5,9 +5,9 @@ import (
 	"io"
 
 	"github.com/onozaty/csvt/csv"
-	"github.com/onozaty/csvt/util"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"golang.org/x/exp/slices"
 )
 
 func newCountCmd() *cobra.Command {
@@ -81,7 +81,7 @@ func count(reader csv.CsvReader, options CountOptions) (int, error) {
 
 	targetColumnIndex := -1
 	if options.targetColumnName != "" {
-		targetColumnIndex = util.IndexOf(columnNames, options.targetColumnName)
+		targetColumnIndex = slices.Index(columnNames, options.targetColumnName)
 		if targetColumnIndex == -1 {
 			return 0, fmt.Errorf("missing %s in the CSV file", options.targetColumnName)
 		}

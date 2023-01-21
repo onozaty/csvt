@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/boltdb/bolt"
-	"github.com/onozaty/csvt/util"
+	"golang.org/x/exp/slices"
 )
 
 type CsvTable interface {
@@ -62,7 +62,7 @@ func LoadCsvMemoryTable(reader CsvReader, keyColumnName string) (CsvTable, error
 		return nil, err
 	}
 
-	primaryColumnIndex := util.IndexOf(headers, keyColumnName)
+	primaryColumnIndex := slices.Index(headers, keyColumnName)
 	if primaryColumnIndex == -1 {
 		return nil, fmt.Errorf("%s is not found", keyColumnName)
 	}
@@ -171,7 +171,7 @@ func LoadCsvFileTable(reader CsvReader, keyColumnName string) (CsvTable, error) 
 		return nil, err
 	}
 
-	primaryColumnIndex := util.IndexOf(headers, keyColumnName)
+	primaryColumnIndex := slices.Index(headers, keyColumnName)
 	if primaryColumnIndex == -1 {
 		return nil, fmt.Errorf("%s is not found", keyColumnName)
 	}

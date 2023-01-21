@@ -5,9 +5,9 @@ import (
 	"io"
 
 	"github.com/onozaty/csvt/csv"
-	"github.com/onozaty/csvt/util"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"golang.org/x/exp/slices"
 )
 
 func newRemoveCmd() *cobra.Command {
@@ -75,7 +75,7 @@ func remove(reader csv.CsvReader, removeColumnNames []string, writer csv.CsvWrit
 	removeColumnIndexes := []int{}
 	for _, removeColumnName := range removeColumnNames {
 
-		removeColumnIndex := util.IndexOf(columnNames, removeColumnName)
+		removeColumnIndex := slices.Index(columnNames, removeColumnName)
 		if removeColumnIndex == -1 {
 			return fmt.Errorf("missing %s in the CSV file", removeColumnName)
 		}
@@ -90,7 +90,7 @@ func remove(reader csv.CsvReader, removeColumnNames []string, writer csv.CsvWrit
 
 		for i, item := range row {
 
-			if !util.Contains(removeColumnIndexes, i) {
+			if !slices.Contains(removeColumnIndexes, i) {
 				filtered = append(filtered, item)
 			}
 		}

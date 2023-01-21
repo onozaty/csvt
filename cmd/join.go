@@ -8,6 +8,7 @@ import (
 	"github.com/onozaty/csvt/util"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"golang.org/x/exp/slices"
 )
 
 func newJoinCmd() *cobra.Command {
@@ -117,7 +118,7 @@ func join(first csv.CsvReader, second csv.CsvReader, joinColumnName string, writ
 	if err != nil {
 		return errors.Wrap(err, "failed to read the first CSV file")
 	}
-	firstJoinColumnIndex := util.IndexOf(firstColumnNames, firstJoinColumnName)
+	firstJoinColumnIndex := slices.Index(firstColumnNames, firstJoinColumnName)
 	if firstJoinColumnIndex == -1 {
 		return fmt.Errorf("missing %s in the first CSV file", firstJoinColumnName)
 	}
