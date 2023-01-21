@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/onozaty/csvt/util"
+	"golang.org/x/exp/slices"
 )
 
 type ItemSet struct {
@@ -39,7 +39,7 @@ func LoadItemSet(reader CsvReader, targetColumnName string) (*ItemSet, error) {
 	if err != nil {
 		return nil, err
 	}
-	targetColumnIndex := util.IndexOf(columnNames, targetColumnName)
+	targetColumnIndex := slices.Index(columnNames, targetColumnName)
 	if targetColumnIndex == -1 {
 		return nil, fmt.Errorf("%s is not found", targetColumnName)
 	}

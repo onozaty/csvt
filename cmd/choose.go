@@ -5,9 +5,9 @@ import (
 	"io"
 
 	"github.com/onozaty/csvt/csv"
-	"github.com/onozaty/csvt/util"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"golang.org/x/exp/slices"
 )
 
 func newChooseCmd() *cobra.Command {
@@ -75,7 +75,7 @@ func choose(reader csv.CsvReader, chooseColumnNames []string, writer csv.CsvWrit
 	chooseColumnIndexes := []int{}
 	for _, chooseColumnName := range chooseColumnNames {
 
-		chooseColumnIndex := util.IndexOf(columnNames, chooseColumnName)
+		chooseColumnIndex := slices.Index(columnNames, chooseColumnName)
 		if chooseColumnIndex == -1 {
 			return fmt.Errorf("missing %s in the CSV file", chooseColumnName)
 		}
@@ -90,7 +90,7 @@ func choose(reader csv.CsvReader, chooseColumnNames []string, writer csv.CsvWrit
 
 		for i, item := range row {
 
-			if util.Contains(chooseColumnIndexes, i) {
+			if slices.Contains(chooseColumnIndexes, i) {
 				filtered = append(filtered, item)
 			}
 		}

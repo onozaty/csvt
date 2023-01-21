@@ -7,9 +7,9 @@ import (
 	"strings"
 
 	"github.com/onozaty/csvt/csv"
-	"github.com/onozaty/csvt/util"
 	"github.com/pkg/errors"
 	"github.com/spf13/pflag"
+	"golang.org/x/exp/slices"
 	"golang.org/x/text/encoding"
 )
 
@@ -134,7 +134,7 @@ func getTargetColumnsIndexes(allColumnNames []string, targetColumnNames []string
 
 func getTargetColumnIndex(allColumnNames []string, targetColumnName string) (int, error) {
 
-	targetColumnIndex := util.IndexOf(allColumnNames, targetColumnName)
+	targetColumnIndex := slices.Index(allColumnNames, targetColumnName)
 	if targetColumnIndex == -1 {
 		return -1, fmt.Errorf("missing %s in the CSV file", targetColumnName)
 	}

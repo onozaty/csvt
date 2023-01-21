@@ -5,9 +5,9 @@ import (
 	"io"
 
 	"github.com/onozaty/csvt/csv"
-	"github.com/onozaty/csvt/util"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"golang.org/x/exp/slices"
 )
 
 func newRenameCmd() *cobra.Command {
@@ -85,7 +85,7 @@ func rename(reader csv.CsvReader, targetColumnNames []string, afterColumnNames [
 	targetColumnIndexes := []int{}
 	for _, targetColumnName := range targetColumnNames {
 
-		targetColumnIndex := util.IndexOf(columnNames, targetColumnName)
+		targetColumnIndex := slices.Index(columnNames, targetColumnName)
 		if targetColumnIndex == -1 {
 			return fmt.Errorf("missing %s in the CSV file", targetColumnName)
 		}

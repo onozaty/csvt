@@ -9,7 +9,7 @@ import (
 	"strconv"
 
 	"github.com/boltdb/bolt"
-	"github.com/onozaty/csvt/util"
+	"golang.org/x/exp/slices"
 )
 
 type CsvSortedRows interface {
@@ -55,7 +55,7 @@ func LoadCsvMemorySortedRows(reader CsvReader, useColumnNames []string, compare 
 	useColumnIndexes := []int{}
 	for _, useColumnName := range useColumnNames {
 
-		useColumnIndex := util.IndexOf(allColumnNames, useColumnName)
+		useColumnIndex := slices.Index(allColumnNames, useColumnName)
 		if useColumnIndex == -1 {
 			return nil, fmt.Errorf("%s is not found", useColumnName)
 		}
@@ -191,7 +191,7 @@ func LoadCsvFileSortedRows(reader CsvReader, useColumnNames []string, compare fu
 	useColumnIndexes := []int{}
 	for _, useColumnName := range useColumnNames {
 
-		useColumnIndex := util.IndexOf(allColumnNames, useColumnName)
+		useColumnIndex := slices.Index(allColumnNames, useColumnName)
 		if useColumnIndex == -1 {
 			return nil, fmt.Errorf("%s is not found", useColumnName)
 		}
