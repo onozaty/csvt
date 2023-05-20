@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -60,7 +59,7 @@ func joinRows(rows ...string) string {
 
 func readDir(t *testing.T, dir string) map[string][]byte {
 
-	files, err := ioutil.ReadDir(dir)
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		t.Fatal("read dir failed\n", err)
 	}
