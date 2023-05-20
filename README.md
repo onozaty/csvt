@@ -238,7 +238,7 @@ Check the column names and concat them into the same column.
 ### Usage
 
 ```
-csvt concat -1 INPUT1 -2 INPUT2 -o OUTPUT
+csvt concat -i INPUT1 -i INPUT2 [-i INPUT3 ...] -o OUTPUT
 ```
 
 ```
@@ -246,10 +246,9 @@ Usage:
   csvt concat [flags]
 
 Flags:
-  -1, --first string    First CSV file path.
-  -2, --second string   Second CSV file path.
-  -o, --output string   Output CSV file path.
-  -h, --help            help for concat
+  -i, --input stringArray   Input CSV files path.
+  -o, --output string       Output CSV file path.
+  -h, --help                help for concat
 ```
 
 ### Example
@@ -273,7 +272,7 @@ name4,4
 Concat `input1.csv` and `input2.csv`.
 
 ```
-$ csvt concat -1 input1.csv -2 input2.csv -o output.csv
+$ csvt concat -i input1.csv -i input2.csv -o output.csv
 ```
 
 The contents of the created `output.csv`.

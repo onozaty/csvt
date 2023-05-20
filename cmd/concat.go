@@ -21,40 +21,37 @@ func newConcatCmd() *cobra.Command {
 				return err
 			}
 
-			firstPath, _ := cmd.Flags().GetString("first")
-			secondPath, _ := cmd.Flags().GetString("second")
+			inputPaths, _ := cmd.Flags().GetStringArray("input")
 			outputPath, _ := cmd.Flags().GetString("output")
 
 			// 引数の解析に成功した時点で、エラーが起きてもUsageは表示しない
 			cmd.SilenceUsage = true
 
-			return runConcat(format, firstPath, secondPath, outputPath)
+			return runConcat(format, inputPaths, outputPath)
 		},
 	}
 
-	concatCmd.Flags().StringP("first", "1", "", "First CSV file path.")
-	concatCmd.MarkFlagRequired("first")
-	concatCmd.Flags().StringP("second", "2", "", "Second CSV file path.")
-	concatCmd.MarkFlagRequired("second")
+	concatCmd.Flags().StringArrayP("input", "i", []string{}, "Input CSV files path.")
+	concatCmd.MarkFlagRequired("input")
 	concatCmd.Flags().StringP("output", "o", "", "Output CSV file path.")
 	concatCmd.MarkFlagRequired("output")
 
 	return concatCmd
 }
 
-func runConcat(format csv.Format, firstPath string, secondPath string, outputPath string) error {
+func runConcat(format csv.Format, inputPaths []string, outputPath string) error {
 
-	firstReader, firstClose, err := setupInput(firstPath, format)
-	if err != nil {
-		return err
-	}
-	defer firstClose()
+	readers := []csv.CsvReader{}
 
-	secondReader, secondClose, err := setupInput(secondPath, format)
-	if err != nil {
-		return err
+	for _, inputPath := range inputPaths {
+		reader, inputClose, err := setupInput(inputPath, format)
+		if err != nil {
+			return err
+		}
+		defer inputClose()
+
+		readers = append(readers, reader)
 	}
-	defer secondClose()
 
 	writer, outputClose, err := setupOutput(outputPath, format)
 	if err != nil {
@@ -62,7 +59,7 @@ func runConcat(format csv.Format, firstPath string, secondPath string, outputPat
 	}
 	defer outputClose()
 
-	err = concat(firstReader, secondReader, writer)
+	err = concat(readers, writer)
 	if err != nil {
 		return err
 	}
@@ -70,32 +67,12 @@ func runConcat(format csv.Format, firstPath string, secondPath string, outputPat
 	return writer.Flush()
 }
 
-func concat(first csv.CsvReader, second csv.CsvReader, writer csv.CsvWriter) error {
+func concat(readers []csv.CsvReader, writer csv.CsvWriter) error {
 
-	firstColumnNames, err := first.Read()
+	firstReader := readers[0]
+	firstColumnNames, err := firstReader.Read()
 	if err != nil {
 		return errors.Wrap(err, "failed to read the first CSV file")
-	}
-
-	secondColumnNames, err := second.Read()
-	if err != nil {
-		return errors.Wrap(err, "failed to read the second CSV file")
-	}
-
-	if len(firstColumnNames) != len(secondColumnNames) {
-		return fmt.Errorf("number of columns does not match")
-	}
-
-	// 1つ目のCSVのカラム名と2つ目のCSVのカラム名のマッピングを作成
-	secondColumnIndexes := []int{}
-	for _, firstColumnName := range firstColumnNames {
-
-		secondColumnIndex, err := getTargetColumnIndex(secondColumnNames, firstColumnName)
-		if err != nil {
-			return errors.Wrap(err, "no column corresponding to the second CSV file")
-		}
-
-		secondColumnIndexes = append(secondColumnIndexes, secondColumnIndex)
 	}
 
 	// 1つ目の書き込み
@@ -105,7 +82,7 @@ func concat(first csv.CsvReader, second csv.CsvReader, writer csv.CsvWriter) err
 	}
 
 	for {
-		row, err := first.Read()
+		row, err := firstReader.Read()
 		if err == io.EOF {
 			break
 		}
@@ -119,25 +96,51 @@ func concat(first csv.CsvReader, second csv.CsvReader, writer csv.CsvWriter) err
 		}
 	}
 
-	// 2つ目の書き込み
-	for {
-		row, err := second.Read()
-		if err == io.EOF {
-			break
-		}
+	// 2つ目以降
+	count := 1
+	for _, reader := range readers[1:] {
+		count++
+
+		columnNames, err := reader.Read()
 		if err != nil {
-			return errors.Wrap(err, "failed to read the second CSV file")
+			return errors.Wrapf(err, "failed to read CSV file (%d)", count)
 		}
 
-		// 1つ目のCSVに合わせてカラム入れ替え
-		swapedRow := []string{}
-		for _, secondColumnIndex := range secondColumnIndexes {
-			swapedRow = append(swapedRow, row[secondColumnIndex])
+		if len(firstColumnNames) != len(columnNames) {
+			return fmt.Errorf("number of columns does not match (%d)", count)
 		}
 
-		err = writer.Write(swapedRow)
-		if err != nil {
-			return err
+		// 1つ目のCSVのカラム名とのカラム名のマッピングを作成
+		columnIndexes := []int{}
+		for _, firstColumnName := range firstColumnNames {
+
+			columnIndex, err := getTargetColumnIndex(columnNames, firstColumnName)
+			if err != nil {
+				return errors.Wrapf(err, "no column corresponding in CSV file (%d)", count)
+			}
+
+			columnIndexes = append(columnIndexes, columnIndex)
+		}
+
+		for {
+			row, err := reader.Read()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				return errors.Wrapf(err, "failed to read CSV file (%d)", count)
+			}
+
+			// 1つ目のCSVに合わせてカラム入れ替え
+			swapedRow := []string{}
+			for _, columnIndex := range columnIndexes {
+				swapedRow = append(swapedRow, row[columnIndex])
+			}
+
+			err = writer.Write(swapedRow)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
