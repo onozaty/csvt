@@ -37,9 +37,8 @@ changelog:
       - '^docs:'
       - '^test:'
 
-brews:
-  - name: csvt
-    repository:
+homebrew_casks:
+  - repository:
       owner: onozaty
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
@@ -49,8 +48,7 @@ brews:
     skip_upload: auto
 
 scoops:
-  - name: csvt
-    repository:
+  - repository:
       owner: onozaty
       name: scoop-bucket
       token: "{{ .Env.SCOOP_BUCKET_TOKEN }}"
