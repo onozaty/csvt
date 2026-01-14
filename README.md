@@ -6,6 +6,27 @@
 
 `csvt` is a command line tool for processing CSV.
 
+## Installation
+
+### Homebrew (macOS/Linux)
+
+```bash
+brew install onozaty/tap/csvt
+```
+
+### Scoop (Windows)
+
+```bash
+scoop bucket add onozaty https://github.com/onozaty/scoop-bucket
+scoop install csvt
+```
+
+### Binary Download
+
+Download the latest binary from [GitHub Releases](https://github.com/onozaty/csvt/releases/latest).
+
+## Usage
+
 `csvt` consists of multiple subcommands.
 
 * [add](#add) Add column.
@@ -1317,13 +1338,6 @@ col1,col2
 2,1
 1,1
 ```
-
-## Install
-
-csvt is implemented in golang and runs on all major platforms such as Windows, Mac OS, and Linux.  
-You can download the binaries for each OS from the links below.
-
-* https://github.com/onozaty/csvt/releases/latest
 
 ## License
 

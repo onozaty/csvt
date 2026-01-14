@@ -36,3 +36,25 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
+
+brews:
+  - name: csvt
+    repository:
+      owner: onozaty
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+    description: "Command line tool for processing CSV"
+    homepage: "https://github.com/onozaty/csvt"
+    license: MIT
+    skip_upload: auto
+
+scoops:
+  - name: csvt
+    repository:
+      owner: onozaty
+      name: scoop-bucket
+      token: "{{ .Env.SCOOP_BUCKET_TOKEN }}"
+    description: "Command line tool for processing CSV"
+    homepage: "https://github.com/onozaty/csvt"
+    license: MIT
+    skip_upload: auto
