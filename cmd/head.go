@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/olekukonko/tablewriter"
+	"github.com/olekukonko/tablewriter/tw"
 	"github.com/onozaty/csvt/csv"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -66,11 +67,15 @@ func head(reader csv.CsvReader, number int, writer io.Writer) error {
 		return errors.Wrap(err, "failed to read the input CSV file")
 	}
 
-	table := tablewriter.NewWriter(writer)
-	table.SetAutoFormatHeaders(false)
-	table.SetHeaderAlignment(tablewriter.ALIGN_LEFT)
-	table.SetAlignment(tablewriter.ALIGN_LEFT)
-	table.SetHeader(columnNames)
+	table := tablewriter.NewTable(writer,
+		tablewriter.WithSymbols(tw.NewSymbols(tw.StyleASCII)),
+		tablewriter.WithHeaderAlignment(tw.AlignLeft),
+		tablewriter.WithRowAlignment(tw.AlignLeft),
+	)
+	table.Configure(func(cfg *tablewriter.Config) {
+		cfg.Header.Formatting.AutoFormat = tw.Off
+	})
+	table.Header(columnNames)
 
 	for i := 0; i < number; i++ {
 		row, err := reader.Read()
